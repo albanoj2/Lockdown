@@ -28,7 +28,7 @@
 	</dependencies>
 
 	<properties>
-		<java.version>10</java.version>
+		<java.version>9</java.version>
 	</properties>
 
 	<build>
