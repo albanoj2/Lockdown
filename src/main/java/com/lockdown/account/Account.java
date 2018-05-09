@@ -3,6 +3,8 @@ package com.lockdown.account;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lockdown.money.DollarAmount;
+
 public class Account {
 
 	private final List<Transaction> transactions;

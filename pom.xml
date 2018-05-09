@@ -7,7 +7,8 @@
 	<groupId>com.lockdown</groupId>
 	<artifactId>lockdown-core</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Lockdown Banking &amp; Budgeting</name>
+	<name>lockdown-core</name>
+	<description>Core domain and business logic for Lockdown</description>
 
 	<properties>
 		<java.version>9</java.version>

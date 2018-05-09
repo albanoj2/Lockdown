@@ -1,4 +1,4 @@
-package com.lockdown.account;
+package com.lockdown.money;
 
 public class DollarAmount {
 
@@ -16,6 +16,10 @@ public class DollarAmount {
 		return new DollarAmount(0);
 	}
 	
+	public static DollarAmount dollars(long dollars) {
+		return DollarAmount.cents(dollars * 100);
+	}
+	
 	public long getDollars() {
 		return cents / 100;
 	}
@@ -30,6 +34,30 @@ public class DollarAmount {
 	
 	public DollarAmount sum(DollarAmount amount) {
 		return DollarAmount.cents(cents + amount.cents);
+	}
+	
+	public DollarAmount subtract(DollarAmount amount) {
+		return DollarAmount.cents(cents - amount.cents);
+	}
+	
+	public DollarAmount multiply(long factor) {
+		return DollarAmount.cents(cents * factor);
+	}
+	
+	public boolean isNegative() {
+		return cents < 0;
+	}
+	
+	public boolean isPositive() {
+		return cents > 0;
+	}
+	
+	public boolean isZero() {
+		return cents == 0;
+	}
+	
+	public DollarAmount abs() {
+		return new DollarAmount(Math.abs(cents));
 	}
 
 	@Override
@@ -54,6 +82,7 @@ public class DollarAmount {
 
 	@Override
 	public String toString() {
-		return "$" + getDollars() + "." + getCents();
+		String sign = cents < 0 ? "-" : "";
+		return sign + String.format("$%d.%d", Math.abs(getDollars()), Math.abs(getCents()));
 	}
 }

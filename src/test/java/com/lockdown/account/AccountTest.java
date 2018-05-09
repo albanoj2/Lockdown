@@ -1,19 +1,17 @@
 package com.lockdown.account;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import com.lockdown.account.Account;
-import com.lockdown.account.DollarAmount;
-import com.lockdown.account.Transaction;
+import com.lockdown.money.DollarAmount;
 
 public class AccountTest {
 
 	private Account account;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.account = new Account();
 	}
