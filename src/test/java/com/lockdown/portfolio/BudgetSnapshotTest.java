@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,6 @@ import com.lockdown.account.Transaction;
 import com.lockdown.budget.Budget;
 import com.lockdown.budget.BudgetEntry;
 import com.lockdown.money.DollarAmount;
-import com.sun.tools.javac.util.List;
 
 public class BudgetSnapshotTest {
 
