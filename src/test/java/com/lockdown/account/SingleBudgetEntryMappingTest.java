@@ -18,11 +18,11 @@ public class SingleBudgetEntryMappingTest {
 	
 	@Test
 	public void matchingBudgetEntryEnsureCorrectAmount() {
-		Transaction transaction = Transaction.now(Money.dollars(1));
+		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetEntry entry = nonNullBudgetEntry();
 		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping(entry);
 		
-		assertEquals(Money.dollars(1), mapping.amountFor(transaction, entry));
+		assertEquals(Money.dollars(1), mapping.amountFor(budgetedTransaction, entry));
 	}
 	
 	private static BudgetEntry nonNullBudgetEntry() {
@@ -40,20 +40,20 @@ public class SingleBudgetEntryMappingTest {
 
 	@Test
 	public void nonMatchingBudgetEntryEnsureZeroAmount() {
-		Transaction transaction = Transaction.now(Money.dollars(1));
+		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetEntry matchingEntry = budgetEntryWithId(1);
 		BudgetEntry someOtherEntry = budgetEntryWithId(2);
 		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping( matchingEntry);
 		
-		assertEquals(Money.zero(), mapping.amountFor(transaction, someOtherEntry));
+		assertEquals(Money.zero(), mapping.amountFor(budgetedTransaction, someOtherEntry));
 	}
 	
 	@Test
 	public void amountForWithNullBudgetEntryEnsureNullPointerExceptionThrown() {
-		Transaction transaction = Transaction.now(Money.dollars(1));
+		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetEntry entry = nonNullBudgetEntry();
 		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping(entry);
 		
-		assertThrows(NullPointerException.class, () -> mapping.amountFor(transaction, null));
+		assertThrows(NullPointerException.class, () -> mapping.amountFor(budgetedTransaction, null));
 	}
 }

@@ -13,6 +13,7 @@
 	<properties>
 		<java.version>9</java.version>
 		<junit.version>5.2.0</junit.version>
+		<spring.data.version>2.0.7.RELEASE</spring.data.version>
 	</properties>
 
 	<dependencies>
@@ -33,6 +34,11 @@
 			<artifactId>junit-vintage-engine</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>${spring.data.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -7,29 +7,41 @@ import com.lockdown.money.Money;
 
 public class Account {
 
-	private final List<Transaction> transactions;
+	private final List<UnbudgetedTransaction> unbudgetedTransactions;
+	private final List<BudgetedTransaction> budgetedTransactions;
 	
-	public Account(List<Transaction> transactions) {
-		this.transactions = transactions;
+	public Account(List<UnbudgetedTransaction> unbudgetedTransactions, List<BudgetedTransaction> budgetedTransactions) {
+		this.unbudgetedTransactions = unbudgetedTransactions;
+		this.budgetedTransactions = budgetedTransactions;
 	}
 	
 	public static Account blank() {
-		return new Account(new ArrayList<>());
+		return new Account(new ArrayList<>(), new ArrayList<>());
 	}
 	
-	public List<Transaction> getTransactions() {
-		return transactions;
+	public List<UnbudgetedTransaction> getUnbudgetedTransactions() {
+		return unbudgetedTransactions;
 	}
 	
-	public Account addTransaction(Transaction transaction) {
-		transactions.add(transaction);
+	public Account addUnbudgetedTransaction(UnbudgetedTransaction transaction) {
+		unbudgetedTransactions.add(transaction);
 		return this;
 	}
 	
-	public Money getBalance() {
-		return transactions.stream()
-			.map(t -> t.getAmount())
-			.reduce((t1, t2) -> t1.sum(t2))
-			.orElse(Money.zero());
+	public List<BudgetedTransaction> getBudgetedTransactions() {
+		return budgetedTransactions;
+	}
+	
+	public Account addBudgetedTransaction(BudgetedTransaction transaction) {
+		budgetedTransactions.add(transaction);
+		return this;
+	}
+	
+	public Money getBudgetedBalance() {
+		return TransactionList.getBalance(budgetedTransactions);
+	}
+	
+	public Money getUnbudgetedBalance() {
+		return TransactionList.getBalance(unbudgetedTransactions);
 	}
 }

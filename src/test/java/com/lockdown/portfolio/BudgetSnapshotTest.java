@@ -10,8 +10,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.lockdown.account.Account;
+import com.lockdown.account.BudgetedTransaction;
+import com.lockdown.account.Transactions;
 import com.lockdown.account.SingleBudgetEntryMapping;
-import com.lockdown.account.Transaction;
 import com.lockdown.budget.Budget;
 import com.lockdown.budget.BudgetEntry;
 import com.lockdown.money.Money;
@@ -31,9 +32,9 @@ public class BudgetSnapshotTest {
 		Budget budget = new Budget(List.of(entry));
 		
 		Account account = Account.blank()
-			.addTransaction(transactionFor(entry, 5))
-			.addTransaction(transactionFor(entry, -10))
-			.addTransaction(transactionFor(entry, 15));
+			.addBudgetedTransaction(transactionFor(entry, 5))
+			.addBudgetedTransaction(transactionFor(entry, -10))
+			.addBudgetedTransaction(transactionFor(entry, 15));
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account));
 		
@@ -41,8 +42,8 @@ public class BudgetSnapshotTest {
 		assertEquals(Money.dollars(10), snapshot.getBudgetEntrySnapshots().get(entry).getBalance());
 	}
 	
-	private static Transaction transactionFor(BudgetEntry entry, long dollars) {
-		return Transaction.now(Money.dollars(dollars), new SingleBudgetEntryMapping(entry));
+	private static BudgetedTransaction transactionFor(BudgetEntry entry, long dollars) {
+		return Transactions.budgetedForAmountWithMapping(Money.dollars(dollars), new SingleBudgetEntryMapping(entry));
 	}
 	
 	@Test
@@ -55,10 +56,10 @@ public class BudgetSnapshotTest {
 		Budget budget = new Budget(List.of(entry1, entry2));
 		
 		Account account = Account.blank()
-			.addTransaction(transactionFor(entry1, 5))
-			.addTransaction(transactionFor(entry1, -10))
-			.addTransaction(transactionFor(entry2, 15))
-			.addTransaction(transactionFor(entry2, -5));
+			.addBudgetedTransaction(transactionFor(entry1, 5))
+			.addBudgetedTransaction(transactionFor(entry1, -10))
+			.addBudgetedTransaction(transactionFor(entry2, 15))
+			.addBudgetedTransaction(transactionFor(entry2, -5));
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account));
 		
@@ -77,16 +78,16 @@ public class BudgetSnapshotTest {
 		Budget budget = new Budget(List.of(entry1, entry2));
 		
 		Account account1 = Account.blank()
-			.addTransaction(transactionFor(entry1, 50))
-			.addTransaction(transactionFor(entry1, -10))
-			.addTransaction(transactionFor(entry2, 30))
-			.addTransaction(transactionFor(entry2, -20));
+			.addBudgetedTransaction(transactionFor(entry1, 50))
+			.addBudgetedTransaction(transactionFor(entry1, -10))
+			.addBudgetedTransaction(transactionFor(entry2, 30))
+			.addBudgetedTransaction(transactionFor(entry2, -20));
 		
 		Account account2 = Account.blank()
-			.addTransaction(transactionFor(entry1, 20))
-			.addTransaction(transactionFor(entry1, -40))
-			.addTransaction(transactionFor(entry2, 10))
-			.addTransaction(transactionFor(entry2, -30));
+			.addBudgetedTransaction(transactionFor(entry1, 20))
+			.addBudgetedTransaction(transactionFor(entry1, -40))
+			.addBudgetedTransaction(transactionFor(entry2, 10))
+			.addBudgetedTransaction(transactionFor(entry2, -30));
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account1, account2));
 		

@@ -1,7 +1,6 @@
 package com.lockdown.portfolio;
 
 import static com.lockdown.money.Money.dollars;
-import static com.lockdown.money.Money.zero;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Period;
@@ -12,8 +11,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import com.lockdown.account.BudgetEntryMapping;
+import com.lockdown.account.BudgetedTransaction;
+import com.lockdown.account.Transactions;
 import com.lockdown.account.SingleBudgetEntryMapping;
-import com.lockdown.account.Transaction;
 import com.lockdown.budget.BudgetEntry;
 import com.lockdown.money.Money;
 
@@ -46,11 +46,11 @@ public class BudgetEntrySnapshotTest {
 	}
 	
 	private static BudgetEntrySnapshot createSnapshotForTransactionAmounts(BudgetEntry entry, BudgetEntryMapping mapping, List<Integer> amounts) {
-		List<Transaction> transactions = amounts.stream()
-			.map(amount -> Transaction.now(Money.dollars(amount), mapping))
+		List<BudgetedTransaction> budgetedTransactions = amounts.stream()
+			.map(amount -> Transactions.budgetedForAmountWithMapping(Money.dollars(amount), mapping))
 			.collect(Collectors.toList());
 		
-		return new BudgetEntrySnapshot(entry, transactions);
+		return new BudgetEntrySnapshot(entry, budgetedTransactions);
 	}
 	
 	private static BudgetEntry createBlankEntry() {
@@ -91,21 +91,19 @@ public class BudgetEntrySnapshotTest {
 	@Test
 	public void twoNegativeTransactionsWithOneNotMappedToBudgetEntryEnsureCorrectExpensedAmount() {
 		BudgetEntry entry = createBlankEntry();
-		Transaction mappedTransaction = createMappedTransaction(dollars(-3), entry);
-		Transaction unmappedTransaction = createUnmappedTransaction(dollars(-3));
+		BudgetedTransaction mappedTransaction = createMappedTransaction(dollars(-3), entry);
+		BudgetedTransaction unmappedTransaction = createUnmappedTransaction(dollars(-3));
 		BudgetEntrySnapshot snapshot = new BudgetEntrySnapshot(entry, List.of(mappedTransaction, unmappedTransaction));
 		assertEquals(dollars(3), snapshot.getExpensedAmount());
 	}
 	
-	private static Transaction createMappedTransaction(Money amount, BudgetEntry entry) {
-		return Transaction.now(amount, createMappingFor(entry));
+	private static BudgetedTransaction createMappedTransaction(Money amount, BudgetEntry entry) {
+		return Transactions.budgetedForAmountWithMapping(amount, createMappingFor(entry));
 	}
 	
-	private static Transaction createUnmappedTransaction(Money amount) {
-		return Transaction.now(amount, (t, e) -> zero());
+	private static BudgetedTransaction createUnmappedTransaction(Money amount) {
+		return Transactions.budgetedForAmount(amount);
 	}
-	
-
 	
 	@Test
 	public void singlePositiveTransactionEnsureCorrectDepositedAmount() {
@@ -135,8 +133,8 @@ public class BudgetEntrySnapshotTest {
 	@Test
 	public void twoPositiveTransactionsWithOneNotMappedToBudgetEntryEnsureCorrectDepositedAmount() {
 		BudgetEntry entry = createBlankEntry();
-		Transaction mappedTransaction = createMappedTransaction(dollars(3), entry);
-		Transaction unmappedTransaction = createUnmappedTransaction(dollars(3));
+		BudgetedTransaction mappedTransaction = createMappedTransaction(dollars(3), entry);
+		BudgetedTransaction unmappedTransaction = createUnmappedTransaction(dollars(3));
 		BudgetEntrySnapshot snapshot = new BudgetEntrySnapshot(entry, List.of(mappedTransaction, unmappedTransaction));
 		assertEquals(dollars(3), snapshot.getDepositedAmount());
 	}

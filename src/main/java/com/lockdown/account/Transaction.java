@@ -1,54 +1,46 @@
 package com.lockdown.account;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-import com.lockdown.budget.BudgetEntry;
+import com.lockdown.DomainObject;
 import com.lockdown.money.Money;
 
-public class Transaction {
+public abstract class Transaction extends DomainObject {
 
-	private final Date date;
-	private final Money amount;
-	private final BudgetEntryMapping mapping;
-	
-	public Transaction(Date date, Money amount, BudgetEntryMapping mapping) {
+	protected final LocalDate date;
+	protected final String description;
+	protected final String party;
+	protected final Money amount;
+
+	protected Transaction(long id, LocalDate date, String description, String party, Money amount) {
+		super(id);
 		this.date = date;
+		this.description = description;
+		this.party = party;
 		this.amount = amount;
-		this.mapping = mapping;
-	}
-	public static Transaction now(Money amount, BudgetEntryMapping mapping) {
-		return new Transaction(new Date(), amount, mapping);
-	}
-	
-	public static Transaction now(Money amount) {
-		return now(amount, SingleBudgetEntryMapping.none());
-	}
-	
-	public static Transaction zero() {
-		return now(Money.zero());
 	}
 
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public String getParty() {
+		return party;
 	}
 
 	public Money getAmount() {
 		return amount;
 	}
-	
-	public Money amountFor(BudgetEntry entry) {
-		return mapping.amountFor(this, entry);
-	}
-	
+
 	public boolean isExpense() {
 		return amount.isNegative();
 	}
-	
+
 	public boolean isDeposit() {
 		return amount.isPositive();
-	}
-	@Override
-	public String toString() {
-		return "Transaction [date=" + date + ", amount=" + amount + ", mapping=" + mapping + "]";
 	}
 }

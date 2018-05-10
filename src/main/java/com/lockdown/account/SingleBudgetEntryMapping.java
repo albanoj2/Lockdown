@@ -18,12 +18,12 @@ public class SingleBudgetEntryMapping implements BudgetEntryMapping {
 	}
 
 	@Override
-	public Money amountFor(Transaction transaction, BudgetEntry entry) {
+	public Money amountFor(Transaction budgetedTransaction, BudgetEntry entry) {
 		
 		Objects.requireNonNull(entry);
 		
 		if (this.entry.equals(entry)) {
-			return transaction.getAmount();
+			return budgetedTransaction.getAmount();
 		}
 		else {
 			return Money.zero();

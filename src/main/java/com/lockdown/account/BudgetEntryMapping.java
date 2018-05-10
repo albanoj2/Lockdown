@@ -5,5 +5,5 @@ import com.lockdown.money.Money;
 
 @FunctionalInterface
 public interface BudgetEntryMapping {
-	public Money amountFor(Transaction transaction, BudgetEntry entry);
+	public Money amountFor(Transaction budgetedTransaction, BudgetEntry entry);
 }
