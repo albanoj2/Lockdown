@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.lockdown.budget.BudgetEntry;
 import com.lockdown.budget.FrequencyUnits;
-import com.lockdown.money.DollarAmount;
+import com.lockdown.money.Money;
 
 public class SingleBudgetEntryMappingTest {
 	
@@ -18,11 +18,11 @@ public class SingleBudgetEntryMappingTest {
 	
 	@Test
 	public void matchingBudgetEntryEnsureCorrectAmount() {
-		Transaction transaction = Transaction.now(DollarAmount.dollars(1));
+		Transaction transaction = Transaction.now(Money.dollars(1));
 		BudgetEntry entry = nonNullBudgetEntry();
 		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping(entry);
 		
-		assertEquals(DollarAmount.dollars(1), mapping.amountFor(transaction, entry));
+		assertEquals(Money.dollars(1), mapping.amountFor(transaction, entry));
 	}
 	
 	private static BudgetEntry nonNullBudgetEntry() {
@@ -30,22 +30,27 @@ public class SingleBudgetEntryMappingTest {
 	}
 	
 	private static BudgetEntry budgetEntryWithId(long id) {
-		return BudgetEntry.startingNow(id, DollarAmount.zero(), FrequencyUnits.WEEKLY);
+		return BudgetEntry.builder()
+			.id(id)
+			.startingNow()
+			.zeroAmount()
+			.frequency(FrequencyUnits.WEEKLY)
+			.build();
 	}
 
 	@Test
 	public void nonMatchingBudgetEntryEnsureZeroAmount() {
-		Transaction transaction = Transaction.now(DollarAmount.dollars(1));
+		Transaction transaction = Transaction.now(Money.dollars(1));
 		BudgetEntry matchingEntry = budgetEntryWithId(1);
 		BudgetEntry someOtherEntry = budgetEntryWithId(2);
 		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping( matchingEntry);
 		
-		assertEquals(DollarAmount.zero(), mapping.amountFor(transaction, someOtherEntry));
+		assertEquals(Money.zero(), mapping.amountFor(transaction, someOtherEntry));
 	}
 	
 	@Test
 	public void amountForWithNullBudgetEntryEnsureNullPointerExceptionThrown() {
-		Transaction transaction = Transaction.now(DollarAmount.dollars(1));
+		Transaction transaction = Transaction.now(Money.dollars(1));
 		BudgetEntry entry = nonNullBudgetEntry();
 		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping(entry);
 		

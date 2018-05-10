@@ -3,7 +3,7 @@ package com.lockdown.account;
 import java.util.Objects;
 
 import com.lockdown.budget.BudgetEntry;
-import com.lockdown.money.DollarAmount;
+import com.lockdown.money.Money;
 
 public class SingleBudgetEntryMapping implements BudgetEntryMapping {
 
@@ -14,11 +14,11 @@ public class SingleBudgetEntryMapping implements BudgetEntryMapping {
 	}
 	
 	public static SingleBudgetEntryMapping none() {
-		return new SingleBudgetEntryMapping(BudgetEntry.none());
+		return new SingleBudgetEntryMapping(BudgetEntry.blank());
 	}
 
 	@Override
-	public DollarAmount amountFor(Transaction transaction, BudgetEntry entry) {
+	public Money amountFor(Transaction transaction, BudgetEntry entry) {
 		
 		Objects.requireNonNull(entry);
 		
@@ -26,7 +26,7 @@ public class SingleBudgetEntryMapping implements BudgetEntryMapping {
 			return transaction.getAmount();
 		}
 		else {
-			return DollarAmount.zero();
+			return Money.zero();
 		}
 	}
 

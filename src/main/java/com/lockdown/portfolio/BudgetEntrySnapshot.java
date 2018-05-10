@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 import com.lockdown.account.Transaction;
 import com.lockdown.budget.BudgetEntry;
-import com.lockdown.money.DollarAmount;
+import com.lockdown.money.Money;
 
 public class BudgetEntrySnapshot {
 
@@ -17,31 +17,31 @@ public class BudgetEntrySnapshot {
 		this.transactions = transactions;
 	}
 	
-	public DollarAmount getExpensedAmount() {
+	public Money getExpensedAmount() {
 		return sumTransactionAmountsIf(Transaction::isExpense).abs();
 	}
 	
-	private DollarAmount sumTransactionAmountsIf(Predicate<Transaction> predicate) {
+	private Money sumTransactionAmountsIf(Predicate<Transaction> predicate) {
 		return transactions.stream()
-				.filter(predicate)
-				.map(transaction -> transaction.amountFor(entry))
-				.reduce((amount1, amount2) -> amount1.sum(amount2))
-				.orElse(DollarAmount.zero());
+			.filter(predicate)
+			.map(transaction -> transaction.amountFor(entry))
+			.reduce((amount1, amount2) -> amount1.sum(amount2))
+			.orElse(Money.zero());
 	}
 	
-	public DollarAmount getDepositedAmount() {
+	public Money getDepositedAmount() {
 		return sumTransactionAmountsIf(Transaction::isDeposit);
 	}
 	
-	public DollarAmount getBalance() {
+	public Money getBalance() {
 		return getDepositedAmount().subtract(getExpensedAmount());
 	}
 	
-	public DollarAmount getAccumulatedAmount() {
+	public Money getAccumulatedAmount() {
 		return entry.getTotalAccumulatedAmount();
 	}
 	
-	public DollarAmount getRemainingAmount() {
+	public Money getRemainingAmount() {
 		return getBalance().sum(getAccumulatedAmount());
 	}
 

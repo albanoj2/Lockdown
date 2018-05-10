@@ -1,23 +1,23 @@
 package com.lockdown.money;
 
-public class DollarAmount {
+public class Money {
 
 	private long cents;
 	
-	private DollarAmount(long cents) {
+	private Money(long cents) {
 		this.cents = cents;
 	}
 	
-	public static DollarAmount cents(long cents) {
-		return new DollarAmount(cents);
+	public static Money cents(long cents) {
+		return new Money(cents);
 	}
 	
-	public static DollarAmount zero() {
-		return new DollarAmount(0);
+	public static Money zero() {
+		return new Money(0);
 	}
 	
-	public static DollarAmount dollars(long dollars) {
-		return DollarAmount.cents(dollars * 100);
+	public static Money dollars(long dollars) {
+		return Money.cents(dollars * 100);
 	}
 	
 	public long getDollars() {
@@ -32,16 +32,16 @@ public class DollarAmount {
 		return cents;
 	}
 	
-	public DollarAmount sum(DollarAmount amount) {
-		return DollarAmount.cents(cents + amount.cents);
+	public Money sum(Money amount) {
+		return Money.cents(cents + amount.cents);
 	}
 	
-	public DollarAmount subtract(DollarAmount amount) {
-		return DollarAmount.cents(cents - amount.cents);
+	public Money subtract(Money amount) {
+		return Money.cents(cents - amount.cents);
 	}
 	
-	public DollarAmount multiply(long factor) {
-		return DollarAmount.cents(cents * factor);
+	public Money multiply(long factor) {
+		return Money.cents(cents * factor);
 	}
 	
 	public boolean isNegative() {
@@ -56,8 +56,8 @@ public class DollarAmount {
 		return cents == 0;
 	}
 	
-	public DollarAmount abs() {
-		return new DollarAmount(Math.abs(cents));
+	public Money abs() {
+		return new Money(Math.abs(cents));
 	}
 
 	@Override
@@ -71,11 +71,11 @@ public class DollarAmount {
 		if (this == obj) {
 			return true;
 		}
-		else if (!(obj instanceof DollarAmount)) {
+		else if (!(obj instanceof Money)) {
 			return false;
 		}
 		else {
-			DollarAmount other = (DollarAmount) obj;
+			Money other = (Money) obj;
 			return other.cents == cents;
 		}
 	}

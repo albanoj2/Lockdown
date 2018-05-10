@@ -1,10 +1,10 @@
 package com.lockdown.portfolio;
 
-import static com.lockdown.money.DollarAmount.dollars;
-import static com.lockdown.money.DollarAmount.zero;
+import static com.lockdown.money.Money.dollars;
+import static com.lockdown.money.Money.zero;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,29 +15,28 @@ import com.lockdown.account.BudgetEntryMapping;
 import com.lockdown.account.SingleBudgetEntryMapping;
 import com.lockdown.account.Transaction;
 import com.lockdown.budget.BudgetEntry;
-import com.lockdown.budget.FrequencyUnits;
-import com.lockdown.money.DollarAmount;
+import com.lockdown.money.Money;
 
 public class BudgetEntrySnapshotTest {
 
 	@Test
 	public void noTransactionsEnsureExpensedAmountIsZero() {
-		assertEquals(DollarAmount.zero(), emptySnapshot().getExpensedAmount());
+		assertEquals(Money.zero(), emptySnapshot().getExpensedAmount());
 	}
 
 	private static BudgetEntrySnapshot emptySnapshot() {
-		return new BudgetEntrySnapshot(BudgetEntry.none(), new ArrayList<>());
+		return new BudgetEntrySnapshot(BudgetEntry.blank(), new ArrayList<>());
 	}
 	
 	@Test
 	public void noTransactionsEnsureDepositedAmountIsZero() {
-		assertEquals(DollarAmount.zero(), emptySnapshot().getDepositedAmount());
+		assertEquals(Money.zero(), emptySnapshot().getDepositedAmount());
 	}
 	
 	@Test
 	public void singleNegativeTransactionEnsureCorrectExpensedAmount() {
 		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(List.of(-3));
-		assertEquals(DollarAmount.dollars(3), snapshot.getExpensedAmount());
+		assertEquals(Money.dollars(3), snapshot.getExpensedAmount());
 	}
 	
 	private static BudgetEntrySnapshot createSnapshotForTransactionAmounts(List<Integer> amounts) {
@@ -48,7 +47,7 @@ public class BudgetEntrySnapshotTest {
 	
 	private static BudgetEntrySnapshot createSnapshotForTransactionAmounts(BudgetEntry entry, BudgetEntryMapping mapping, List<Integer> amounts) {
 		List<Transaction> transactions = amounts.stream()
-			.map(amount -> Transaction.now(DollarAmount.dollars(amount), mapping))
+			.map(amount -> Transaction.now(Money.dollars(amount), mapping))
 			.collect(Collectors.toList());
 		
 		return new BudgetEntrySnapshot(entry, transactions);
@@ -59,7 +58,11 @@ public class BudgetEntrySnapshotTest {
 	}
 	
 	private static BudgetEntry createEntry(int dollars) {
-		return BudgetEntry.startingNow(0, DollarAmount.dollars(dollars), FrequencyUnits.WEEKLY);
+		return BudgetEntry.builder()
+			.amount(Money.dollars(dollars))
+			.startingNow()
+			.weekly()
+			.build();
 	}
 	
 	private static BudgetEntryMapping createMappingFor(BudgetEntry entry) {
@@ -69,20 +72,20 @@ public class BudgetEntrySnapshotTest {
 	@Test
 	public void twoNegativeTransactionsEnsureCorrectExpensedAmount() {
 		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(List.of(-3, -7));
-		assertEquals(DollarAmount.dollars(10), snapshot.getExpensedAmount());
+		assertEquals(Money.dollars(10), snapshot.getExpensedAmount());
 	}
 	
 	@Test
 	public void oneNegativeOnePositiveTransactionEnsureCorrectExpensedAmount() {
 		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(List.of(3, -7));
-		assertEquals(DollarAmount.dollars(7), snapshot.getExpensedAmount());
+		assertEquals(Money.dollars(7), snapshot.getExpensedAmount());
 	}
 	
 	@Test
 	public void twoNegativeTransactionsWithFixedMappingAmountEnsureCorrectExpensedAmount() {
 		BudgetEntry entry = createBlankEntry();
-		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(entry, (t, e) -> DollarAmount.zero(), List.of(-3, -7));
-		assertEquals(DollarAmount.zero(), snapshot.getExpensedAmount());
+		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(entry, (t, e) -> Money.zero(), List.of(-3, -7));
+		assertEquals(Money.zero(), snapshot.getExpensedAmount());
 	}
 
 	@Test
@@ -94,11 +97,11 @@ public class BudgetEntrySnapshotTest {
 		assertEquals(dollars(3), snapshot.getExpensedAmount());
 	}
 	
-	private static Transaction createMappedTransaction(DollarAmount amount, BudgetEntry entry) {
+	private static Transaction createMappedTransaction(Money amount, BudgetEntry entry) {
 		return Transaction.now(amount, createMappingFor(entry));
 	}
 	
-	private static Transaction createUnmappedTransaction(DollarAmount amount) {
+	private static Transaction createUnmappedTransaction(Money amount) {
 		return Transaction.now(amount, (t, e) -> zero());
 	}
 	
@@ -107,26 +110,26 @@ public class BudgetEntrySnapshotTest {
 	@Test
 	public void singlePositiveTransactionEnsureCorrectDepositedAmount() {
 		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(List.of(3));
-		assertEquals(DollarAmount.dollars(3), snapshot.getDepositedAmount());
+		assertEquals(Money.dollars(3), snapshot.getDepositedAmount());
 	}
 	
 	@Test
 	public void twoPositiveTransactionsEnsureCorrectDepositedAmount() {
 		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(List.of(3, 7));
-		assertEquals(DollarAmount.dollars(10), snapshot.getDepositedAmount());
+		assertEquals(Money.dollars(10), snapshot.getDepositedAmount());
 	}
 	
 	@Test
 	public void oneNegativeOnePositiveTransactionEnsureCorrectDepositedAmount() {
 		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(List.of(3, -7));
-		assertEquals(DollarAmount.dollars(3), snapshot.getDepositedAmount());
+		assertEquals(Money.dollars(3), snapshot.getDepositedAmount());
 	}
 	
 	@Test
 	public void twoPositiveTransactionsWithFixedMappingAmountEnsureCorrectDepositedAmount() {
 		BudgetEntry entry = createBlankEntry();
-		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(entry, (t, e) -> DollarAmount.zero(), List.of(3, 7));
-		assertEquals(DollarAmount.zero(), snapshot.getDepositedAmount());
+		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(entry, (t, e) -> Money.zero(), List.of(3, 7));
+		assertEquals(Money.zero(), snapshot.getDepositedAmount());
 	}
 
 	@Test
@@ -140,23 +143,31 @@ public class BudgetEntrySnapshotTest {
 	
 	@Test
 	public void cononicalTransactionsEnsureCorrectRemainingAmount() {
-		BudgetEntry entry = new BudgetEntry(DollarAmount.dollars(10), LocalDate.EPOCH, LocalDate.EPOCH.plusWeeks(2), FrequencyUnits.WEEKLY);
+		BudgetEntry entry = tenDollarsEachWeekForTwoWeeks();
 		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(entry, new SingleBudgetEntryMapping(entry), List.of(5, -10, 30, -20));
 		
 		// Accumulated amount:    $10/week * 2 weeks     = $20
 		// Transaction total:     $5 - $10 + $30 - $20   = $5
 		// Total:                 $5 + $20               = $25
-		assertEquals(DollarAmount.dollars(25), snapshot.getRemainingAmount());
+		assertEquals(Money.dollars(25), snapshot.getRemainingAmount());
+	}
+	
+	public static BudgetEntry tenDollarsEachWeekForTwoWeeks() {
+		return BudgetEntry.builder()
+			.amount(dollars(10))
+			.life(Period.ofWeeks(2))
+			.weekly()
+			.build();
 	}
 	
 	@Test
 	public void cononicalTransactionsWithExpectedNegativeValueEnsureCorrectRemainingAmount() {
-		BudgetEntry entry = new BudgetEntry(DollarAmount.dollars(10), LocalDate.EPOCH, LocalDate.EPOCH.plusWeeks(2), FrequencyUnits.WEEKLY);
+		BudgetEntry entry = tenDollarsEachWeekForTwoWeeks();
 		BudgetEntrySnapshot snapshot = createSnapshotForTransactionAmounts(entry, new SingleBudgetEntryMapping(entry), List.of(5, -10, -30, -20));
 		
 		// Accumulated amount:    $10/week * 2 weeks     = $20
 		// Transaction total:     $5 - $10 - $30 - $20   = -$55
 		// Total:                 -$55 + $20               = -$35
-		assertEquals(DollarAmount.dollars(-35), snapshot.getRemainingAmount());
+		assertEquals(Money.dollars(-35), snapshot.getRemainingAmount());
 	}
 }

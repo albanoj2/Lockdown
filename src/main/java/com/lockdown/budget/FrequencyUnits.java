@@ -1,29 +1,25 @@
 package com.lockdown.budget;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.time.Period;
 
 public enum FrequencyUnits implements Frequency {
 	
 	WEEKLY {
 		@Override
-		public long occurrencesBetween(LocalDate start, LocalDate end) {
-			return ChronoUnit.WEEKS.between(start, end);
+		public int occurrencesIn(Period period) {
+			return period.getDays() / 7;
 		}
-		
 	}, 
 	MONTHLY {
 		@Override
-		public long occurrencesBetween(LocalDate start, LocalDate end) {
-			return ChronoUnit.MONTHS.between(start, end);
+		public int occurrencesIn(Period period) {
+			return period.getMonths();
 		}
-		
 	}, 
 	NEVER {
 		@Override
-		public long occurrencesBetween(LocalDate start, LocalDate end) {
+		public int occurrencesIn(Period period) {
 			return 0;
 		}
-		
 	};
 }

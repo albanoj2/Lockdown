@@ -3,7 +3,7 @@ package com.lockdown.account;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lockdown.money.DollarAmount;
+import com.lockdown.money.Money;
 
 public class Account {
 
@@ -13,8 +13,8 @@ public class Account {
 		this.transactions = transactions;
 	}
 	
-	public Account() {
-		this(new ArrayList<>());
+	public static Account blank() {
+		return new Account(new ArrayList<>());
 	}
 	
 	public List<Transaction> getTransactions() {
@@ -26,10 +26,10 @@ public class Account {
 		return this;
 	}
 	
-	public DollarAmount getBalance() {
+	public Money getBalance() {
 		return transactions.stream()
 			.map(t -> t.getAmount())
 			.reduce((t1, t2) -> t1.sum(t2))
-			.orElse(DollarAmount.zero());
+			.orElse(Money.zero());
 	}
 }

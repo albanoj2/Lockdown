@@ -1,9 +1,9 @@
 package com.lockdown.account;
 
 import com.lockdown.budget.BudgetEntry;
-import com.lockdown.money.DollarAmount;
+import com.lockdown.money.Money;
 
 @FunctionalInterface
 public interface BudgetEntryMapping {
-	public DollarAmount amountFor(Transaction transaction, BudgetEntry entry);
+	public Money amountFor(Transaction transaction, BudgetEntry entry);
 }

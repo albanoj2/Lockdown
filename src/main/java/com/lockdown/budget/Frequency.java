@@ -1,7 +1,8 @@
 package com.lockdown.budget;
 
-import java.time.LocalDate;
+import java.time.Period;
 
+@FunctionalInterface
 public interface Frequency {
-	public long occurrencesBetween(LocalDate start, LocalDate end);
+	public int occurrencesIn(Period period);
 }
