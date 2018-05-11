@@ -3,20 +3,22 @@ package com.lockdown.account;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lockdown.DomainObject;
 import com.lockdown.money.Money;
 
-public class Account {
+public class Account extends DomainObject {
 
 	private final List<UnbudgetedTransaction> unbudgetedTransactions;
 	private final List<BudgetedTransaction> budgetedTransactions;
 	
-	public Account(List<UnbudgetedTransaction> unbudgetedTransactions, List<BudgetedTransaction> budgetedTransactions) {
+	public Account(long id, List<UnbudgetedTransaction> unbudgetedTransactions, List<BudgetedTransaction> budgetedTransactions) {
+		super(id);
 		this.unbudgetedTransactions = unbudgetedTransactions;
 		this.budgetedTransactions = budgetedTransactions;
 	}
 	
 	public static Account blank() {
-		return new Account(new ArrayList<>(), new ArrayList<>());
+		return new Account(0, new ArrayList<>(), new ArrayList<>());
 	}
 	
 	public List<UnbudgetedTransaction> getUnbudgetedTransactions() {

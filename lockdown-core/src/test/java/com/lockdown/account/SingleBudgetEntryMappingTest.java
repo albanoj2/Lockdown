@@ -43,7 +43,7 @@ public class SingleBudgetEntryMappingTest {
 		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetEntry matchingEntry = budgetEntryWithId(1);
 		BudgetEntry someOtherEntry = budgetEntryWithId(2);
-		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping( matchingEntry);
+		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping(matchingEntry);
 		
 		assertEquals(Money.zero(), mapping.amountFor(budgetedTransaction, someOtherEntry));
 	}

@@ -3,16 +3,19 @@ package com.lockdown.budget;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Budget {
+import com.lockdown.DomainObject;
+
+public class Budget extends DomainObject {
 
 	private final List<BudgetEntry> entries;
 	
-	public Budget(List<BudgetEntry> entries) {
+	public Budget(long id, List<BudgetEntry> entries) {
+		super(id);
 		this.entries = entries;
 	}
 	
 	public Budget() {
-		this(new ArrayList<>());
+		this(0, new ArrayList<>());
 	}
 
 	public static Budget empty() {

@@ -29,7 +29,7 @@ public class BudgetSnapshotTest {
 	public void oneAccountWithTransactionsForOneBudgetEntryEnsureCorrectEntrySnapshots() {
 				
 		BudgetEntry entry = BudgetEntry.blank();
-		Budget budget = new Budget(List.of(entry));
+		Budget budget = new Budget(0, List.of(entry));
 		
 		Account account = Account.blank()
 			.addBudgetedTransaction(transactionFor(entry, 5))
@@ -53,7 +53,7 @@ public class BudgetSnapshotTest {
 		BudgetEntry entry2 = BudgetEntry.blank();
 		entry1.setName("Entry 1");
 		entry2.setName("Entry 2");
-		Budget budget = new Budget(List.of(entry1, entry2));
+		Budget budget = new Budget(0, List.of(entry1, entry2));
 		
 		Account account = Account.blank()
 			.addBudgetedTransaction(transactionFor(entry1, 5))
@@ -75,7 +75,7 @@ public class BudgetSnapshotTest {
 		BudgetEntry entry2 = BudgetEntry.blank();
 		entry1.setName("Entry 1");
 		entry2.setName("Entry 2");
-		Budget budget = new Budget(List.of(entry1, entry2));
+		Budget budget = new Budget(0, List.of(entry1, entry2));
 		
 		Account account1 = Account.blank()
 			.addBudgetedTransaction(transactionFor(entry1, 50))

@@ -13,5 +13,6 @@
 
 	<modules>
 		<module>lockdown-core</module>
+		<module>lockdown-persist</module>
 	</modules>
 </project>
