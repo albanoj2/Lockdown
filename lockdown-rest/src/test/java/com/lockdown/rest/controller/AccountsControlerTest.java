@@ -14,6 +14,7 @@ import static org.mockito.Mockito.doReturn;
 import java.util.List;
 
 import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -25,10 +26,15 @@ import com.lockdown.rest.util.DomainObjectGenerator;
 
 public class AccountsControlerTest extends AbstractControllerTest {
 	
-	private final AccountGenerator generator = new AccountGenerator();
+	private AccountGenerator generator;
 	
 	@MockBean
 	private AccountRepository accountRepository;
+	
+	@Before
+	public void setUp() {
+		generator = new AccountGenerator();
+	}
 	
 	@Test
 	public void givenNoAccountsWhenGetAllAccountsEnsureCorrectResponse() throws Exception {
@@ -66,16 +72,16 @@ public class AccountsControlerTest extends AbstractControllerTest {
 		return equalTo(account.getName());
 	}
 
-//	@Test
-//	public void givenTwoAccountsWhenGetAllAccountsEnsureCorrectResponse() throws Exception {
-//		List<Account> accounts = generator.listOf(2);
-//		doReturn(accounts).when(accountRepository).findAll();
-//		mvc().perform(get("/accounts"))
-//			.andExpect(status().isOk())
-//			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-//			.andExpect(jsonPathLong("$.accounts[0].id", matchesId(accounts.get(0))))
-//			.andExpect(jsonPath("$.accounts[0].name", matchesName(accounts.get(0))))
-//			.andExpect(jsonPathLong("$.accounts[1].id", matchesId(accounts.get(1))))
-//			.andExpect(jsonPath("$.accounts[1].name", matchesName(accounts.get(1))));
-//	}
+	@Test
+	public void givenTwoAccountsWhenGetAllAccountsEnsureCorrectResponse() throws Exception {
+		List<Account> accounts = generator.listOf(2);
+		doReturn(accounts).when(accountRepository).findAll();
+		mvc().perform(get("/accounts"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+			.andExpect(jsonPathLong("$.accounts[0].id", matchesId(accounts.get(0))))
+			.andExpect(jsonPath("$.accounts[0].name", matchesName(accounts.get(0))))
+			.andExpect(jsonPathLong("$.accounts[1].id", matchesId(accounts.get(1))))
+			.andExpect(jsonPath("$.accounts[1].name", matchesName(accounts.get(1))));
+	}
 }
