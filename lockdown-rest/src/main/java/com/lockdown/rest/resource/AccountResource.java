@@ -1,32 +1,49 @@
 package com.lockdown.rest.resource;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.lockdown.account.Account;
-import com.lockdown.account.BudgetedTransaction;
-import com.lockdown.account.UnbudgetedTransaction;
 
 public class AccountResource {
 
 	private final long id;
-	private final List<UnbudgetedTransaction> unbudgetedTransactions;
-	private final List<BudgetedTransaction> budgetedTransactions;
+	private final String name;
+//	private final List<UnbudgetedTransaction> unbudgetedTransactions;
+//	private final List<BudgetedTransaction> budgetedTransactions;
 	
-	public AccountResource(Account account) {
+	private AccountResource(Account account) {
 		this.id = account.getId();
-		this.unbudgetedTransactions = account.getUnbudgetedTransactions();
-		this.budgetedTransactions = account.getBudgetedTransactions();
+		this.name = account.getName();
+//		this.unbudgetedTransactions = account.getUnbudgetedTransactions();
+//		this.budgetedTransactions = account.getBudgetedTransactions();
+	}
+	
+	public static AccountResource from(Account account) {
+		return new AccountResource(account);
+	}
+	
+	public static List<AccountResource> forEach(List<Account> accounts) {
+		return accounts.stream()
+			.map(account -> AccountResource.from(account))
+			.collect(Collectors.toList());
 	}
 
 	public long getId() {
 		return id;
 	}
 
-	public List<UnbudgetedTransaction> getUnbudgetedTransactions() {
-		return unbudgetedTransactions;
+	public String getName() {
+		return name;
 	}
 
-	public List<BudgetedTransaction> getBudgetedTransactions() {
-		return budgetedTransactions;
-	}
+//	public List<UnbudgetedTransaction> getUnbudgetedTransactions() {
+//		return unbudgetedTransactions;
+//	}
+//
+//	public List<BudgetedTransaction> getBudgetedTransactions() {
+//		return budgetedTransactions;
+//	}
+	
+	
 }

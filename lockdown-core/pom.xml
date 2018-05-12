@@ -14,7 +14,10 @@
 		<java.version>9</java.version>
 		<junit.version>5.2.0</junit.version>
 		<spring.data.version>2.0.7.RELEASE</spring.data.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+
 
 	<dependencies>
 		<dependency>
