@@ -14,10 +14,10 @@ public abstract class DomainObjectGenerator<T extends DomainObject> implements S
 
 	@Override
 	public T get() {
-		return createInstance(ID.getAndIncrement());
+		return createInstanceWithId(ID.getAndIncrement());
 	}
 	
-	protected abstract T createInstance(long id);
+	protected abstract T createInstanceWithId(long id);
 	
 	public List<T> listOf(int number) {
 		return Stream.generate(this).limit(number).collect(Collectors.toList());
