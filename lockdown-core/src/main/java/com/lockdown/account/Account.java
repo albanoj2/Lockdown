@@ -3,6 +3,7 @@ package com.lockdown.account;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lockdown.DomainObject;
 import com.lockdown.money.Money;
 
@@ -23,12 +24,20 @@ public class Account extends DomainObject {
 		this(id, name, new ArrayList<>(), new ArrayList<>());
 	}
 	
+	public Account() {
+		this(0, null);
+	}
+	
 	public static Account blank() {
-		return Account.withIdAndName(0, "Unnamed");
+		return new Account();
 	}
 	
 	public static Account withIdAndName(long id, String name) {
 		return new Account(id, name);
+	}
+	
+	public static Account withName(String name) {
+		return Account.withIdAndName(0, name);
 	}
 	
 	public String getName() {
@@ -53,10 +62,12 @@ public class Account extends DomainObject {
 		return this;
 	}
 	
+	@JsonIgnore
 	public Money getBudgetedBalance() {
 		return TransactionList.getBalance(budgetedTransactions);
 	}
 	
+	@JsonIgnore
 	public Money getUnbudgetedBalance() {
 		return TransactionList.getBalance(unbudgetedTransactions);
 	}

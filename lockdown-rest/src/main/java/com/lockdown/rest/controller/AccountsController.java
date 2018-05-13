@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lockdown.account.Account;
 import com.lockdown.persist.mongo.AccountRepository;
+import com.lockdown.rest.controller.error.InvalidAccountException;
 import com.lockdown.rest.resource.AccountResource;
 import com.lockdown.rest.resource.AccountsResource;
 
@@ -43,8 +44,17 @@ public class AccountsController {
 		}
 	}
 	
-	@PostMapping("/{id}")
-	public ResponseEntity<AccountResource> createAccount(@PathVariable long id, @RequestBody Account account) {
-		return null;
+	@PostMapping
+	public ResponseEntity<AccountResource> createAccount(@RequestBody Account accountToCreate) {
+		validate(accountToCreate);
+		Account createdAccount = repository.insert(accountToCreate);
+		return new ResponseEntity<>(AccountResource.from(createdAccount), HttpStatus.OK);
+	}
+	
+	private static void validate(Account account) {
+		
+		if (account.getName() == null) {
+			throw new InvalidAccountException("Name cannot be null");
+		}
 	}
 }
