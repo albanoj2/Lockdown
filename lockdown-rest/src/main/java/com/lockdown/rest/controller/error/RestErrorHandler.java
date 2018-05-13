@@ -10,10 +10,19 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class RestErrorHandler extends ResponseEntityExceptionHandler {
+	
+	@ExceptionHandler(ResourceNotFoundException.class)
+    protected ResponseEntity<Object> handleResourceNotFound(RuntimeException exception, WebRequest request) {
+        return handleWithErrorResponseBodyObject(exception, request, HttpStatus.NOT_FOUND);
+    }
 
-	@ExceptionHandler(InvalidResourceException.class)
-    protected ResponseEntity<Object> handleInvalidDomainObject(RuntimeException exception, WebRequest request) {
-        ErrorResponseBody responseBody = new ErrorResponseBody(exception);
-        return handleExceptionInternal(exception, responseBody, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	private ResponseEntity<Object> handleWithErrorResponseBodyObject(RuntimeException exception, WebRequest request, HttpStatus status) {
+		ErrorResponseBody responseBody = new ErrorResponseBody(exception);
+        return handleExceptionInternal(exception, responseBody, new HttpHeaders(), status, request);
+	}
+
+	@ExceptionHandler(InvalidResourceSuppliedException.class)
+    protected ResponseEntity<Object> handleInvalidResourceSupplied(RuntimeException exception, WebRequest request) {
+        return handleWithErrorResponseBodyObject(exception, request, HttpStatus.BAD_REQUEST);
     }
 }

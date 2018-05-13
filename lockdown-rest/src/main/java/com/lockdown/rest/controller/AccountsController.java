@@ -1,7 +1,6 @@
 package com.lockdown.rest.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lockdown.account.Account;
 import com.lockdown.persist.mongo.AccountRepository;
-import com.lockdown.rest.controller.error.InvalidAccountException;
+import com.lockdown.rest.controller.error.InvalidResourceSuppliedException;
+import com.lockdown.rest.controller.error.ResourceNotFoundException;
 import com.lockdown.rest.resource.AccountResource;
 import com.lockdown.rest.resource.AccountsResource;
 
@@ -34,14 +34,9 @@ public class AccountsController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<AccountResource> getAccount(@PathVariable long id) {
-		Optional<Account> account = repository.findById(id);
+		Account foundAccount = repository.findById(id).orElseThrow(ResourceNotFoundException.forId(id));
+		return ResponseEntity.ok(AccountResource.from(foundAccount));
 		
-		if (account.isPresent()) {
-			return ResponseEntity.ok(AccountResource.from(account.get()));
-		}
-		else {
-			return ResponseEntity.notFound().build();
-		}
 	}
 	
 	@PostMapping
@@ -54,7 +49,7 @@ public class AccountsController {
 	private static void validate(Account account) {
 		
 		if (account.getName() == null) {
-			throw new InvalidAccountException("Name cannot be null");
+			throw new InvalidResourceSuppliedException("Name cannot be null");
 		}
 	}
 }
