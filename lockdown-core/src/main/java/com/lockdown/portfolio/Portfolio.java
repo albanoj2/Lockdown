@@ -15,7 +15,7 @@ public class Portfolio extends DomainObject {
 	@SuppressWarnings("unused")
 	private List<Account> accounts;
 	
-	public Portfolio(long id, Budget budget, List<Account> accounts) {
+	public Portfolio(String id, Budget budget, List<Account> accounts) {
 		super(id);
 		this.budget = budget;
 		this.accounts = accounts;

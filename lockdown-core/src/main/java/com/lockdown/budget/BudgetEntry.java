@@ -16,7 +16,7 @@ public class BudgetEntry extends DomainObject {
 	private final Frequency frequency;
 	private final Period life;
 	
-	private BudgetEntry(long id, String name, String description, Money amount, Period life, Frequency frequency) {
+	private BudgetEntry(String id, String name, String description, Money amount, Period life, Frequency frequency) {
 		super(id);
 		this.name = name;
 		this.description = Optional.ofNullable(description);
@@ -69,7 +69,7 @@ public class BudgetEntry extends DomainObject {
 	
 	public static class Builder {
 		
-		private Optional<Long> id;
+		private Optional<String> id;
 		private Optional<String> name;
 		private Optional<String> description;
 		private Money amount;
@@ -83,7 +83,7 @@ public class BudgetEntry extends DomainObject {
 			this.life = Optional.empty();
 		}
 		
-		public Builder id(long id) {
+		public Builder id(String id) {
 			this.id = Optional.of(id);
 			return this;
 		}
@@ -148,7 +148,7 @@ public class BudgetEntry extends DomainObject {
 			if (frequency == null) throw new IllegalStateException("Frequency must be provided");
 			
 			return new BudgetEntry(
-				id.orElse(0L), 
+				id.orElse(null), 
 				name.orElse("Unnamed"), 
 				description.orElse(""), 
 				amount, 

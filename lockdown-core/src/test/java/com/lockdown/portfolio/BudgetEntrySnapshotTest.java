@@ -1,19 +1,19 @@
 package com.lockdown.portfolio;
 
 import static com.lockdown.money.Money.dollars;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.lockdown.account.BudgetEntryMapping;
 import com.lockdown.account.BudgetedTransaction;
-import com.lockdown.account.Transactions;
 import com.lockdown.account.SingleBudgetEntryMapping;
+import com.lockdown.account.Transactions;
 import com.lockdown.budget.BudgetEntry;
 import com.lockdown.money.Money;
 

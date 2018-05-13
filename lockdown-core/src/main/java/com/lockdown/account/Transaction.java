@@ -12,7 +12,7 @@ public abstract class Transaction extends DomainObject {
 	protected final String party;
 	protected final Money amount;
 
-	protected Transaction(long id, LocalDate date, String description, String party, Money amount) {
+	protected Transaction(String id, LocalDate date, String description, String party, Money amount) {
 		super(id);
 		this.date = date;
 		this.description = description;

@@ -13,7 +13,5 @@
 
 	<modules>
 		<module>lockdown-core</module>
-		<module>lockdown-persist</module>
-		<module>lockdown-rest</module>
 	</modules>
 </project>

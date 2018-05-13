@@ -9,13 +9,13 @@ public class Budget extends DomainObject {
 
 	private final List<BudgetEntry> entries;
 	
-	public Budget(long id, List<BudgetEntry> entries) {
+	public Budget(String id, List<BudgetEntry> entries) {
 		super(id);
 		this.entries = entries;
 	}
 	
 	public Budget() {
-		this(0, new ArrayList<>());
+		this(null, new ArrayList<>());
 	}
 
 	public static Budget empty() {

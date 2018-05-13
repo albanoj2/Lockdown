@@ -13,31 +13,31 @@ public class Account extends DomainObject {
 	private final List<UnbudgetedTransaction> unbudgetedTransactions;
 	private final List<BudgetedTransaction> budgetedTransactions;
 	
-	public Account(long id, String name, List<UnbudgetedTransaction> unbudgetedTransactions, List<BudgetedTransaction> budgetedTransactions) {
+	public Account(String id, String name, List<UnbudgetedTransaction> unbudgetedTransactions, List<BudgetedTransaction> budgetedTransactions) {
 		super(id);
 		this.name = name;
 		this.unbudgetedTransactions = unbudgetedTransactions;
 		this.budgetedTransactions = budgetedTransactions;
 	}
 	
-	public Account(long id, String name) {
+	public Account(String id, String name) {
 		this(id, name, new ArrayList<>(), new ArrayList<>());
 	}
 	
 	public Account() {
-		this(0, null);
+		this(null, null);
 	}
 	
 	public static Account blank() {
 		return new Account();
 	}
 	
-	public static Account withIdAndName(long id, String name) {
+	public static Account withIdAndName(String id, String name) {
 		return new Account(id, name);
 	}
 	
 	public static Account withName(String name) {
-		return Account.withIdAndName(0, name);
+		return Account.withIdAndName(null, name);
 	}
 	
 	public String getName() {

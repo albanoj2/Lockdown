@@ -1,4 +1,4 @@
-package com.lockdown.persist.mongo;
+package com.lockdown.persist.mongodb;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

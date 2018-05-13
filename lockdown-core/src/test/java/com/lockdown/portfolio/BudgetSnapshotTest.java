@@ -1,18 +1,19 @@
 package com.lockdown.portfolio;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.lockdown.account.Account;
 import com.lockdown.account.BudgetedTransaction;
-import com.lockdown.account.Transactions;
 import com.lockdown.account.SingleBudgetEntryMapping;
+import com.lockdown.account.Transactions;
 import com.lockdown.budget.Budget;
 import com.lockdown.budget.BudgetEntry;
 import com.lockdown.money.Money;
@@ -29,7 +30,7 @@ public class BudgetSnapshotTest {
 	public void oneAccountWithTransactionsForOneBudgetEntryEnsureCorrectEntrySnapshots() {
 				
 		BudgetEntry entry = BudgetEntry.blank();
-		Budget budget = new Budget(0, List.of(entry));
+		Budget budget = new Budget(null, List.of(entry));
 		
 		Account account = Account.blank()
 			.addBudgetedTransaction(transactionFor(entry, 5))
@@ -53,7 +54,7 @@ public class BudgetSnapshotTest {
 		BudgetEntry entry2 = BudgetEntry.blank();
 		entry1.setName("Entry 1");
 		entry2.setName("Entry 2");
-		Budget budget = new Budget(0, List.of(entry1, entry2));
+		Budget budget = new Budget(null, List.of(entry1, entry2));
 		
 		Account account = Account.blank()
 			.addBudgetedTransaction(transactionFor(entry1, 5))
@@ -75,7 +76,7 @@ public class BudgetSnapshotTest {
 		BudgetEntry entry2 = BudgetEntry.blank();
 		entry1.setName("Entry 1");
 		entry2.setName("Entry 2");
-		Budget budget = new Budget(0, List.of(entry1, entry2));
+		Budget budget = new Budget(null, List.of(entry1, entry2));
 		
 		Account account1 = Account.blank()
 			.addBudgetedTransaction(transactionFor(entry1, 50))

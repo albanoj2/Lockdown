@@ -1,9 +1,9 @@
 package com.lockdown.account;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 import com.lockdown.budget.BudgetEntry;
 import com.lockdown.budget.FrequencyUnits;
@@ -11,9 +11,9 @@ import com.lockdown.money.Money;
 
 public class SingleBudgetEntryMappingTest {
 	
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void createWithNullBudgetEntryEnsureNullPointerExceptionThrown() {
-		assertThrows(NullPointerException.class, () -> new SingleBudgetEntryMapping(null));
+		new SingleBudgetEntryMapping(null);
 	}
 	
 	@Test
@@ -31,7 +31,7 @@ public class SingleBudgetEntryMappingTest {
 	
 	private static BudgetEntry budgetEntryWithId(long id) {
 		return BudgetEntry.builder()
-			.id(id)
+			.id(String.valueOf(id))
 			.startingNow()
 			.zeroAmount()
 			.frequency(FrequencyUnits.WEEKLY)
@@ -48,12 +48,12 @@ public class SingleBudgetEntryMappingTest {
 		assertEquals(Money.zero(), mapping.amountFor(budgetedTransaction, someOtherEntry));
 	}
 	
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void amountForWithNullBudgetEntryEnsureNullPointerExceptionThrown() {
 		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetEntry entry = nonNullBudgetEntry();
 		SingleBudgetEntryMapping mapping = new SingleBudgetEntryMapping(entry);
 		
-		assertThrows(NullPointerException.class, () -> mapping.amountFor(budgetedTransaction, null));
+		mapping.amountFor(budgetedTransaction, null);
 	}
 }
