@@ -24,6 +24,14 @@ public class BudgetItem extends DomainObject {
 		this.life = life;
 		this.frequency = frequency;
 	}
+	
+	public BudgetItem() {
+		this(null, "Unnamed", "", Money.zero(), Periods.fromNow(), FrequencyUnits.NEVER);
+	}
+	
+	public static BudgetItem blank() {
+		return new BudgetItem();
+	}
 
 	public Money getAmountPerFrequency() {
 		return amountPerFrequency;
@@ -31,14 +39,6 @@ public class BudgetItem extends DomainObject {
 
 	public Frequency getFrequency() {
 		return frequency;
-	}
-	
-	public static BudgetItem blank() {
-		return builder()
-			.zeroAmount()
-			.startingNow()
-			.never()
-			.build();
 	}
 	
 	public Money getTotalAccumulatedAmount() {

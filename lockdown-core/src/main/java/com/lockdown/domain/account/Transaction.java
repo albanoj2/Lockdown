@@ -28,6 +28,10 @@ public class Transaction extends DomainObject {
 	public static Transaction unbudgeted(String id, LocalDate date, Money amount, String name, String description) {
 		return new Transaction(id, date, amount, name, description, Optional.empty());
 	}
+	
+	public Transaction() {
+		this(null, LocalDate.now(), Money.zero(), "Unnamed", "", Optional.empty());
+	}
 
 	public LocalDate getDate() {
 		return date;
@@ -67,6 +71,17 @@ public class Transaction extends DomainObject {
 	@JsonIgnore
 	public boolean isDeposit() {
 		return amount.isPositive();
+	}
+	
+	@JsonIgnore
+	public boolean isValid() {
+		
+		if (isBudgeted()) {
+			return budgetItemMapping.get().isValidFor(this);
+		}
+		else {
+			return true;
+		}
 	}
 	
 	public Money amountFor(BudgetItem entry) {
