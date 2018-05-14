@@ -7,9 +7,9 @@ import com.lockdown.domain.DomainObject;
 
 public class Budget extends DomainObject {
 
-	private final List<BudgetEntry> entries;
+	private final List<BudgetItem> entries;
 	
-	public Budget(String id, List<BudgetEntry> entries) {
+	public Budget(String id, List<BudgetItem> entries) {
 		super(id);
 		this.entries = entries;
 	}
@@ -22,7 +22,7 @@ public class Budget extends DomainObject {
 		return new Budget();
 	}
 
-	public List<BudgetEntry> getEntries() {
+	public List<BudgetItem> getEntries() {
 		return entries;
 	}
 }

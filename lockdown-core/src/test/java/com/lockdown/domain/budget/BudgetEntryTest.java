@@ -7,7 +7,7 @@ import java.time.Period;
 
 import org.junit.Test;
 
-import com.lockdown.domain.budget.BudgetEntry;
+import com.lockdown.domain.budget.BudgetItem;
 import com.lockdown.domain.budget.FrequencyUnits;
 import com.lockdown.domain.money.Money;
 
@@ -15,13 +15,13 @@ public class BudgetEntryTest {
 
 	@Test
 	public void neverEntryEnsureCorrectAccumulatedTotal() {
-		BudgetEntry entry = BudgetEntry.builder().with(dollars(5), FrequencyUnits.NEVER).build();
+		BudgetItem entry = BudgetItem.builder().with(dollars(5), FrequencyUnits.NEVER).build();
 		assertEquals(Money.zero(), entry.getTotalAccumulatedAmount());
 	}
 	
 	@Test
 	public void weeklyEntryWith1OccurrenceEnsureCorrectAccumulatedTotal() {
-		BudgetEntry entry = BudgetEntry.builder()
+		BudgetItem entry = BudgetItem.builder()
 			.amount(dollars(5))
 			.weekly()
 			.life(Period.ofWeeks(1))
@@ -31,7 +31,7 @@ public class BudgetEntryTest {
 	
 	@Test
 	public void monthlyEntryWith1OccurrenceEnsureCorrectAccumulatedTotal() {
-		BudgetEntry entry = BudgetEntry.builder()
+		BudgetItem entry = BudgetItem.builder()
 			.amount(dollars(5))
 			.monthly()
 			.life(Period.ofMonths(1))

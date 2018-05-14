@@ -5,9 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.lockdown.domain.account.Account;
-import com.lockdown.domain.account.BudgetedTransaction;
-import com.lockdown.domain.account.UnbudgetedTransaction;
 import com.lockdown.domain.money.Money;
 
 public class AccountTest {
@@ -34,8 +31,8 @@ public class AccountTest {
 	
 	@Test
 	public void oneBudgetedTransactionWithZeroValueEnsureZeroBudgetedBalance() {
-		BudgetedTransaction budgetedTransaction = Transactions.budgetedForAmount(Money.zero());
-		account.addBudgetedTransaction(budgetedTransaction);
+		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.zero());
+		account.addTransaction(budgetedTransaction);
 		assertAccountBudgetedBalanceIsZero();
 	}
 	
@@ -46,8 +43,8 @@ public class AccountTest {
 	}
 	
 	private void addBudgetedTransactionWithAmount(long amount) {
-		BudgetedTransaction budgetedTransaction = Transactions.budgetedForAmount(Money.cents(amount));
-		account.addBudgetedTransaction(budgetedTransaction);
+		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.cents(amount));
+		account.addTransaction(budgetedTransaction);
 	}
 	
 	@Test
@@ -86,8 +83,8 @@ public class AccountTest {
 	
 	@Test
 	public void oneUnbudgetedTransactionWithZeroValueEnsureZeroUnbudgetedBalance() {
-		UnbudgetedTransaction unbudgetedTransaction = Transactions.unbudgetedForAmount(Money.zero());
-		account.addUnbudgetedTransaction(unbudgetedTransaction);
+		Transaction unbudgetedTransaction = Transactions.unbudgetedForAmount(Money.zero());
+		account.addTransaction(unbudgetedTransaction);
 		assertAccountUnbudgetedBalanceIsZero();
 	}
 	
@@ -98,8 +95,8 @@ public class AccountTest {
 	}
 	
 	private void addUnbudgetedTransactionWithAmount(long amount) {
-		UnbudgetedTransaction unbudgetedTransaction = Transactions.unbudgetedForAmount(Money.cents(amount));
-		account.addUnbudgetedTransaction(unbudgetedTransaction);
+		Transaction unbudgetedTransaction = Transactions.unbudgetedForAmount(Money.cents(amount));
+		account.addTransaction(unbudgetedTransaction);
 	}
 	
 	@Test

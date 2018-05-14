@@ -11,13 +11,12 @@ import java.util.List;
 import org.junit.Test;
 
 import com.lockdown.domain.account.Account;
-import com.lockdown.domain.account.BudgetedTransaction;
-import com.lockdown.domain.account.SingleBudgetEntryMapping;
+import com.lockdown.domain.account.SingleBudgetItemMapping;
+import com.lockdown.domain.account.Transaction;
 import com.lockdown.domain.account.Transactions;
 import com.lockdown.domain.budget.Budget;
-import com.lockdown.domain.budget.BudgetEntry;
+import com.lockdown.domain.budget.BudgetItem;
 import com.lockdown.domain.money.Money;
-import com.lockdown.domain.portfolio.BudgetSnapshot;
 
 public class BudgetSnapshotTest {
 
@@ -30,13 +29,13 @@ public class BudgetSnapshotTest {
 	@Test
 	public void oneAccountWithTransactionsForOneBudgetEntryEnsureCorrectEntrySnapshots() {
 				
-		BudgetEntry entry = BudgetEntry.blank();
+		BudgetItem entry = BudgetItem.blank();
 		Budget budget = new Budget(null, List.of(entry));
 		
 		Account account = Account.blank()
-			.addBudgetedTransaction(transactionFor(entry, 5))
-			.addBudgetedTransaction(transactionFor(entry, -10))
-			.addBudgetedTransaction(transactionFor(entry, 15));
+			.addTransaction(transactionFor(entry, 5))
+			.addTransaction(transactionFor(entry, -10))
+			.addTransaction(transactionFor(entry, 15));
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account));
 		
@@ -44,24 +43,24 @@ public class BudgetSnapshotTest {
 		assertEquals(Money.dollars(10), snapshot.getBudgetEntrySnapshots().get(entry).getBalance());
 	}
 	
-	private static BudgetedTransaction transactionFor(BudgetEntry entry, long dollars) {
-		return Transactions.budgetedForAmountWithMapping(Money.dollars(dollars), new SingleBudgetEntryMapping(entry));
+	private static Transaction transactionFor(BudgetItem entry, long dollars) {
+		return Transactions.budgetedForAmountWithMapping(Money.dollars(dollars), new SingleBudgetItemMapping(entry));
 	}
 	
 	@Test
 	public void oneAccountWithTransactionsForTwoBudgetEntriesEnsureCorrectEntrySnapshots() {
 				
-		BudgetEntry entry1 = BudgetEntry.blank();
-		BudgetEntry entry2 = BudgetEntry.blank();
+		BudgetItem entry1 = BudgetItem.blank();
+		BudgetItem entry2 = BudgetItem.blank();
 		entry1.setName("Entry 1");
 		entry2.setName("Entry 2");
 		Budget budget = new Budget(null, List.of(entry1, entry2));
 		
 		Account account = Account.blank()
-			.addBudgetedTransaction(transactionFor(entry1, 5))
-			.addBudgetedTransaction(transactionFor(entry1, -10))
-			.addBudgetedTransaction(transactionFor(entry2, 15))
-			.addBudgetedTransaction(transactionFor(entry2, -5));
+			.addTransaction(transactionFor(entry1, 5))
+			.addTransaction(transactionFor(entry1, -10))
+			.addTransaction(transactionFor(entry2, 15))
+			.addTransaction(transactionFor(entry2, -5));
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account));
 		
@@ -73,23 +72,23 @@ public class BudgetSnapshotTest {
 	@Test
 	public void twoAccountsWithTransactionsForTwoBudgetEntriesEnsureCorrectEntrySnapshots() {
 				
-		BudgetEntry entry1 = BudgetEntry.blank();
-		BudgetEntry entry2 = BudgetEntry.blank();
+		BudgetItem entry1 = BudgetItem.blank();
+		BudgetItem entry2 = BudgetItem.blank();
 		entry1.setName("Entry 1");
 		entry2.setName("Entry 2");
 		Budget budget = new Budget(null, List.of(entry1, entry2));
 		
 		Account account1 = Account.blank()
-			.addBudgetedTransaction(transactionFor(entry1, 50))
-			.addBudgetedTransaction(transactionFor(entry1, -10))
-			.addBudgetedTransaction(transactionFor(entry2, 30))
-			.addBudgetedTransaction(transactionFor(entry2, -20));
+			.addTransaction(transactionFor(entry1, 50))
+			.addTransaction(transactionFor(entry1, -10))
+			.addTransaction(transactionFor(entry2, 30))
+			.addTransaction(transactionFor(entry2, -20));
 		
 		Account account2 = Account.blank()
-			.addBudgetedTransaction(transactionFor(entry1, 20))
-			.addBudgetedTransaction(transactionFor(entry1, -40))
-			.addBudgetedTransaction(transactionFor(entry2, 10))
-			.addBudgetedTransaction(transactionFor(entry2, -30));
+			.addTransaction(transactionFor(entry1, 20))
+			.addTransaction(transactionFor(entry1, -40))
+			.addTransaction(transactionFor(entry2, 10))
+			.addTransaction(transactionFor(entry2, -30));
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account1, account2));
 		

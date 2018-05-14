@@ -1,36 +1,25 @@
 package com.lockdown.domain.account;
 
-import com.lockdown.domain.account.BudgetEntryMapping;
-import com.lockdown.domain.account.BudgetedTransaction;
-import com.lockdown.domain.account.Transaction;
-import com.lockdown.domain.account.UnbudgetedTransaction;
-import com.lockdown.domain.budget.BudgetEntry;
+import java.time.LocalDate;
+import java.util.Optional;
+
+import com.lockdown.domain.budget.BudgetItem;
 import com.lockdown.domain.money.Money;
 
 public class Transactions {
+	
+	private static BudgetItemMapping BLANK_MAPPING = (Transaction t, BudgetItem i) -> Money.zero();
 
-	public static UnbudgetedTransaction unbudgetedForAmount(Money amount) {
-		return UnbudgetedTransaction.now("Unnamed", "Unknown", amount);
+	public static Transaction unbudgetedForAmount(Money amount) {
+		return Transaction.unbudgeted("1", LocalDate.now(), amount, "Unnamed", "");
 	}
 
-	public static BudgetedTransaction budgetedForAmount(Money amount) {
-		return Transactions.budgetedForAmountWithMapping(amount, BlankBudgetEntryMapping.get());
+	public static Transaction budgetedForAmount(Money amount) {
+		return new Transaction("1", LocalDate.now(), amount, "Unnamed", "", Optional.of(BLANK_MAPPING));
 	}
 
-	public static BudgetedTransaction budgetedForAmountWithMapping(Money amount, BudgetEntryMapping mapping) {
-		return BudgetedTransaction.now("Unnamed", "Unknown", amount, mapping);
-	}
-
-	public static class BlankBudgetEntryMapping implements BudgetEntryMapping {
-
-		public static BlankBudgetEntryMapping get() {
-			return new BlankBudgetEntryMapping();
-		}
-
-		@Override
-		public Money amountFor(Transaction budgetedTransaction, BudgetEntry entry) {
-			return Money.zero();
-		}
-
+	public static Transaction budgetedForAmountWithMapping(Money amount, BudgetItemMapping mapping) {
+		return new Transaction("1", LocalDate.now(), amount, "Unnamed", "", Optional.of(mapping));
 	}
 }
+

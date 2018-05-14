@@ -8,18 +8,18 @@ import com.lockdown.domain.DomainObject;
 import com.lockdown.domain.money.Money;
 import com.lockdown.domain.time.Periods;
 
-public class BudgetEntry extends DomainObject {
+public class BudgetItem extends DomainObject {
 
 	private String name;
-	private final Optional<String> description;
+	private final String description;
 	private final Money amountPerFrequency;
 	private final Frequency frequency;
 	private final Period life;
 	
-	private BudgetEntry(String id, String name, String description, Money amount, Period life, Frequency frequency) {
+	private BudgetItem(String id, String name, String description, Money amount, Period life, Frequency frequency) {
 		super(id);
 		this.name = name;
-		this.description = Optional.ofNullable(description);
+		this.description = description;
 		this.amountPerFrequency = amount;
 		this.life = life;
 		this.frequency = frequency;
@@ -33,7 +33,7 @@ public class BudgetEntry extends DomainObject {
 		return frequency;
 	}
 	
-	public static BudgetEntry blank() {
+	public static BudgetItem blank() {
 		return builder()
 			.zeroAmount()
 			.startingNow()
@@ -54,7 +54,7 @@ public class BudgetEntry extends DomainObject {
 	}
 
 	public String getDescription() {
-		return description.orElse("");
+		return description != null ? description : "";
 	}
 
 	@Override
@@ -142,12 +142,12 @@ public class BudgetEntry extends DomainObject {
 				.frequency(frequency);
 		}
 		
-		public BudgetEntry build() {
+		public BudgetItem build() {
 			
 			if (amount == null) throw new IllegalStateException("Amount must be provided");
 			if (frequency == null) throw new IllegalStateException("Frequency must be provided");
 			
-			return new BudgetEntry(
+			return new BudgetItem(
 				id.orElse(null), 
 				name.orElse("Unnamed"), 
 				description.orElse(""), 

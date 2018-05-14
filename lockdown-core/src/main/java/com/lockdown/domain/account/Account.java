@@ -2,73 +2,77 @@ package com.lockdown.domain.account;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lockdown.domain.DomainObject;
 import com.lockdown.domain.money.Money;
 
 public class Account extends DomainObject {
 
 	private final String name;
-	private final List<UnbudgetedTransaction> unbudgetedTransactions;
-	private final List<BudgetedTransaction> budgetedTransactions;
+	private final String itemId;
+	private final String accessToken;
+	private final List<Transaction> transactions;
 	
-	public Account(String id, String name, List<UnbudgetedTransaction> unbudgetedTransactions, List<BudgetedTransaction> budgetedTransactions) {
+	public Account(String id, String name, String itemId, String accessToken, List<Transaction> transactions) {
 		super(id);
 		this.name = name;
-		this.unbudgetedTransactions = unbudgetedTransactions;
-		this.budgetedTransactions = budgetedTransactions;
-	}
-	
-	public Account(String id, String name) {
-		this(id, name, new ArrayList<>(), new ArrayList<>());
+		this.itemId = itemId;
+		this.accessToken = accessToken;
+		this.transactions = transactions;
 	}
 	
 	public Account() {
-		this(null, null);
+		this(null, "Unnamed", null, null, new ArrayList<>());
 	}
 	
 	public static Account blank() {
 		return new Account();
 	}
-	
-	public static Account withIdAndName(String id, String name) {
-		return new Account(id, name);
-	}
-	
-	public static Account withName(String name) {
-		return Account.withIdAndName(null, name);
-	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
-	public List<UnbudgetedTransaction> getUnbudgetedTransactions() {
-		return unbudgetedTransactions;
+
+	public String getItemId() {
+		return itemId;
+	}
+
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public List<Transaction> getTransactions() {
+		return transactions;
 	}
 	
-	public Account addUnbudgetedTransaction(UnbudgetedTransaction transaction) {
-		unbudgetedTransactions.add(transaction);
+	public Account addTransaction(Transaction transaction) {
+		transactions.add(transaction);
 		return this;
 	}
 	
-	public List<BudgetedTransaction> getBudgetedTransactions() {
-		return budgetedTransactions;
+	public List<Transaction> getBudgetedTransactions() {
+		return transactions.stream().filter(t -> t.isBudgeted()).collect(Collectors.toList());
 	}
 	
-	public Account addBudgetedTransaction(BudgetedTransaction transaction) {
-		budgetedTransactions.add(transaction);
-		return this;
+	public List<Transaction> getUnbudgetedTransactions() {
+		return transactions.stream().filter(t -> t.isUnbudgeted()).collect(Collectors.toList());
 	}
 	
-	@JsonIgnore
 	public Money getBudgetedBalance() {
-		return TransactionList.getBalance(budgetedTransactions);
+		return transactions.stream()
+			.filter(transaction -> transaction.isBudgeted())
+			.map(t -> t.getAmount())
+			.reduce((t1, t2) -> t1.sum(t2))
+			.orElse(Money.zero());
 	}
 	
-	@JsonIgnore
 	public Money getUnbudgetedBalance() {
-		return TransactionList.getBalance(unbudgetedTransactions);
+		return transactions.stream()
+			.filter(transaction -> transaction.isUnbudgeted())
+			.map(t -> t.getAmount())
+			.reduce((t1, t2) -> t1.sum(t2))
+			.orElse(Money.zero());
 	}
 }
+

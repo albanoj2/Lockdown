@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.lockdown.domain.account.Account;
-import com.lockdown.domain.account.BudgetedTransaction;
+import com.lockdown.domain.account.Transaction;
 import com.lockdown.domain.budget.Budget;
-import com.lockdown.domain.budget.BudgetEntry;
+import com.lockdown.domain.budget.BudgetItem;
 
 public class BudgetSnapshot {
 
@@ -25,19 +25,19 @@ public class BudgetSnapshot {
 		this(Budget.empty(), new ArrayList<>());
 	}
 	
-	public Map<BudgetEntry, BudgetEntrySnapshot> getBudgetEntrySnapshots() {
+	public Map<BudgetItem, BudgetItemSnapshot> getBudgetEntrySnapshots() {
 		
-		List<BudgetedTransaction> budgetedTransactions = getAllTransactions();
-		Map<BudgetEntry, BudgetEntrySnapshot> snapshots = new HashMap<>();
+		List<Transaction> budgetedTransactions = getAllTransactions();
+		Map<BudgetItem, BudgetItemSnapshot> snapshots = new HashMap<>();
 		
-		for (BudgetEntry entry: budget.getEntries()) {
-			snapshots.put(entry, new BudgetEntrySnapshot(entry, budgetedTransactions));
+		for (BudgetItem entry: budget.getEntries()) {
+			snapshots.put(entry, new BudgetItemSnapshot(entry, budgetedTransactions));
 		}
 
 		return snapshots;
 	}
 	
-	private List<BudgetedTransaction> getAllTransactions() {
+	private List<Transaction> getAllTransactions() {
 		return accounts.stream()
 			.flatMap(account -> account.getBudgetedTransactions().stream())
 			.collect(Collectors.toList());

@@ -3,25 +3,25 @@ package com.lockdown.domain.portfolio;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.lockdown.domain.account.BudgetedTransaction;
-import com.lockdown.domain.budget.BudgetEntry;
+import com.lockdown.domain.account.Transaction;
+import com.lockdown.domain.budget.BudgetItem;
 import com.lockdown.domain.money.Money;
 
-public class BudgetEntrySnapshot {
+public class BudgetItemSnapshot {
 
-	private final BudgetEntry entry;
-	private final List<BudgetedTransaction> budgetedTransactions;
+	private final BudgetItem entry;
+	private final List<Transaction> budgetedTransactions;
 	
-	public BudgetEntrySnapshot(BudgetEntry entry, List<BudgetedTransaction> budgetedTransactions) {
+	public BudgetItemSnapshot(BudgetItem entry, List<Transaction> budgetedTransactions) {
 		this.entry = entry;
 		this.budgetedTransactions = budgetedTransactions;
 	}
 	
 	public Money getExpensedAmount() {
-		return sumTransactionAmountsIf(BudgetedTransaction::isExpense).abs();
+		return sumTransactionAmountsIf(Transaction::isExpense).abs();
 	}
 	
-	private Money sumTransactionAmountsIf(Predicate<BudgetedTransaction> predicate) {
+	private Money sumTransactionAmountsIf(Predicate<Transaction> predicate) {
 		return budgetedTransactions.stream()
 			.filter(predicate)
 			.map(transaction -> transaction.amountFor(entry))
@@ -30,7 +30,7 @@ public class BudgetEntrySnapshot {
 	}
 	
 	public Money getDepositedAmount() {
-		return sumTransactionAmountsIf(BudgetedTransaction::isDeposit);
+		return sumTransactionAmountsIf(Transaction::isDeposit);
 	}
 	
 	public Money getBalance() {
@@ -45,11 +45,11 @@ public class BudgetEntrySnapshot {
 		return getBalance().sum(getAccumulatedAmount());
 	}
 
-	public BudgetEntry getEntry() {
+	public BudgetItem getEntry() {
 		return entry;
 	}
 
-	public List<BudgetedTransaction> getTransactions() {
+	public List<Transaction> getTransactions() {
 		return budgetedTransactions;
 	}
 }
