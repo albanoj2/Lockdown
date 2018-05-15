@@ -8,18 +8,30 @@ import com.lockdown.domain.money.Money;
 
 public class Transactions {
 	
-	private static BudgetItemMapping BLANK_MAPPING = (Transaction t, BudgetItem i) -> Money.zero();
+	public static BudgetItemMapping BLANK_MAPPING = new BlankBudgetItemMapping();
 
 	public static Transaction unbudgetedForAmount(Money amount) {
-		return Transaction.unbudgeted("1", LocalDate.now(), amount, "Unnamed", "");
+		return Transaction.unbudgeted(1L, LocalDate.now(), amount, "Unnamed", "");
 	}
 
 	public static Transaction budgetedForAmount(Money amount) {
-		return new Transaction("1", LocalDate.now(), amount, "Unnamed", "", Optional.of(BLANK_MAPPING));
+		return new Transaction(1L, LocalDate.now(), amount, "Unnamed", "", Optional.of(BLANK_MAPPING));
 	}
 
 	public static Transaction budgetedForAmountWithMapping(Money amount, BudgetItemMapping mapping) {
-		return new Transaction("1", LocalDate.now(), amount, "Unnamed", "", Optional.of(mapping));
+		return new Transaction(1L, LocalDate.now(), amount, "Unnamed", "", Optional.of(mapping));
+	}
+	
+	private static class BlankBudgetItemMapping extends BudgetItemMapping {
+
+		protected BlankBudgetItemMapping() {
+			super(null);
+		}
+
+		@Override
+		public Money amountFor(Transaction transaction, BudgetItem item) {
+			return Money.zero();
+		}
 	}
 }
 

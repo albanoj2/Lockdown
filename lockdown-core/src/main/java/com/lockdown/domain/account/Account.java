@@ -4,19 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lockdown.domain.DomainObject;
 import com.lockdown.domain.money.Money;
 
-public class Account extends DomainObject {
+@Entity
+public class Account {
 
+	@Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+	private final Long id;
+	
 	private final String key;
 	private final String name;
 	private final String type;
+	
+	@OneToMany(cascade = CascadeType.ALL)
 	private final List<Transaction> transactions;
 	
-	public Account(String id, String key, String name, String type, List<Transaction> transactions) {
-		super(id);
+	public Account(Long id, String key, String name, String type, List<Transaction> transactions) {
+		this.id = id;
 		this.key = key;
 		this.name = name;
 		this.type = type;
@@ -29,6 +42,10 @@ public class Account extends DomainObject {
 	
 	public static Account blank() {
 		return new Account();
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public String getKey() {

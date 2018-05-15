@@ -4,20 +4,31 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Optional;
 
-import com.lockdown.domain.DomainObject;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import com.lockdown.domain.money.Money;
+import com.lockdown.domain.money.MoneyAttributeConverter;
 import com.lockdown.domain.time.Periods;
 
-public class BudgetItem extends DomainObject {
+@Entity
+public class BudgetItem {
 
+	@Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+	private final Long id;
 	private String name;
 	private final String description;
+	@Convert(converter = MoneyAttributeConverter.class)
 	private final Money amountPerFrequency;
 	private final Frequency frequency;
 	private final Period life;
 	
-	private BudgetItem(String id, String name, String description, Money amount, Period life, Frequency frequency) {
-		super(id);
+	private BudgetItem(Long id, String name, String description, Money amount, Period life, Frequency frequency) {
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.amountPerFrequency = amount;
@@ -26,11 +37,19 @@ public class BudgetItem extends DomainObject {
 	}
 	
 	public BudgetItem() {
-		this(null, "Unnamed", "", Money.zero(), Periods.fromNow(), FrequencyUnits.NEVER);
+		this(null, "Unnamed", "", Money.zero(), Periods.fromNow(), Frequency.NEVER);
 	}
 	
 	public static BudgetItem blank() {
 		return new BudgetItem();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Period getLife() {
+		return life;
 	}
 
 	public Money getAmountPerFrequency() {
@@ -69,7 +88,7 @@ public class BudgetItem extends DomainObject {
 	
 	public static class Builder {
 		
-		private Optional<String> id;
+		private Optional<Long> id;
 		private Optional<String> name;
 		private Optional<String> description;
 		private Money amount;
@@ -83,7 +102,7 @@ public class BudgetItem extends DomainObject {
 			this.life = Optional.empty();
 		}
 		
-		public Builder id(String id) {
+		public Builder id(Long id) {
 			this.id = Optional.of(id);
 			return this;
 		}
@@ -113,15 +132,15 @@ public class BudgetItem extends DomainObject {
 		}
 		
 		public Builder never() {
-			return frequency(FrequencyUnits.NEVER);
+			return frequency(Frequency.NEVER);
 		}
 		
 		public Builder weekly() {
-			return frequency(FrequencyUnits.WEEKLY);
+			return frequency(Frequency.WEEKLY);
 		}
 		
 		public Builder monthly() {
-			return frequency(FrequencyUnits.MONTHLY);
+			return frequency(Frequency.MONTHLY);
 		}
 		
 		public Builder life(Period life) {

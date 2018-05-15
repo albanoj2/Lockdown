@@ -8,14 +8,14 @@ import java.time.Period;
 import org.junit.Test;
 
 import com.lockdown.domain.budget.BudgetItem;
-import com.lockdown.domain.budget.FrequencyUnits;
+import com.lockdown.domain.budget.Frequency;
 import com.lockdown.domain.money.Money;
 
 public class BudgetEntryTest {
 
 	@Test
 	public void neverEntryEnsureCorrectAccumulatedTotal() {
-		BudgetItem entry = BudgetItem.builder().with(dollars(5), FrequencyUnits.NEVER).build();
+		BudgetItem entry = BudgetItem.builder().with(dollars(5), Frequency.NEVER).build();
 		assertEquals(Money.zero(), entry.getTotalAccumulatedAmount());
 	}
 	

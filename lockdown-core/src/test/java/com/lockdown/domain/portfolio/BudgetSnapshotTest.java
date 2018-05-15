@@ -44,7 +44,7 @@ public class BudgetSnapshotTest {
 	}
 	
 	private static Transaction transactionFor(BudgetItem entry, long dollars) {
-		return Transactions.budgetedForAmountWithMapping(Money.dollars(dollars), new SingleBudgetItemMapping(entry));
+		return Transactions.budgetedForAmountWithMapping(Money.dollars(dollars), new SingleBudgetItemMapping(null, entry));
 	}
 	
 	@Test
