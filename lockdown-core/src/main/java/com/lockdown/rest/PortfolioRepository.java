@@ -4,4 +4,4 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.lockdown.domain.portfolio.Portfolio;
 
-public interface PortfolioRepository extends MongoRepository<Portfolio, Long> {}
+public interface PortfolioRepository extends MongoRepository<Portfolio, String> {}

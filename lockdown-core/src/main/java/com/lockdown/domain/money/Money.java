@@ -1,7 +1,10 @@
 package com.lockdown.domain.money;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class Money {
 
+	@JsonValue
 	private long cents;
 	
 	private Money(long cents) {

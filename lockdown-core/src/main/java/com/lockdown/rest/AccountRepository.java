@@ -5,5 +5,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.lockdown.domain.account.Account;
 
-@RepositoryRestResource(collectionResourceRel = "account", path = "accounts")
-public interface AccountRepository extends MongoRepository<Account, Long> {}
+@RepositoryRestResource(collectionResourceRel = "accounts", path = "accounts")
+public interface AccountRepository extends MongoRepository<Account, String> {}

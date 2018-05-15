@@ -1,18 +1,5 @@
 package com.lockdown.rest.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.HashMap;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.validation.Errors;
-import org.springframework.validation.MapBindingResult;
-
-import com.lockdown.domain.account.Account;
-import com.lockdown.rest.validation.AccountValidator.Field;
-
 public class AccountCreateValidatorTest {
 
 //	private AccountCreateValidator validator;

@@ -4,44 +4,46 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lockdown.domain.DomainObject;
 import com.lockdown.domain.money.Money;
 
 public class Account extends DomainObject {
 
+	private final String key;
 	private final String name;
-	private final String itemId;
-	private final String accessToken;
+	private final String type;
 	private final List<Transaction> transactions;
 	
-	public Account(String id, String name, String itemId, String accessToken, List<Transaction> transactions) {
+	public Account(String id, String key, String name, String type, List<Transaction> transactions) {
 		super(id);
+		this.key = key;
 		this.name = name;
-		this.itemId = itemId;
-		this.accessToken = accessToken;
+		this.type = type;
 		this.transactions = transactions;
 	}
 	
 	public Account() {
-		this(null, "Unnamed", null, null, new ArrayList<>());
+		this(null, "0", "Unnamed", "Unknown", new ArrayList<>());
 	}
 	
 	public static Account blank() {
 		return new Account();
 	}
 
+	public String getKey() {
+		return key;
+	}
+
 	public String getName() {
 		return name;
 	}
 
-	public String getItemId() {
-		return itemId;
+	public String getType() {
+		return type;
 	}
 
-	public String getAccessToken() {
-		return accessToken;
-	}
-
+	@JsonIgnore
 	public List<Transaction> getTransactions() {
 		return transactions;
 	}
@@ -73,6 +75,11 @@ public class Account extends DomainObject {
 			.map(t -> t.getAmount())
 			.reduce((t1, t2) -> t1.sum(t2))
 			.orElse(Money.zero());
+	}
+
+	@Override
+	public String toString() {
+		return "Account [name=" + name + ", transactions=" + transactions + "]";
 	}
 }
 
