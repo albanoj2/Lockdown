@@ -18,7 +18,7 @@ import com.lockdown.domain.money.Money;
 public class Account {
 
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private final Long id;
 	
 	private final String key;

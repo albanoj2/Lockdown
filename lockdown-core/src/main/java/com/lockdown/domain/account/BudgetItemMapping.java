@@ -14,7 +14,7 @@ import com.lockdown.domain.money.Money;
 public abstract class BudgetItemMapping {
 	
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private final Long id;
 	
 	protected BudgetItemMapping(Long id) {

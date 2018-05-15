@@ -19,7 +19,7 @@ import com.lockdown.domain.money.MoneyAttributeConverter;
 public class Transaction {
 
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private final Long id;
 	private final LocalDate date;
 	@Convert(converter = MoneyAttributeConverter.class)

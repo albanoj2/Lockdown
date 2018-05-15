@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class Credentials {
 	
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private final Long id;
 	private final String itemId;
 	private final String accessToken;
