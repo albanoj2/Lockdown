@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 public class Budget {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy=GenerationType.AUTO)
 	private final Long id;
 	
 	@OneToMany(cascade = CascadeType.ALL)

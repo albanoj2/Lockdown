@@ -19,7 +19,7 @@ import com.lockdown.domain.budget.Budget;
 public class Portfolio {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy=GenerationType.AUTO)
 	private final Long id;
 	
 	@OneToOne(cascade = CascadeType.ALL)

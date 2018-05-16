@@ -18,7 +18,7 @@ import com.lockdown.domain.time.Periods;
 public class BudgetItem {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy=GenerationType.AUTO)
 	private final Long id;
 	private String name;
 	private final String description;
