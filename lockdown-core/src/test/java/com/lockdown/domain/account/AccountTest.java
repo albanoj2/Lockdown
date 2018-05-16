@@ -5,7 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.lockdown.domain.money.Money;
+import com.lockdown.domain.Account;
+import com.lockdown.domain.Money;
+import com.lockdown.domain.Transaction;
 
 public class AccountTest {
 

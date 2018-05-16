@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.lockdown.domain.money.Money;
+import com.lockdown.domain.Money;
 
 public class MoneyTest {
 

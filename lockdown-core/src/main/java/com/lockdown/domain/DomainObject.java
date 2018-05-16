@@ -1,10 +1,7 @@
 package com.lockdown.domain;
 
-import org.springframework.data.annotation.Id;
-
 public abstract class DomainObject {
 
-	@Id
 	private String id;
 	
 	protected DomainObject() {}

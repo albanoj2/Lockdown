@@ -10,13 +10,14 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.lockdown.domain.account.Account;
-import com.lockdown.domain.account.SingleBudgetItemMapping;
-import com.lockdown.domain.account.Transaction;
+import com.lockdown.domain.Account;
+import com.lockdown.domain.Budget;
+import com.lockdown.domain.BudgetItem;
+import com.lockdown.domain.BudgetSnapshot;
+import com.lockdown.domain.Money;
+import com.lockdown.domain.SingleBudgetItemMapping;
+import com.lockdown.domain.Transaction;
 import com.lockdown.domain.account.Transactions;
-import com.lockdown.domain.budget.Budget;
-import com.lockdown.domain.budget.BudgetItem;
-import com.lockdown.domain.money.Money;
 
 public class BudgetSnapshotTest {
 

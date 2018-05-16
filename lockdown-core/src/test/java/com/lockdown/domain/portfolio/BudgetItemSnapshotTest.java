@@ -1,6 +1,6 @@
 package com.lockdown.domain.portfolio;
 
-import static com.lockdown.domain.money.Money.dollars;
+import static com.lockdown.domain.Money.dollars;
 import static org.junit.Assert.assertEquals;
 
 import java.time.Period;
@@ -10,12 +10,13 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import com.lockdown.domain.account.BudgetItemMapping;
-import com.lockdown.domain.account.SingleBudgetItemMapping;
-import com.lockdown.domain.account.Transaction;
+import com.lockdown.domain.BudgetItem;
+import com.lockdown.domain.BudgetItemMapping;
+import com.lockdown.domain.BudgetItemSnapshot;
+import com.lockdown.domain.Money;
+import com.lockdown.domain.SingleBudgetItemMapping;
+import com.lockdown.domain.Transaction;
 import com.lockdown.domain.account.Transactions;
-import com.lockdown.domain.budget.BudgetItem;
-import com.lockdown.domain.money.Money;
 
 public class BudgetItemSnapshotTest {
 

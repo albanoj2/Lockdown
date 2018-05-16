@@ -5,9 +5,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.lockdown.domain.budget.BudgetItem;
-import com.lockdown.domain.budget.FrequencyUnits;
-import com.lockdown.domain.money.Money;
+import com.lockdown.domain.BudgetItem;
+import com.lockdown.domain.Frequency;
+import com.lockdown.domain.Money;
+import com.lockdown.domain.SingleBudgetItemMapping;
+import com.lockdown.domain.Transaction;
 
 public class SingleBudgetItemMappingTest {
 	
@@ -34,7 +36,7 @@ public class SingleBudgetItemMappingTest {
 			.id(String.valueOf(id))
 			.startingNow()
 			.zeroAmount()
-			.frequency(FrequencyUnits.WEEKLY)
+			.frequency(Frequency.WEEKLY)
 			.build();
 	}
 
