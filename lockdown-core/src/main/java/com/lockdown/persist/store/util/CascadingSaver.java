@@ -141,7 +141,7 @@ public final class CascadingSaver {
 		DataStore<T> dataStore = (DataStore<T>) dataStoreMap.get(object.getClass());
 		
 		if (dataStore == null) {
-			throw new IllegalArgumentException("Could not find data store for " + object.getClass().getName());
+			throw new IllegalStateException("Could not find data store for " + object.getClass().getName());
 		}
 		else {
 			return dataStore.save(object);

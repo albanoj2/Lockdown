@@ -7,25 +7,25 @@ import com.lockdown.domain.DomainObject;
 public class Parent extends DomainObject {
 
 	private final String name;
-	private final List<Brother> brothers;
-	private final List<Sister> sisters;
+	private final List<Son> sons;
+	private final List<Daughter> daughters;
 	
-	public Parent(String id, String name, List<Brother> brothers, List<Sister> sisters) {
+	public Parent(String id, String name, List<Son> sons, List<Daughter> daughters) {
 		super(id);
 		this.name = name;
-		this.brothers = brothers;
-		this.sisters = sisters;
+		this.sons = sons;
+		this.daughters = daughters;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public List<Brother> getBrothers() {
-		return brothers;
+	public List<Son> getSons() {
+		return sons;
 	}
 
-	public List<Sister> getSisters() {
-		return sisters;
+	public List<Daughter> getDaughters() {
+		return daughters;
 	}
 }
