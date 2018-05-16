@@ -1,18 +1,13 @@
 package com.lockdown.persist.store;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.Credentials;
 import com.lockdown.persist.dto.CredentialsDto;
-import com.lockdown.persist.repository.CredentialsRepository;
-import com.lockdown.persist.repository.LockdownRepository;
 
 @Service
+@DataStoreFor(Credentials.class)
 public class CredentialsDataStore extends AbstractDataStore<Credentials, CredentialsDto> {
-	
-	@Autowired
-	private CredentialsRepository repository;
 
 	@Override
 	protected CredentialsDto fromDomainObject(Credentials domainObject) {
@@ -25,8 +20,7 @@ public class CredentialsDataStore extends AbstractDataStore<Credentials, Credent
 	}
 
 	@Override
-	protected LockdownRepository<CredentialsDto> getRepository() {
-		return repository;
+	public Credentials saveAndCascade(Credentials toSave) {
+		return save(toSave);
 	}
-
 }

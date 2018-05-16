@@ -2,16 +2,17 @@ package com.lockdown.domain;
 
 import java.util.Objects;
 
-public class SingleBudgetItemMapping implements BudgetItemMapping {
+public class SingleBudgetItemMapping extends DomainObject implements BudgetItemMapping {
 
 	private final BudgetItem to;
 	
-	public SingleBudgetItemMapping(BudgetItem entry) {
+	public SingleBudgetItemMapping(String id, BudgetItem entry) {
+		super(id);
 		this.to = Objects.requireNonNull(entry);
 	}
 	
 	public static SingleBudgetItemMapping none() {
-		return new SingleBudgetItemMapping(BudgetItem.blank());
+		return new SingleBudgetItemMapping(null, BudgetItem.blank());
 	}
 
 	@Override

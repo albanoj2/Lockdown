@@ -10,14 +10,10 @@ import com.lockdown.domain.Budget;
 import com.lockdown.domain.Credentials;
 import com.lockdown.domain.Portfolio;
 import com.lockdown.persist.dto.PortfolioDto;
-import com.lockdown.persist.repository.LockdownRepository;
-import com.lockdown.persist.repository.PortfolioRepository;
 
 @Service
+@DataStoreFor(Portfolio.class)
 public class PortfolioDataStore extends AbstractDataStore<Portfolio, PortfolioDto> {
-
-	@Autowired
-	private PortfolioRepository repository;
 	
 	@Autowired
 	private BudgetDataStore budgetDataStore;
@@ -44,23 +40,18 @@ public class PortfolioDataStore extends AbstractDataStore<Portfolio, PortfolioDt
 	}
 
 	@Override
-	public Portfolio save(Portfolio toSave) {
+	public Portfolio saveAndCascade(Portfolio toSave) {
 		
-		Budget savedBudget = budgetDataStore.save(toSave.getBudget());
+		Budget savedBudget = budgetDataStore.saveAndCascade(toSave.getBudget());
 		List<Account> savedAccounts = accountDataStore.saveAll(toSave.getAccounts());
 		List<Credentials> savedCredentials = credentialsDataStore.saveAll(toSave.getCredentials());
 		
-		return super.save(new Portfolio(toSave.getId(), savedBudget, savedAccounts, savedCredentials));
+		return save(new Portfolio(toSave.getId(), savedBudget, savedAccounts, savedCredentials));
 	}
 
 	private Budget getBudget(PortfolioDto dto) {
 		// Assume this budget will be available when get() is called because the ID is found in a DTO
 		return budgetDataStore.findById(dto.getBudgetId()).get();
-	}
-
-	@Override
-	protected LockdownRepository<PortfolioDto> getRepository() {
-		return repository;
 	}
 
 }

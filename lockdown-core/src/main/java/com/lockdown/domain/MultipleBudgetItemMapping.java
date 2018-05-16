@@ -4,9 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class MultipleBudgetItemMapping implements BudgetItemMapping {
+public class MultipleBudgetItemMapping extends DomainObject implements BudgetItemMapping {
 
 	private final Map<BudgetItem, Money> mappings = new HashMap<>();
+	
+	public MultipleBudgetItemMapping(String id) {
+		super(id);
+	}
 
 	public void addMapping(BudgetItem item, Money amount) {
 		Objects.requireNonNull(item);

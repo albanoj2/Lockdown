@@ -18,7 +18,7 @@ public class MultipleBudgetItemMappingTest {
 	
 	@Before
 	public void setUp() {
-		mapping = new MultipleBudgetItemMapping();
+		mapping = new MultipleBudgetItemMapping(null);
 	}
 	
 	@Test(expected = NullPointerException.class)

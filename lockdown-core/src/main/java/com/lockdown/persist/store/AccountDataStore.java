@@ -1,18 +1,17 @@
 package com.lockdown.persist.store;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.Account;
+import com.lockdown.domain.Transaction;
 import com.lockdown.persist.dto.AccountDto;
-import com.lockdown.persist.repository.AccountRepository;
-import com.lockdown.persist.repository.LockdownRepository;
 
 @Service
+@DataStoreFor(Account.class)
 public class AccountDataStore extends AbstractDataStore<Account, AccountDto> {
-	
-	@Autowired
-	private AccountRepository repository;
 	
 	@Autowired
 	private TransactionDataStore transactionDataStore;
@@ -28,8 +27,8 @@ public class AccountDataStore extends AbstractDataStore<Account, AccountDto> {
 	}
 
 	@Override
-	protected LockdownRepository<AccountDto> getRepository() {
-		return repository;
+	public Account saveAndCascade(Account toSave) {
+		List<Transaction> savedTransactions = transactionDataStore.saveAllAndCascade(toSave.getTransactions());
+		return save(new Account(toSave.getId(), toSave.getKey(), toSave.getName(), toSave.getType(), savedTransactions));
 	}
-
 }

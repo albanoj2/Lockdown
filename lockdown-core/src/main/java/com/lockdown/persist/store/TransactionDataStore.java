@@ -1,18 +1,13 @@
 package com.lockdown.persist.store;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.Transaction;
 import com.lockdown.persist.dto.TransactionDto;
-import com.lockdown.persist.repository.LockdownRepository;
-import com.lockdown.persist.repository.TransactionRepository;
 
 @Service
+@DataStoreFor(Transaction.class)
 public class TransactionDataStore extends AbstractDataStore<Transaction, TransactionDto> {
-	
-	@Autowired
-	private TransactionRepository repository;
 
 	@Override
 	protected TransactionDto fromDomainObject(Transaction domainObject) {
@@ -25,7 +20,7 @@ public class TransactionDataStore extends AbstractDataStore<Transaction, Transac
 	}
 
 	@Override
-	protected LockdownRepository<TransactionDto> getRepository() {
-		return repository;
+	public Transaction saveAndCascade(Transaction toSave) {
+		return save(toSave);
 	}
 }

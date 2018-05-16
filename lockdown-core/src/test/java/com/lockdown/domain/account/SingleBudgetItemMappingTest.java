@@ -15,14 +15,14 @@ public class SingleBudgetItemMappingTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void createWithNullBudgetItemEnsureNullPointerExceptionThrown() {
-		new SingleBudgetItemMapping(null);
+		new SingleBudgetItemMapping(null, null);
 	}
 	
 	@Test
 	public void matchingBudgetItemEnsureCorrectAmount() {
 		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetItem entry = nonNullBudgetItem();
-		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(entry);
+		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(null, entry);
 		
 		assertEquals(Money.dollars(1), mapping.amountFor(budgetedTransaction, entry));
 	}
@@ -45,7 +45,7 @@ public class SingleBudgetItemMappingTest {
 		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetItem matchingEntry = budgetEntryWithId(1);
 		BudgetItem someOtherEntry = budgetEntryWithId(2);
-		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(matchingEntry);
+		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(null, matchingEntry);
 		
 		assertEquals(Money.zero(), mapping.amountFor(budgetedTransaction, someOtherEntry));
 	}
@@ -54,7 +54,7 @@ public class SingleBudgetItemMappingTest {
 	public void amountForWithNullBudgetItemEnsureNullPointerExceptionThrown() {
 		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetItem entry = nonNullBudgetItem();
-		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(entry);
+		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(null, entry);
 		
 		mapping.amountFor(budgetedTransaction, null);
 	}

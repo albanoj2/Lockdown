@@ -1,18 +1,17 @@
 package com.lockdown.persist.store;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.Budget;
+import com.lockdown.domain.BudgetItem;
 import com.lockdown.persist.dto.BudgetDto;
-import com.lockdown.persist.repository.BudgetRepository;
-import com.lockdown.persist.repository.LockdownRepository;
 
 @Service
+@DataStoreFor(Budget.class)
 public class BudgetDataStore extends AbstractDataStore<Budget, BudgetDto> {
-	
-	@Autowired
-	private BudgetRepository repository;
 	
 	@Autowired
 	private BudgetItemDataStore budgetItemDataStore;
@@ -28,8 +27,9 @@ public class BudgetDataStore extends AbstractDataStore<Budget, BudgetDto> {
 	}
 
 	@Override
-	protected LockdownRepository<BudgetDto> getRepository() {
-		return repository;
+	public Budget saveAndCascade(Budget toSave) {
+		List<BudgetItem> savedBudgetItems = budgetItemDataStore.saveAllAndCascade(toSave.getEntries());
+		return save(new Budget(toSave.getId(), savedBudgetItems));
 	}
 
 }

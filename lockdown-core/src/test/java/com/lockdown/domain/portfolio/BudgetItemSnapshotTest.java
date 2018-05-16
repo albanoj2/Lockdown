@@ -67,7 +67,7 @@ public class BudgetItemSnapshotTest {
 	}
 	
 	private static BudgetItemMapping createMappingFor(BudgetItem entry) {
-		return new SingleBudgetItemMapping(entry);
+		return new SingleBudgetItemMapping(null, entry);
 	}
 	
 	@Test
@@ -143,7 +143,7 @@ public class BudgetItemSnapshotTest {
 	@Test
 	public void cononicalTransactionsEnsureCorrectRemainingAmount() {
 		BudgetItem entry = tenDollarsEachWeekForTwoWeeks();
-		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, new SingleBudgetItemMapping(entry), List.of(5, -10, 30, -20));
+		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, new SingleBudgetItemMapping(null, entry), List.of(5, -10, 30, -20));
 		
 		// Accumulated amount:    $10/week * 2 weeks     = $20
 		// Transaction total:     $5 - $10 + $30 - $20   = $5
@@ -162,7 +162,7 @@ public class BudgetItemSnapshotTest {
 	@Test
 	public void cononicalTransactionsWithExpectedNegativeValueEnsureCorrectRemainingAmount() {
 		BudgetItem entry = tenDollarsEachWeekForTwoWeeks();
-		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, new SingleBudgetItemMapping(entry), List.of(5, -10, -30, -20));
+		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, new SingleBudgetItemMapping(null, entry), List.of(5, -10, -30, -20));
 		
 		// Accumulated amount:    $10/week * 2 weeks     = $20
 		// Transaction total:     $5 - $10 - $30 - $20   = -$55
