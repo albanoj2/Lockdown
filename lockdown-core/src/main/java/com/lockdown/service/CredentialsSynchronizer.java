@@ -1,8 +1,8 @@
 package com.lockdown.service;
 
-import com.lockdown.domain.account.InstitutionCredentials;
+import com.lockdown.domain.account.Credentials;
 import com.lockdown.service.context.CredentialsSynchrnozierContext;
 
 public interface CredentialsSynchronizer {
-	public void synchronize(InstitutionCredentials credentials, CredentialsSynchrnozierContext context);
+	public void synchronize(Credentials credentials, CredentialsSynchrnozierContext context);
 }

@@ -2,18 +2,18 @@ package com.lockdown.domain.account;
 
 import com.lockdown.domain.DomainObject;
 
-public class InstitutionCredentials extends DomainObject {
+public class Credentials extends DomainObject {
 	
 	private final String itemId;
 	private final String accessToken;
 	
-	public InstitutionCredentials(String id, String itemId, String accessToken) {
+	public Credentials(String id, String itemId, String accessToken) {
 		super(id);
 		this.itemId = itemId;
 		this.accessToken = accessToken;
 	}
 	
-	public InstitutionCredentials() {
+	public Credentials() {
 		this(null, null, null);
 	}
 
