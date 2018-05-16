@@ -26,5 +26,16 @@ public class Portfolio extends DomainObject {
 		this.accounts = new ArrayList<>();
 		this.credentials = new ArrayList<>();
 	}
-	
+
+	public Budget getBudget() {
+		return budget;
+	}
+
+	public List<Account> getAccounts() {
+		return accounts;
+	}
+
+	public List<Credentials> getCredentials() {
+		return credentials;
+	}
 }
