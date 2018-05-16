@@ -2,25 +2,19 @@ package com.lockdown.domain.account;
 
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-
 import com.lockdown.domain.budget.BudgetItem;
 import com.lockdown.domain.money.Money;
 
-@Entity
-public class SingleBudgetItemMapping extends BudgetItemMapping {
+public class SingleBudgetItemMapping implements BudgetItemMapping {
 
-	@ManyToOne
 	private final BudgetItem to;
 	
-	public SingleBudgetItemMapping(Long id, BudgetItem entry) {
-		super(id);
+	public SingleBudgetItemMapping(BudgetItem entry) {
 		this.to = Objects.requireNonNull(entry);
 	}
 	
 	public static SingleBudgetItemMapping none() {
-		return new SingleBudgetItemMapping(null, BudgetItem.blank());
+		return new SingleBudgetItemMapping(BudgetItem.blank());
 	}
 
 	@Override

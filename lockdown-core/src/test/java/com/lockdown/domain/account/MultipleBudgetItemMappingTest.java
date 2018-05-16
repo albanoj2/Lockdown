@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +16,7 @@ public class MultipleBudgetItemMappingTest {
 	
 	@Before
 	public void setUp() {
-		mapping = new MultipleBudgetItemMapping(null, new HashMap<>());
+		mapping = new MultipleBudgetItemMapping();
 	}
 	
 	@Test(expected = NullPointerException.class)

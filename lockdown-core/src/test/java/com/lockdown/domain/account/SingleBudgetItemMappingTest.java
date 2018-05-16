@@ -6,21 +6,21 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.lockdown.domain.budget.BudgetItem;
-import com.lockdown.domain.budget.Frequency;
+import com.lockdown.domain.budget.FrequencyUnits;
 import com.lockdown.domain.money.Money;
 
 public class SingleBudgetItemMappingTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void createWithNullBudgetItemEnsureNullPointerExceptionThrown() {
-		new SingleBudgetItemMapping(null, null);
+		new SingleBudgetItemMapping(null);
 	}
 	
 	@Test
 	public void matchingBudgetItemEnsureCorrectAmount() {
 		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetItem entry = nonNullBudgetItem();
-		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(null, entry);
+		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(entry);
 		
 		assertEquals(Money.dollars(1), mapping.amountFor(budgetedTransaction, entry));
 	}
@@ -31,10 +31,10 @@ public class SingleBudgetItemMappingTest {
 	
 	private static BudgetItem budgetEntryWithId(long id) {
 		return BudgetItem.builder()
-			.id(id)
+			.id(String.valueOf(id))
 			.startingNow()
 			.zeroAmount()
-			.frequency(Frequency.WEEKLY)
+			.frequency(FrequencyUnits.WEEKLY)
 			.build();
 	}
 
@@ -43,7 +43,7 @@ public class SingleBudgetItemMappingTest {
 		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetItem matchingEntry = budgetEntryWithId(1);
 		BudgetItem someOtherEntry = budgetEntryWithId(2);
-		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(null, matchingEntry);
+		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(matchingEntry);
 		
 		assertEquals(Money.zero(), mapping.amountFor(budgetedTransaction, someOtherEntry));
 	}
@@ -52,7 +52,7 @@ public class SingleBudgetItemMappingTest {
 	public void amountForWithNullBudgetItemEnsureNullPointerExceptionThrown() {
 		Transaction budgetedTransaction = Transactions.budgetedForAmount(Money.dollars(1));
 		BudgetItem entry = nonNullBudgetItem();
-		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(null, entry);
+		SingleBudgetItemMapping mapping = new SingleBudgetItemMapping(entry);
 		
 		mapping.amountFor(budgetedTransaction, null);
 	}

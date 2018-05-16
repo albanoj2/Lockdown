@@ -8,7 +8,7 @@ public class DataSynchronizerService {
 	
 	@SuppressWarnings("unused")
 	@Autowired
-	private DataSynchronizer synchronizer;
+	private SynchronizerFactory synchronizerFactory;
 
 //	@Scheduled(fixedRate = 10000)
 	public void synchronize() {

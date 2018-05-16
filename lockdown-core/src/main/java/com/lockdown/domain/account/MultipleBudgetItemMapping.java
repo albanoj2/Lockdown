@@ -1,25 +1,15 @@
 package com.lockdown.domain.account;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-
 import com.lockdown.domain.budget.BudgetItem;
 import com.lockdown.domain.money.Money;
-import com.lockdown.domain.money.MoneyAttributeConverter;
 
-@Entity
-public class MultipleBudgetItemMapping extends BudgetItemMapping {
+public class MultipleBudgetItemMapping implements BudgetItemMapping {
 
-	@Convert(converter = MoneyAttributeConverter.class)
-	private final Map<BudgetItem, Money> mappings;
-
-	protected MultipleBudgetItemMapping(Long id, Map<BudgetItem, Money> mappings) {
-		super(id);
-		this.mappings = mappings;
-	}
+	private final Map<BudgetItem, Money> mappings = new HashMap<>();
 
 	public void addMapping(BudgetItem item, Money amount) {
 		Objects.requireNonNull(item);

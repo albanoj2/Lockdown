@@ -3,25 +3,14 @@ package com.lockdown.domain.budget;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import com.lockdown.domain.DomainObject;
 
-@Entity
-public class Budget {
+public class Budget extends DomainObject {
 
-	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-	private final Long id;
-	
-	@OneToMany(cascade = CascadeType.ALL)
 	private final List<BudgetItem> entries;
 	
-	public Budget(Long id, List<BudgetItem> entries) {
-		this.id = id;
+	public Budget(String id, List<BudgetItem> entries) {
+		super(id);
 		this.entries = entries;
 	}
 	
@@ -31,10 +20,6 @@ public class Budget {
 
 	public static Budget empty() {
 		return new Budget();
-	}
-
-	public Long getId() {
-		return id;
 	}
 
 	public List<BudgetItem> getEntries() {
