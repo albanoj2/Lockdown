@@ -33,4 +33,8 @@ public class Portfolio extends DomainObject {
 	public List<Credentials> getCredentials() {
 		return credentials;
 	}
+	
+	public void addCredentials(Credentials newCredentials) {
+		credentials.add(newCredentials);
+	}
 }

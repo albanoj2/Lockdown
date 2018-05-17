@@ -18,9 +18,4 @@ public class CredentialsDataStore extends AbstractDataStore<Credentials, Credent
 	protected Credentials toDomainObject(CredentialsDto dto) {
 		return dto.toCredentials();
 	}
-
-	@Override
-	public Credentials saveAndCascade(Credentials toSave) {
-		return save(toSave);
-	}
 }

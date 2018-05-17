@@ -11,11 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.lockdown.domain.DomainObject;
 import com.lockdown.persist.dto.Dto;
 import com.lockdown.persist.repository.LockdownRepository;
+import com.lockdown.persist.store.util.CascadingSaver;
 
 public abstract class AbstractDataStore<DomainObjectType extends DomainObject, DtoType extends Dto> implements DataStore<DomainObjectType> {
 	
 	@Autowired
 	private LockdownRepository<DtoType> repository;
+	
+	@Autowired
+	private CascadingSaver saver;
 
 	@Override
 	public final boolean existsById(String id) {
@@ -68,6 +72,11 @@ public abstract class AbstractDataStore<DomainObjectType extends DomainObject, D
 		repository.deleteById(id);
 	}
 	
+	@Override
+	public DomainObjectType saveAndCascade(DomainObjectType toSave) {
+		return saver.saveAndCascade(toSave);
+	}
+
 	protected abstract DtoType fromDomainObject(DomainObjectType domainObject);
 	protected abstract DomainObjectType toDomainObject(DtoType dto);
 }

@@ -18,9 +18,4 @@ public class BudgetItemDataStore extends AbstractDataStore<BudgetItem, BudgetIte
 	protected BudgetItem toDomainObject(BudgetItemDto dto) {
 		return dto.toBudgetItem();
 	}
-
-	@Override
-	public BudgetItem saveAndCascade(BudgetItem toSave) {
-		return save(toSave);
-	}
 }

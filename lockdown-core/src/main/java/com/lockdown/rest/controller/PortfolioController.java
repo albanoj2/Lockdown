@@ -30,7 +30,7 @@ public class PortfolioController {
 	
 	@PostMapping
 	public ResponseEntity<Portfolio> createPortfolio() {
-		Portfolio createdPortfolio = dataStore.save(new Portfolio());
+		Portfolio createdPortfolio = dataStore.saveAndCascade(new Portfolio());
 		return new ResponseEntity<>(createdPortfolio, HttpStatus.CREATED);
 	}
 	

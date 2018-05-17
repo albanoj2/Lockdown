@@ -18,9 +18,4 @@ public class TransactionDataStore extends AbstractDataStore<Transaction, Transac
 	protected Transaction toDomainObject(TransactionDto dto) {
 		return dto.toTransaction();
 	}
-
-	@Override
-	public Transaction saveAndCascade(Transaction toSave) {
-		return save(toSave);
-	}
 }
