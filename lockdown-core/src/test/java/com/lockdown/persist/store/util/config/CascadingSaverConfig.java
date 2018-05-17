@@ -4,14 +4,17 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import com.lockdown.persist.store.util.data.cascade.store.ChildDataStore;
 import com.lockdown.persist.store.util.data.cascade.store.DomainSubclassDataStore;
 import com.lockdown.persist.store.util.data.cascade.store.GrandchildDataStore;
 import com.lockdown.persist.store.util.data.cascade.store.ParentDataStore;
+import com.lockdown.persist.store.util.helper.DataStoresWatcher;
 
 @Configuration
 @ComponentScan(basePackages = "com.lockdown.persist.store.util")
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class CascadingSaverConfig {
 
 	@Bean
@@ -32,5 +35,10 @@ public class CascadingSaverConfig {
 	@Bean
 	public DomainSubclassDataStore domainSubclassDataStore() {
 		return Mockito.mock(DomainSubclassDataStore.class);
+	}
+	
+	@Bean
+	public DataStoresWatcher dataStoresWatcher() {
+		return new DataStoresWatcher();
 	}
 }

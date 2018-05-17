@@ -1,4 +1,4 @@
-package com.lockdown.persist.store.util;
+package com.lockdown.persist.store.util.helper;
 
 import static org.junit.Assert.assertTrue;
 
@@ -8,26 +8,26 @@ import java.util.List;
 
 import com.lockdown.persist.store.util.data.cascade.domain.MockDomainObject;
 
-public class InOrderValidationStrategy implements OrderValidationStrategy {
+public class InOrderAssertionStrategy implements OrderAssertionStrategy {
 	
 	private final List<UnorderedGroup> matchers;
 	
-	private InOrderValidationStrategy() {
+	private InOrderAssertionStrategy() {
 		this.matchers = new ArrayList<>();
 	}
 	
-	public static InOrderValidationStrategy first(MockDomainObject... domainObjects) {
-		return new InOrderValidationStrategy()
+	public static InOrderAssertionStrategy first(MockDomainObject... domainObjects) {
+		return new InOrderAssertionStrategy()
 			.thenExpect(domainObjects);
 	}
 	
-	public InOrderValidationStrategy thenExpect(MockDomainObject... domainObjects) {
+	public InOrderAssertionStrategy thenExpect(MockDomainObject... domainObjects) {
 		this.matchers.add(new UnorderedGroup(domainObjects));
 		return this;
 	}
 
 	@Override
-	public void validateOrder(List<MockDomainObject> saved) {
+	public void assertOrder(List<MockDomainObject> saved) {
 		int lastVerifiedIndex = 0;
 		
 		for (UnorderedGroup group: matchers) {

@@ -1,4 +1,4 @@
-package com.lockdown.persist.store.util;
+package com.lockdown.persist.store.util.helper;
 
 import static org.junit.Assert.*;
 
@@ -12,10 +12,10 @@ import com.lockdown.persist.store.util.data.cascade.domain.Grandchild;
 import com.lockdown.persist.store.util.data.cascade.domain.MockDomainObject;
 import com.lockdown.persist.store.util.data.cascade.domain.Parent;
 
-public class SubnodeSavedBeforeNodeValidationStrategy implements OrderValidationStrategy {
+public class GrandchildrenBeforeChildrenBeforeParentAssertionStrategy implements OrderAssertionStrategy {
 
 	@Override
-	public void validateOrder(List<MockDomainObject> objects) {
+	public void assertOrder(List<MockDomainObject> objects) {
 
 		List<Grandchild> thisSubtreeGrandchildren = new ArrayList<>();
 		List<Child> foundChildren = new ArrayList<>();
