@@ -12,7 +12,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,9 +21,11 @@ import com.lockdown.domain.DomainObject;
 import com.lockdown.persist.store.DataStore;
 import com.lockdown.persist.store.util.config.CascadingSaverConfig;
 import com.lockdown.persist.store.util.data.cascade.domain.Child;
+import com.lockdown.persist.store.util.data.cascade.domain.DomainSubclass;
 import com.lockdown.persist.store.util.data.cascade.domain.Grandchild;
 import com.lockdown.persist.store.util.data.cascade.domain.Parent;
 import com.lockdown.persist.store.util.data.cascade.store.ChildDataStore;
+import com.lockdown.persist.store.util.data.cascade.store.DomainSubclassDataStore;
 import com.lockdown.persist.store.util.data.cascade.store.GrandchildDataStore;
 import com.lockdown.persist.store.util.data.cascade.store.ParentDataStore;
 
@@ -42,9 +43,10 @@ public class CascadingSaverTest {
 	private GrandchildDataStore grandchildDataStore;
 	
 	@Autowired
-	private CascadingSaver saver;
+	private DomainSubclassDataStore domainSubclassDataStore;
 	
-	private InOrder saveOrdering;
+	@Autowired
+	private CascadingSaver saver;
 	
 	@Before
 	public void setUp() {
@@ -54,6 +56,7 @@ public class CascadingSaverTest {
 		doAnswer(SaveAnswers.assignId()).when(parentDataStore).save(any(Parent.class));
 		doAnswer(SaveAnswers.assignId()).when(childDataStore).save(any(Child.class));
 		doAnswer(SaveAnswers.assignId()).when(grandchildDataStore).save(any(Grandchild.class));
+		doAnswer(SaveAnswers.assignId()).when(domainSubclassDataStore).save(any(DomainSubclass.class));
 	}
 	
 	@Test(expected = NullPointerException.class)
@@ -74,18 +77,28 @@ public class CascadingSaverTest {
 	public void givenFourValidDataStoresRegisteredWhenInitializingThenHaveValidDataStoresFound() {
 		Map<Class<? extends DomainObject>, DataStore<? extends DomainObject>> foundDataStores = saver.getFoundDataStores();
 		
-		assertEquals(3, foundDataStores.size());
+		assertEquals(4, foundDataStores.size());
 		assertEquals(parentDataStore, foundDataStores.get(Parent.class));
 		assertEquals(childDataStore, foundDataStores.get(Child.class));
 		assertEquals(grandchildDataStore, foundDataStores.get(Grandchild.class));
+		assertEquals(domainSubclassDataStore, foundDataStores.get(DomainSubclass.class));
 	}
 	
 	@Test
 	public void givenValidDataStoreRegisteredWhenSavingChildlessParentThenEnsureOnlyParentIsSaved() {
+		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = generateChildlessParent();
-		saver.saveAndCascade(parent);
-		verifySavedInOrder()
-			.assertSavedNext(parent);
+		Parent savedParent = saver.saveAndCascade(parent);
+		watcher.expectSavedNext(savedParent).verify();
+	}
+	
+	private SaveWatcher registerSaveWatcher() {
+		SaveWatcher watcher = new SaveWatcher();
+		doAnswer(watcher).when(parentDataStore).save(any(Parent.class));
+		doAnswer(watcher).when(childDataStore).save(any(Child.class));
+		doAnswer(watcher).when(grandchildDataStore).save(any(Grandchild.class));
+		doAnswer(watcher).when(domainSubclassDataStore).save(any(DomainSubclass.class));
+		return watcher;
 	}
 	
 	private static Parent generateChildlessParent() {
@@ -98,12 +111,15 @@ public class CascadingSaverTest {
 	
 	@Test
 	public void givenValidDataStoreRegisteredWhenSavingParentWithOneFirstSubtreeChildThenEnsureParentAndChildAreSavedInOrder() {
+		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = parentWithFirstSubtreeChild();
+		Parent savedParent = saver.saveAndCascade(parent);
+		
 		Child child = parent.getFirstSubtree().get(0);
-		saver.saveAndCascade(parent);
-		verifySavedInOrder()
-			.assertSavedNext(child)
-			.assertSavedNext(parent);
+		watcher
+			.expectSavedNext(child)
+			.expectSavedNext(savedParent)
+			.verify();
 	}
 	
 	private static Parent parentWithFirstSubtreeChild() {
@@ -132,15 +148,17 @@ public class CascadingSaverTest {
 	
 	@Test
 	public void givenValidDataStoreRegisteredWhenSavingParentWithTwoFirstSubtreeChildrenThenEnsureParentAndChildrenAreSavedInOrder() {
+		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = parentWithTwoFirstSubtreeChildren();
+		Parent savedParent = saver.saveAndCascade(parent);
+		
 		Child child1 = parent.getFirstSubtree().get(0);
 		Child child2 = parent.getFirstSubtree().get(1);
-		saver.saveAndCascade(parent);
-		
-		verifySavedInOrder()
-			.assertSavedNext(child1)
-			.assertSavedNext(child2)
-			.assertSavedNext(parent);
+		watcher
+			.expectSavedNext(child1)
+			.expectSavedNext(child2)
+			.expectSavedNext(savedParent)
+			.verify();
 	}
 	
 	private static Parent parentWithTwoFirstSubtreeChildren() {
@@ -158,17 +176,19 @@ public class CascadingSaverTest {
 	
 	@Test
 	public void givenValidDataStoreRegisteredWhenSavingParentWithTwoChildrenInFirstSubtreeAndOneChildInSecondSubtreeThenEnsureParentAndChildrenAreSavedInOrder() {
+		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = parentWithTwoFirstSubtreeChildrenAndOneSecondSubtreeChild();
+		Parent savedParent = saver.saveAndCascade(parent);
+		
 		Child firstSubtreeChild1 = parent.getFirstSubtree().get(0);
 		Child firstSubtreeChild2 = parent.getFirstSubtree().get(1);
 		Child secondSubtreeChild1 = parent.getSecondSubtree().get(0);
-		saver.saveAndCascade(parent);
-		
-		verifySavedInOrder()
-			.assertSavedNext(secondSubtreeChild1)
-			.assertSavedNext(firstSubtreeChild1)
-			.assertSavedNext(firstSubtreeChild2)
-			.assertSavedNext(parent);
+		watcher
+			.expectSavedNext(secondSubtreeChild1)
+			.expectSavedNext(firstSubtreeChild1)
+			.expectSavedNext(firstSubtreeChild2)
+			.expectSavedNext(savedParent)
+			.verify();
 	}
 	
 	private static Parent parentWithTwoFirstSubtreeChildrenAndOneSecondSubtreeChild() {
@@ -187,19 +207,22 @@ public class CascadingSaverTest {
 	
 	@Test
 	public void givenValidDataStoreRegisteredWhenSavingParentWithTwoChildrenInEachSubtreeThenEnsureParentAndChildrenAreSavedInOrder() {
+		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = parentWithTwoChildrenInEachSubtree();
+		Parent savedParent = saver.saveAndCascade(parent);
+		
 		Child firstSubtreeChild1 = parent.getFirstSubtree().get(0);
 		Child firstSubtreeChild2 = parent.getFirstSubtree().get(1);
 		Child secondSubtreeChild1 = parent.getSecondSubtree().get(0);
 		Child secondSubtreeChild2 = parent.getSecondSubtree().get(1);
-		saver.saveAndCascade(parent);
 		
-		verifySavedInOrder()
-			.assertSavedNext(secondSubtreeChild1)
-			.assertSavedNext(secondSubtreeChild2)
-			.assertSavedNext(firstSubtreeChild1)
-			.assertSavedNext(firstSubtreeChild2)
-			.assertSavedNext(parent);
+		watcher
+			.expectSavedNext(secondSubtreeChild1)
+			.expectSavedNext(secondSubtreeChild2)
+			.expectSavedNext(firstSubtreeChild1)
+			.expectSavedNext(firstSubtreeChild2)
+			.expectSavedNext(savedParent)
+			.verify();
 	}
 	
 	private static Parent parentWithTwoChildrenInEachSubtree() {
@@ -219,24 +242,20 @@ public class CascadingSaverTest {
 	
 	@Test
 	public void givenValidDataStoreRegisteredWhenSavingParentWithTwoChildrenInEachSubtreeAndTwoGrandchildrenInEachChildThenEnsureParentAndChildrenAreSavedInOrder() {
-		SaveWatcher watcher = new SaveWatcher();
-		registerSaveWatcher(watcher);
-		Parent parent = parentWithTwoChildrenInEachSubtreeAndTwoGrandchildrenInEachChild();
+		SaveWatcher watcher = registerSaveWatcher();
 		
+		Parent parent = parentWithTwoChildrenInEachSubtreeAndTwoGrandchildrenInEachChild();
 		Parent savedParent = saver.saveAndCascade(parent);
 		
 		Grandchild firstSubtreeChild1Grandchild1 = parent.getFirstSubtree().get(0).getChildren().get(0);
 		Grandchild firstSubtreeChild1Grandchild2 = parent.getFirstSubtree().get(0).getChildren().get(1);
 		Child firstSubtreeChild1 = parent.getFirstSubtree().get(0);
-		
 		Grandchild firstSubtreeChild2Grandchild1 = parent.getFirstSubtree().get(1).getChildren().get(0);
 		Grandchild firstSubtreeChild2Grandchild2 = parent.getFirstSubtree().get(1).getChildren().get(1);
 		Child firstSubtreeChild2 = parent.getFirstSubtree().get(1);
-
 		Grandchild secondSubtreeChild1Grandchild1 = parent.getSecondSubtree().get(0).getChildren().get(0);
 		Grandchild secondSubtreeChild1Grandchild2 = parent.getSecondSubtree().get(0).getChildren().get(1);
 		Child secondSubtreeChild1 = parent.getSecondSubtree().get(0);
-		
 		Grandchild secondSubtreeChild2Grandchild1 = parent.getSecondSubtree().get(1).getChildren().get(0);
 		Grandchild secondSubtreeChild2Grandchild2 = parent.getSecondSubtree().get(1).getChildren().get(1);
 		Child secondSubtreeChild2 = parent.getSecondSubtree().get(1);
@@ -256,27 +275,6 @@ public class CascadingSaverTest {
 			.expectSavedNext(firstSubtreeChild2)
 			.expectSavedNext(savedParent)
 			.verify();
-		
-//		verifySavedInOrder()
-//			.assertSavedNext(firstSubtreeChild1Grandchild1)
-//			.assertSavedNext(firstSubtreeChild1Grandchild2)
-//			.assertSavedNext(firstSubtreeChild1)
-//			.assertSavedNext(firstSubtreeChild2Grandchild1)
-//			.assertSavedNext(firstSubtreeChild2Grandchild2)
-//			.assertSavedNext(firstSubtreeChild2)
-//			.assertSavedNext(secondSubtreeChild1Grandchild1)
-//			.assertSavedNext(secondSubtreeChild1Grandchild2)
-//			.assertSavedNext(secondSubtreeChild1)
-//			.assertSavedNext(secondSubtreeChild2Grandchild1)
-//			.assertSavedNext(secondSubtreeChild2Grandchild2)
-//			.assertSavedNext(secondSubtreeChild2)
-//			.assertSavedNext(parent);
-	}
-	
-	private void registerSaveWatcher(SaveWatcher watcher) {
-		doAnswer(watcher).when(parentDataStore).save(any(Parent.class));
-		doAnswer(watcher).when(childDataStore).save(any(Child.class));
-		doAnswer(watcher).when(grandchildDataStore).save(any(Grandchild.class));
 	}
 	
 	private static Parent parentWithTwoChildrenInEachSubtreeAndTwoGrandchildrenInEachChild() {
@@ -316,7 +314,16 @@ public class CascadingSaverTest {
 		doAnswer(SaveAnswers.ensureGrandchildrenUpdatedBeforeSavingChild()).when(childDataStore).save(any(Child.class));
 	}
 	
-	private SaveOrderVerifier verifySavedInOrder() {
-		return new SaveOrderVerifier(saveOrdering, parentDataStore, childDataStore, grandchildDataStore);
+	@Test
+	public void givenDomainObjectHasNestedDomainObjectInSuperclassWhenSaveAndCascadeThenEnsureSuperclassDomainObjectIsSavedFirst() {
+		SaveWatcher watcher = registerSaveWatcher();
+		DomainSubclass subclass = new DomainSubclass(null, generateChildlessParent(), generateChildWithoutGrandchildren());
+		DomainSubclass savedSubclass = saver.saveAndCascade(subclass);
+		
+		watcher
+			.expectSavedNext(subclass.getChild())
+			.expectSavedNext(subclass.getParent())
+			.expectSavedNext(savedSubclass)
+			.verify();
 	}
 }

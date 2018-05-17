@@ -6,6 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.lockdown.persist.store.util.data.cascade.store.ChildDataStore;
+import com.lockdown.persist.store.util.data.cascade.store.DomainSubclassDataStore;
 import com.lockdown.persist.store.util.data.cascade.store.GrandchildDataStore;
 import com.lockdown.persist.store.util.data.cascade.store.ParentDataStore;
 
@@ -26,5 +27,10 @@ public class CascadingSaverConfig {
 	@Bean
 	public GrandchildDataStore grandchildDataStore() {
 		return Mockito.mock(GrandchildDataStore.class);
+	}
+	
+	@Bean
+	public DomainSubclassDataStore domainSubclassDataStore() {
+		return Mockito.mock(DomainSubclassDataStore.class);
 	}
 }
