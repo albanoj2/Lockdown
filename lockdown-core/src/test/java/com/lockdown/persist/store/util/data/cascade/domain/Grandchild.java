@@ -1,8 +1,6 @@
 package com.lockdown.persist.store.util.data.cascade.domain;
 
-import com.lockdown.domain.DomainObject;
-
-public class Grandchild extends DomainObject {
+public class Grandchild extends MockDomainObject {
 
 	private final boolean someFlag;
 
@@ -13,5 +11,10 @@ public class Grandchild extends DomainObject {
 
 	public boolean isSomeFlag() {
 		return someFlag;
+	}
+	
+	@Override
+	public Grandchild copy() {
+		return new Grandchild(getId(), someFlag);
 	}
 }

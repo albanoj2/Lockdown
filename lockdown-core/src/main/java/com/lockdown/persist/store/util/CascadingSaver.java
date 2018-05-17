@@ -97,10 +97,8 @@ public final class CascadingSaver {
 	private Set<Field> getAllFields(Object object) {
 		Set<Field> fieldList = new HashSet<Field>();
 		
-	    Class<?> current = object.getClass();
-	    while (current.getSuperclass() != null) {
+	    for (Class<?> current = object.getClass(); current.getSuperclass() != null; current = current.getSuperclass()) {
 	    	fieldList.addAll(Arrays.asList(current.getDeclaredFields()));
-	        current = current.getSuperclass();
 	    }
 	    
 	    return fieldList;
@@ -128,10 +126,14 @@ public final class CascadingSaver {
 
 	private void updateField(Field field, Object object, Object newValue)
 			throws IllegalAccessException, NoSuchFieldException, SecurityException {
+		allowAccessTo(field);
+		field.set(object, newValue);
+	}
+
+	private void allowAccessTo(Field field) throws NoSuchFieldException, IllegalAccessException {
 		Field modifiersField = Field.class.getDeclaredField("modifiers");
 		modifiersField.setAccessible(true);
 		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-		field.set(object, newValue);
 	}
 	
 	@SuppressWarnings("unchecked")
