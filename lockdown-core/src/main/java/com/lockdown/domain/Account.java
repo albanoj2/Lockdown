@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Account extends DomainObject {
+public final class Account extends DomainObject {
 
 	private final String key;
 	private final String name;

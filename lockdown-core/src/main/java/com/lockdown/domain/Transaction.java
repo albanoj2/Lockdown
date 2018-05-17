@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Transaction extends DomainObject {
+public final class Transaction extends DomainObject {
 
 	private final LocalDate date;
 	private final Money amount;
@@ -122,5 +122,11 @@ public class Transaction extends DomainObject {
 			Transaction other = (Transaction) object;
 			return Objects.equals(getKey(), other.getKey());
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "Transaction [date=" + date + ", amount=" + amount + ", key=" + key + ", name=" + name + ", description="
+				+ description + ", isPending=" + isPending + ", budgetItemMapping=" + budgetItemMapping + "]";
 	}
 }

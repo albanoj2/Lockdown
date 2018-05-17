@@ -1,7 +1,6 @@
 package com.lockdown.service.sync.provider.plaid;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,15 +31,11 @@ public class PlaidAccountProvider extends PlaidServiceConsumer implements Accoun
 				.execute();
 			
 			return response.body().getAccounts().stream()
-				.map(PlaidAccountProvider::convertToDomainObject)
+				.map(PlaidConverter::toAccount)
 				.collect(Collectors.toList());
 		} 
 		catch (IOException e) {
 			throw new ProviderException(e);
 		}
-	}
-
-	private static Account convertToDomainObject(com.plaid.client.response.Account input) {
-		return new Account(null, input.getAccountId(), input.getName(), input.getType(), input.getSubtype(), new ArrayList<>());
 	}
 }

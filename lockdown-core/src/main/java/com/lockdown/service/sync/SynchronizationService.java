@@ -1,6 +1,7 @@
 package com.lockdown.service.sync;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -25,9 +26,6 @@ public class SynchronizationService {
 	@Autowired
 	private ProviderFactory providerFactory;
 	
-	@Autowired
-	private AccountsSynchronizer accountsSynchronizer;
-	
 	@PostConstruct
 	public void onCreate() {
 		synchronize();
@@ -37,7 +35,6 @@ public class SynchronizationService {
 		
 		for (Portfolio portfolio: portfolioDataStore.findAll()) {
 			synchronizePortfolio(portfolio);
-//			portfolioDataStore.saveAndCascade(portfolio);
 		}
 	}
 	
@@ -48,21 +45,13 @@ public class SynchronizationService {
 			AccountProvider accountProvider = providerFactory.createAccountProvider(credentials);
 			List<Account> foundAccounts = accountProvider.getAccounts();
 			System.out.println(foundAccounts);
-//			accountsSynchronizer.synchronizeWith(portfolio, foundAccounts);
-//			
-//			for (Account account: portfolio.getAccounts()) {
-//				synchronizeAccount(account, portfolio, credentials);
-//			}
+			synchronizeAccounts(foundAccounts, portfolio, credentials);
 		}
 	}
 	
-	private void synchronizeAccount(Account account, Portfolio portfolio, Credentials credentials) {
+	private void synchronizeAccounts(List<Account> accounts, Portfolio portfolio, Credentials credentials) {
 		TransactionProvider transactionProvider = providerFactory.createTransactionProvider(credentials);
-		List<Transaction> foundTransactions = transactionProvider.getTransactions(account);
-		synchronizerFor(account).synchronizeWith(foundTransactions);
-	}
-	
-	private static TransactionsSynchronizer synchronizerFor(Account account) {
-		return new TransactionsSynchronizer(account);
+		Map<Account, List<Transaction>> foundTransactions = transactionProvider.getTransactions(accounts);
+		System.out.println(foundTransactions);
 	}
 }

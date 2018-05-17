@@ -23,6 +23,11 @@ public class Money {
 		return Money.cents(dollars * 100);
 	}
 	
+	public static Money fractionalDollars(double dollars) {
+		long cents = Math.round(dollars * 100.0);
+		return Money.cents(cents);
+	}
+	
 	public long getDollars() {
 		return cents / 100;
 	}

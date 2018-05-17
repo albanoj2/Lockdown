@@ -246,4 +246,39 @@ public class MoneyTest {
 	public void zeroDollarAmountEnsureIsZero() {
 		assertTrue(Money.zero().isZero());
 	}
+	
+	@Test
+	public void fromZeroFractionalDollarsEnsureCorrectValue() {
+		assertEquals(0, Money.fractionalDollars(0.00).asCents());
+	}
+	
+	@Test
+	public void fromPositiveCentsFractionalDollarsEnsureCorrectValue() {
+		assertEquals(57, Money.fractionalDollars(0.57).asCents());
+	}
+	
+	@Test
+	public void fromPositiveCentsShouldBeRoundedFractionalDollarsEnsureCorrectValue() {
+		assertEquals(58, Money.fractionalDollars(0.576).asCents());
+	}
+	
+	@Test
+	public void fromNegativeCentsFractionalDollarsEnsureCorrectValue() {
+		assertEquals(-57, Money.fractionalDollars(-0.57).asCents());
+	}
+	
+	@Test
+	public void fromNegativeCentsShouldBeRoundedFractionalDollarsEnsureCorrectValue() {
+		assertEquals(-58, Money.fractionalDollars(-0.576).asCents());
+	}
+	
+	@Test
+	public void fromPositiveDollarsAndCentsFractionalDollarsEnsureCorrectValue() {
+		assertEquals(757, Money.fractionalDollars(7.57).asCents());
+	}
+	
+	@Test
+	public void fromNegativeDollarsAndCentsFractionalDollarsEnsureCorrectValue() {
+		assertEquals(-757, Money.fractionalDollars(-7.57).asCents());
+	}
 }
