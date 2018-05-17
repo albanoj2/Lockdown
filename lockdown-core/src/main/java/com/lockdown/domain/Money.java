@@ -67,6 +67,10 @@ public class Money {
 	public int hashCode() {
 		return 31 * (int) (cents ^ (cents >>> 32));
 	}
+	
+	public Money copy() {
+		return new Money(cents);
+	}
 
 	@Override
 	public boolean equals(Object obj) {

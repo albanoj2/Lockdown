@@ -13,7 +13,7 @@ public class Transaction extends DomainObject {
 	private final String key;
 	private final String name;
 	private final String description;
-	private final boolean isPending;
+	private boolean isPending;
 	private final Optional<BudgetItemMapping> budgetItemMapping;
 	
 	public Transaction(String id, LocalDate date, Money amount, String key, String name, String description, boolean isPending, Optional<BudgetItemMapping> budgetItemMapping) {
@@ -102,6 +102,10 @@ public class Transaction extends DomainObject {
 		else {
 			return Money.zero();
 		}
+	}
+	
+	public Transaction copy() {
+		return new Transaction(getId(), date, amount, key, name, description, isPending, budgetItemMapping);
 	}
 
 	@Override

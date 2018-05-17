@@ -57,11 +57,14 @@ public class Account extends DomainObject {
 		return this;
 	}
 	
-	public Account addTransactionOrReplaceIfExists(Transaction transaction) {
+	public Account addTransactionOrUpdateIfExists(Transaction transaction) {
 		int indexOfExisting = transactions.indexOf(transaction);
 		
 		if (indexOfExisting != -1) {
-			transactions.set(indexOfExisting, transaction);
+			Transaction existing = transactions.get(indexOfExisting);
+			Transaction copy = transaction.copy();
+			copy.setId(existing.getId());
+			transactions.set(indexOfExisting, copy);
 		}
 		else {
 			addTransaction(transaction);
