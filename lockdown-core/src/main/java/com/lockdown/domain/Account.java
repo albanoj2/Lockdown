@@ -2,6 +2,7 @@ package com.lockdown.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,6 +52,24 @@ public class Account extends DomainObject {
 		return this;
 	}
 	
+	public Account removeTransaction(Transaction transaction) {
+		transactions.remove(transaction);
+		return this;
+	}
+	
+	public Account addTransactionOrReplaceIfExists(Transaction transaction) {
+		int indexOfExisting = transactions.indexOf(transaction);
+		
+		if (indexOfExisting != -1) {
+			transactions.set(indexOfExisting, transaction);
+		}
+		else {
+			addTransaction(transaction);
+		}
+		
+		return this;
+	}
+	
 	public List<Transaction> getBudgetedTransactions() {
 		return transactions.stream().filter(t -> t.isBudgeted()).collect(Collectors.toList());
 	}
@@ -78,6 +97,26 @@ public class Account extends DomainObject {
 	@Override
 	public String toString() {
 		return "Account [name=" + name + ", transactions=" + transactions + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(key);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		
+		if (this == object) {
+			return true;
+		}
+		else if (!(object instanceof Account)) {
+			return false;
+		}
+		else {
+			Transaction other = (Transaction) object;
+			return Objects.equals(getKey(), other.getKey());
+		}
 	}
 }
 

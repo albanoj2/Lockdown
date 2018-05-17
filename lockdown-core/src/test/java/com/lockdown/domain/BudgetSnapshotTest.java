@@ -1,4 +1,4 @@
-package com.lockdown.domain.portfolio;
+package com.lockdown.domain;
 
 
 import static org.junit.Assert.assertEquals;
@@ -17,7 +17,6 @@ import com.lockdown.domain.BudgetSnapshot;
 import com.lockdown.domain.Money;
 import com.lockdown.domain.SingleBudgetItemMapping;
 import com.lockdown.domain.Transaction;
-import com.lockdown.domain.account.Transactions;
 
 public class BudgetSnapshotTest {
 

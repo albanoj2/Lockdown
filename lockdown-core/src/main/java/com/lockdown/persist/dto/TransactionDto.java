@@ -11,29 +11,35 @@ public class TransactionDto extends Dto {
 	
 	private final LocalDate date;
 	private final long amountInCents;
+	private final String key;
 	private final String name;
 	private final String description;
+	private final boolean isPending;
 	private final BudgetItemMapping mapping;
 
 	public TransactionDto(Transaction transaction) {
 		super(transaction.getId());
 		this.date = transaction.getDate();
 		this.amountInCents = transaction.getAmount().asCents();
+		this.key = transaction.getKey();
 		this.name = transaction.getName();
 		this.description = transaction.getDescription();
+		this.isPending = transaction.isPending();
 		this.mapping = transaction.getBudgetItemMapping().orElse(null);
 	}
 	
 	public TransactionDto() {
 		this.date = null;
 		this.amountInCents = 0;
+		this.key = null;
 		this.name = null;
 		this.description = null;
+		this.isPending = false;
 		this.mapping = null;
 	}
 
 	public Transaction toTransaction() {
-		return new Transaction(getId(), date, Money.cents(amountInCents), name, description, Optional.ofNullable(mapping));
+		return new Transaction(getId(), date, Money.cents(amountInCents), key, name, description, isPending, Optional.ofNullable(mapping));
 	}
 
 	public LocalDate getDate() {
@@ -44,12 +50,20 @@ public class TransactionDto extends Dto {
 		return amountInCents;
 	}
 
+	public String getKey() {
+		return key;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public String getDescription() {
 		return description;
+	}
+
+	public boolean isPending() {
+		return isPending;
 	}
 
 	public BudgetItemMapping getMapping() {

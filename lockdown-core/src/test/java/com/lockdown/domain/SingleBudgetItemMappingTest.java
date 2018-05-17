@@ -1,4 +1,4 @@
-package com.lockdown.domain.account;
+package com.lockdown.domain;
 
 
 import static org.junit.Assert.assertEquals;
