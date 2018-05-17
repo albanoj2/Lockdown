@@ -88,8 +88,8 @@ public class CascadingSaverTest {
 	public void givenValidDataStoreRegisteredWhenSavingChildlessParentThenEnsureOnlyParentIsSaved() {
 		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = generateChildlessParent();
-		Parent savedParent = saver.saveAndCascade(parent);
-		watcher.expectSavedNext(savedParent).verify();
+		saver.saveAndCascade(parent);
+		watcher.validateOrder(new SubnodeSavedBeforeNodeValidationStrategy());
 	}
 	
 	private SaveWatcher registerSaveWatcher() {
@@ -113,13 +113,8 @@ public class CascadingSaverTest {
 	public void givenValidDataStoreRegisteredWhenSavingParentWithOneFirstSubtreeChildThenEnsureParentAndChildAreSavedInOrder() {
 		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = parentWithFirstSubtreeChild();
-		Parent savedParent = saver.saveAndCascade(parent);
-		
-		Child child = parent.getFirstSubtree().get(0);
-		watcher
-			.expectSavedNext(child)
-			.expectSavedNext(savedParent)
-			.verify();
+		saver.saveAndCascade(parent);
+		watcher.validateOrder(new SubnodeSavedBeforeNodeValidationStrategy());
 	}
 	
 	private static Parent parentWithFirstSubtreeChild() {
@@ -150,15 +145,8 @@ public class CascadingSaverTest {
 	public void givenValidDataStoreRegisteredWhenSavingParentWithTwoFirstSubtreeChildrenThenEnsureParentAndChildrenAreSavedInOrder() {
 		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = parentWithTwoFirstSubtreeChildren();
-		Parent savedParent = saver.saveAndCascade(parent);
-		
-		Child child1 = parent.getFirstSubtree().get(0);
-		Child child2 = parent.getFirstSubtree().get(1);
-		watcher
-			.expectSavedNext(child1)
-			.expectSavedNext(child2)
-			.expectSavedNext(savedParent)
-			.verify();
+		saver.saveAndCascade(parent);
+		watcher.validateOrder(new SubnodeSavedBeforeNodeValidationStrategy());
 	}
 	
 	private static Parent parentWithTwoFirstSubtreeChildren() {
@@ -178,17 +166,8 @@ public class CascadingSaverTest {
 	public void givenValidDataStoreRegisteredWhenSavingParentWithTwoChildrenInFirstSubtreeAndOneChildInSecondSubtreeThenEnsureParentAndChildrenAreSavedInOrder() {
 		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = parentWithTwoFirstSubtreeChildrenAndOneSecondSubtreeChild();
-		Parent savedParent = saver.saveAndCascade(parent);
-		
-		Child firstSubtreeChild1 = parent.getFirstSubtree().get(0);
-		Child firstSubtreeChild2 = parent.getFirstSubtree().get(1);
-		Child secondSubtreeChild1 = parent.getSecondSubtree().get(0);
-		watcher
-			.expectSavedNext(secondSubtreeChild1)
-			.expectSavedNext(firstSubtreeChild1)
-			.expectSavedNext(firstSubtreeChild2)
-			.expectSavedNext(savedParent)
-			.verify();
+		saver.saveAndCascade(parent);
+		watcher.validateOrder(new SubnodeSavedBeforeNodeValidationStrategy());
 	}
 	
 	private static Parent parentWithTwoFirstSubtreeChildrenAndOneSecondSubtreeChild() {
@@ -209,20 +188,8 @@ public class CascadingSaverTest {
 	public void givenValidDataStoreRegisteredWhenSavingParentWithTwoChildrenInEachSubtreeThenEnsureParentAndChildrenAreSavedInOrder() {
 		SaveWatcher watcher = registerSaveWatcher();
 		Parent parent = parentWithTwoChildrenInEachSubtree();
-		Parent savedParent = saver.saveAndCascade(parent);
-		
-		Child firstSubtreeChild1 = parent.getFirstSubtree().get(0);
-		Child firstSubtreeChild2 = parent.getFirstSubtree().get(1);
-		Child secondSubtreeChild1 = parent.getSecondSubtree().get(0);
-		Child secondSubtreeChild2 = parent.getSecondSubtree().get(1);
-		
-		watcher
-			.expectSavedNext(secondSubtreeChild1)
-			.expectSavedNext(secondSubtreeChild2)
-			.expectSavedNext(firstSubtreeChild1)
-			.expectSavedNext(firstSubtreeChild2)
-			.expectSavedNext(savedParent)
-			.verify();
+		saver.saveAndCascade(parent);
+		watcher.validateOrder(new SubnodeSavedBeforeNodeValidationStrategy());
 	}
 	
 	private static Parent parentWithTwoChildrenInEachSubtree() {
@@ -245,36 +212,8 @@ public class CascadingSaverTest {
 		SaveWatcher watcher = registerSaveWatcher();
 		
 		Parent parent = parentWithTwoChildrenInEachSubtreeAndTwoGrandchildrenInEachChild();
-		Parent savedParent = saver.saveAndCascade(parent);
-		
-		Grandchild firstSubtreeChild1Grandchild1 = parent.getFirstSubtree().get(0).getChildren().get(0);
-		Grandchild firstSubtreeChild1Grandchild2 = parent.getFirstSubtree().get(0).getChildren().get(1);
-		Child firstSubtreeChild1 = parent.getFirstSubtree().get(0);
-		Grandchild firstSubtreeChild2Grandchild1 = parent.getFirstSubtree().get(1).getChildren().get(0);
-		Grandchild firstSubtreeChild2Grandchild2 = parent.getFirstSubtree().get(1).getChildren().get(1);
-		Child firstSubtreeChild2 = parent.getFirstSubtree().get(1);
-		Grandchild secondSubtreeChild1Grandchild1 = parent.getSecondSubtree().get(0).getChildren().get(0);
-		Grandchild secondSubtreeChild1Grandchild2 = parent.getSecondSubtree().get(0).getChildren().get(1);
-		Child secondSubtreeChild1 = parent.getSecondSubtree().get(0);
-		Grandchild secondSubtreeChild2Grandchild1 = parent.getSecondSubtree().get(1).getChildren().get(0);
-		Grandchild secondSubtreeChild2Grandchild2 = parent.getSecondSubtree().get(1).getChildren().get(1);
-		Child secondSubtreeChild2 = parent.getSecondSubtree().get(1);
-		
-		watcher
-			.expectSavedNext(secondSubtreeChild1Grandchild1)
-			.expectSavedNext(secondSubtreeChild1Grandchild2)
-			.expectSavedNext(secondSubtreeChild1)
-			.expectSavedNext(secondSubtreeChild2Grandchild1)
-			.expectSavedNext(secondSubtreeChild2Grandchild2)
-			.expectSavedNext(secondSubtreeChild2)
-			.expectSavedNext(firstSubtreeChild1Grandchild1)
-			.expectSavedNext(firstSubtreeChild1Grandchild2)
-			.expectSavedNext(firstSubtreeChild1)
-			.expectSavedNext(firstSubtreeChild2Grandchild1)
-			.expectSavedNext(firstSubtreeChild2Grandchild2)
-			.expectSavedNext(firstSubtreeChild2)
-			.expectSavedNext(savedParent)
-			.verify();
+		saver.saveAndCascade(parent);
+		watcher.validateOrder(new SubnodeSavedBeforeNodeValidationStrategy());
 	}
 	
 	private static Parent parentWithTwoChildrenInEachSubtreeAndTwoGrandchildrenInEachChild() {
@@ -320,10 +259,9 @@ public class CascadingSaverTest {
 		DomainSubclass subclass = new DomainSubclass(null, generateChildlessParent(), generateChildWithoutGrandchildren());
 		DomainSubclass savedSubclass = saver.saveAndCascade(subclass);
 		
-		watcher
-			.expectSavedNext(subclass.getChild())
-			.expectSavedNext(subclass.getParent())
-			.expectSavedNext(savedSubclass)
-			.verify();
+		watcher.validateOrder(InOrderValidationStrategy
+			.first(subclass.getChild(), subclass.getParent())
+			.thenExpect(savedSubclass)
+		);
 	}
 }

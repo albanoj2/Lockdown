@@ -1,7 +1,5 @@
 package com.lockdown.persist.store.util;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +11,6 @@ import com.lockdown.persist.store.util.data.cascade.domain.MockDomainObject;
 public class SaveWatcher implements Answer<MockDomainObject> {
 	
 	private final List<MockDomainObject> actuallySaved = new ArrayList<>();
-	private final List<MockDomainObject> expected = new ArrayList<>();
 
 	@Override
 	public MockDomainObject answer(InvocationOnMock invocation) throws Throwable {		
@@ -22,12 +19,7 @@ public class SaveWatcher implements Answer<MockDomainObject> {
 		return savedMock;
 	}
 	
-	public SaveWatcher expectSavedNext(MockDomainObject mock) {
-		expected.add(mock);
-		return this;
-	}
-	
-	public void verify() {
-		assertTrue(actuallySaved.equals(expected));
+	public void validateOrder(OrderValidationStrategy strategy) {
+		strategy.validateOrder(actuallySaved);
 	}
 }
