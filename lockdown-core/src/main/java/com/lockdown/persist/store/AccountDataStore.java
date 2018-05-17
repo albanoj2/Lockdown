@@ -20,6 +20,6 @@ public class AccountDataStore extends AbstractDataStore<Account, AccountDto> {
 
 	@Override
 	protected Account toDomainObject(AccountDto dto) {
-		return new Account(dto.getId(), dto.getKey(), dto.getName(), dto.getType(), transactionDataStore.findAllById(dto.getTransactionIds()));
+		return new Account(dto.getId(), dto.getKey(), dto.getName(), dto.getType(), dto.getSubtype(), transactionDataStore.findAllById(dto.getTransactionIds()));
 	}
 }

@@ -16,9 +16,9 @@ public class TransactionsSynchronizer {
 
 	public void synchronizeWith(List<Transaction> foundTransactions) {
 		
-		for (Transaction transaction: foundTransactions) {
-			account.addTransactionOrUpdateIfExists(transaction);
-		}
+//		for (Transaction transaction: foundTransactions) {
+//			account.addTransactionOrUpdateIfExists(transaction);
+//		}
 		
 		// TODO Remove any existing transactions that are between now and 
 		// the oldest date in foundTransactions not found in foundTransactions

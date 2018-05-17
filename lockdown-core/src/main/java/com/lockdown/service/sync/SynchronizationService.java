@@ -2,6 +2,8 @@ package com.lockdown.service.sync;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +28,16 @@ public class SynchronizationService {
 	@Autowired
 	private AccountsSynchronizer accountsSynchronizer;
 	
+	@PostConstruct
+	public void onCreate() {
+		synchronize();
+	}
+	
 	public void synchronize() {
 		
 		for (Portfolio portfolio: portfolioDataStore.findAll()) {
 			synchronizePortfolio(portfolio);
-			portfolioDataStore.saveAndCascade(portfolio);
+//			portfolioDataStore.saveAndCascade(portfolio);
 		}
 	}
 	
@@ -40,11 +47,12 @@ public class SynchronizationService {
 		for (Credentials credentials: portfolioCredentials) {
 			AccountProvider accountProvider = providerFactory.createAccountProvider(credentials);
 			List<Account> foundAccounts = accountProvider.getAccounts();
-			accountsSynchronizer.synchronizeWith(portfolio, foundAccounts);
-			
-			for (Account account: portfolio.getAccounts()) {
-				synchronizeAccount(account, portfolio, credentials);
-			}
+			System.out.println(foundAccounts);
+//			accountsSynchronizer.synchronizeWith(portfolio, foundAccounts);
+//			
+//			for (Account account: portfolio.getAccounts()) {
+//				synchronizeAccount(account, portfolio, credentials);
+//			}
 		}
 	}
 	

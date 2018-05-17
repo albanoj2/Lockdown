@@ -16,6 +16,11 @@
 		<relativePath></relativePath>
 	</parent>
 
+	<properties>
+		<java.version>9</java.version>
+		<plaid.version>2.2.2</plaid.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,12 +52,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.plaid</groupId>
+			<artifactId>plaid-java</artifactId>
+			<version>${plaid.version}</version>
+		</dependency>
 	</dependencies>
-
-	<properties>
-		<java.version>9</java.version>
-	</properties>
-
 
 	<build>
 		<plugins>

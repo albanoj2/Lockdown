@@ -12,18 +12,20 @@ public class Account extends DomainObject {
 	private final String key;
 	private final String name;
 	private final String type;
+	private final String subtype;
 	private final List<Transaction> transactions;
 	
-	public Account(String id, String key, String name, String type, List<Transaction> transactions) {
+	public Account(String id, String key, String name, String type, String subtype, List<Transaction> transactions) {
 		super(id);
 		this.key = key;
 		this.name = name;
 		this.type = type;
+		this.subtype = subtype;
 		this.transactions = transactions;
 	}
 	
 	public Account() {
-		this(null, "0", "Unnamed", "Unknown", new ArrayList<>());
+		this(null, "0", "Unnamed", "Unknown", "Unknown", new ArrayList<>());
 	}
 	
 	public static Account blank() {
@@ -42,6 +44,10 @@ public class Account extends DomainObject {
 		return type;
 	}
 
+	public String getSubtype() {
+		return subtype;
+	}
+
 	@JsonIgnore
 	public List<Transaction> getTransactions() {
 		return transactions;
@@ -54,22 +60,6 @@ public class Account extends DomainObject {
 	
 	public Account removeTransaction(Transaction transaction) {
 		transactions.remove(transaction);
-		return this;
-	}
-	
-	public Account addTransactionOrUpdateIfExists(Transaction transaction) {
-		int indexOfExisting = transactions.indexOf(transaction);
-		
-		if (indexOfExisting != -1) {
-			Transaction existing = transactions.get(indexOfExisting);
-			Transaction copy = transaction.copy();
-			copy.setId(existing.getId());
-			transactions.set(indexOfExisting, copy);
-		}
-		else {
-			addTransaction(transaction);
-		}
-		
 		return this;
 	}
 	
@@ -99,7 +89,8 @@ public class Account extends DomainObject {
 
 	@Override
 	public String toString() {
-		return "Account [name=" + name + ", transactions=" + transactions + "]";
+		return "Account [key=" + key + ", name=" + name + ", type=" + type + ", subtype=" + subtype + ", transactions="
+				+ transactions + "]";
 	}
 
 	@Override

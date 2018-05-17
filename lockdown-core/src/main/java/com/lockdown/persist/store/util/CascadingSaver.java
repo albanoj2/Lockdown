@@ -3,8 +3,8 @@ package com.lockdown.persist.store.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -57,41 +59,40 @@ public final class CascadingSaver {
 	public <T extends DomainObject> T saveAndCascade(T object) {
 
 		Objects.requireNonNull(object);
+		return saveRootAndCascade(object);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends DomainObject> T saveRootAndCascade(T root) {
 		
 		try {
-			return saveDomainObjectAndCascade(object);
+			for (Field field: getAllFields(root)) {
+				
+				field.setAccessible(true);
+				Object fieldValue = field.get(root);
+				
+				if (isFieldDomainObject(field)) {
+					DomainObject savedField = saveRootAndCascade((DomainObject) fieldValue);
+					updateField(field, root, savedField);
+				}
+				else if (isFieldDomainObjectListOrSet(field, root)) {
+					Collection<DomainObject> collection = (Collection<DomainObject>) fieldValue;
+					Stream<DomainObject> stream = collection.stream().map(this::saveRootAndCascade);
+					
+					if (collection instanceof Set) {
+						updateField(field, root, stream.collect(Collectors.toSet()));
+					}
+					else {
+						updateField(field, root, stream.collect(Collectors.toList()));
+					}
+				}
+			}
+			
+			return saveDomainObject(root);
 		}
 		catch (SecurityException | ReflectiveOperationException e) {
 			throw new IllegalStateException("Could not cascade saves", e);
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends DomainObject> T saveDomainObjectAndCascade(T domainObject) throws SecurityException, ReflectiveOperationException {
-		
-		for (Field field: getAllFields(domainObject)) {
-			
-			field.setAccessible(true);
-			Object fieldValue = field.get(domainObject);
-			
-			if (isFieldDomainObject(field)) {
-				DomainObject savedField = saveDomainObjectAndCascade((DomainObject) fieldValue);
-				updateField(field, domainObject, savedField);
-			}
-			else if (isFieldDomainObjectIterable(field, domainObject)) {
-				Iterable<DomainObject> iterable = (Iterable<DomainObject>) fieldValue;
-				List<DomainObject> savedDomainObjects = new ArrayList<>();
-				
-				for (DomainObject subDomainObject: iterable) {
-					DomainObject savedDomainObject = saveDomainObjectAndCascade(subDomainObject);
-					savedDomainObjects.add(savedDomainObject);
-				}
-				
-				updateField(field, domainObject, savedDomainObjects);
-			}
-		}
-		
-		return saveDomainObject(domainObject);
 	}
 	
 	private Set<Field> getAllFields(Object object) {
@@ -108,9 +109,9 @@ public final class CascadingSaver {
 		return DomainObject.class.isAssignableFrom(field.getType());
 	}
 	
-	private static boolean isFieldDomainObjectIterable(Field field, Object object) throws IllegalArgumentException, IllegalAccessException {
+	private static boolean isFieldDomainObjectListOrSet(Field field, Object object) throws IllegalArgumentException, IllegalAccessException {
 		
-		if (isIterable(field)) {
+		if (isListOrSet(field)) {
 			Iterable<?> iterable = (Iterable<?>) field.get(object);
 			Iterator<?> it = iterable.iterator();
 
@@ -120,8 +121,9 @@ public final class CascadingSaver {
 		return false;
 	}
 	
-	private static boolean isIterable(Field field) {
-		return Iterable.class.isAssignableFrom(field.getType());
+	private static boolean isListOrSet(Field field) {
+		Class<?> fieldType = field.getType();
+		return List.class.isAssignableFrom(fieldType) || Set.class.isAssignableFrom(fieldType);
 	}
 
 	private void updateField(Field field, Object object, Object newValue)

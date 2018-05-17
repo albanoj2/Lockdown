@@ -103,10 +103,6 @@ public class Transaction extends DomainObject {
 			return Money.zero();
 		}
 	}
-	
-	public Transaction copy() {
-		return new Transaction(getId(), date, amount, key, name, description, isPending, budgetItemMapping);
-	}
 
 	@Override
 	public int hashCode() {

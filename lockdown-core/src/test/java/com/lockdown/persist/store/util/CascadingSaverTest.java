@@ -2,11 +2,14 @@ package com.lockdown.persist.store.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+
 import static org.mockito.Mockito.doAnswer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -112,10 +115,10 @@ public class CascadingSaverTest {
 	}
 	
 	private static Parent generateChildlessParent() {
-		return generateParent(new ArrayList<>(), new ArrayList<>());
+		return generateParent(new HashSet<>(), new ArrayList<>());
 	}
 
-	private static Parent generateParent(List<Child> firstSubtree, List<Child> secondSubtree) {
+	private static Parent generateParent(Set<Child> firstSubtree, List<Child> secondSubtree) {
 		return new Parent(null, "Some parent", firstSubtree, secondSubtree);
 	}
 	
@@ -128,7 +131,7 @@ public class CascadingSaverTest {
 	
 	private static Parent parentWithFirstSubtreeChild() {
 		Child child = generateChildWithoutGrandchildren();
-		return generateParent(List.of(child), new ArrayList<>());
+		return generateParent(Set.of(child), new ArrayList<>());
 	}
 	
 	private static Child generateChildWithoutGrandchildren() {
@@ -156,7 +159,7 @@ public class CascadingSaverTest {
 	private static Parent parentWithTwoFirstSubtreeChildren() {
 		Child child1 = generateChildWithoutGrandchildren();
 		Child child2 = generateChildWithoutGrandchildren();
-		return generateParent(List.of(child1, child2), new ArrayList<>());
+		return generateParent(Set.of(child1, child2), new ArrayList<>());
 	}
 	
 	@Test
@@ -177,7 +180,7 @@ public class CascadingSaverTest {
 		Child firstSubtreeChild1 = generateChildWithoutGrandchildren();
 		Child firstSubtreeChild2 = generateChildWithoutGrandchildren();
 		Child secondSubtreeChild = generateChildWithoutGrandchildren();
-		return generateParent(List.of(firstSubtreeChild1, firstSubtreeChild2), List.of(secondSubtreeChild));
+		return generateParent(Set.of(firstSubtreeChild1, firstSubtreeChild2), List.of(secondSubtreeChild));
 	}
 	
 	@Test
@@ -199,7 +202,7 @@ public class CascadingSaverTest {
 		Child firstSubtreeChild2 = generateChildWithoutGrandchildren();
 		Child secondSubtreeChild1 = generateChildWithoutGrandchildren();
 		Child secondSubtreeChild2 = generateChildWithoutGrandchildren();
-		return generateParent(List.of(firstSubtreeChild1, firstSubtreeChild2), List.of(secondSubtreeChild1, secondSubtreeChild2));
+		return generateParent(Set.of(firstSubtreeChild1, firstSubtreeChild2), List.of(secondSubtreeChild1, secondSubtreeChild2));
 	}
 	
 	@Test
@@ -221,7 +224,7 @@ public class CascadingSaverTest {
 		Child firstSubtreeChild2 = generateChild(List.of(generateGrandchild(), generateGrandchild()));
 		Child secondSubtreeChild1 = generateChild(List.of(generateGrandchild(), generateGrandchild()));
 		Child secondSubtreeChild2 = generateChild(List.of(generateGrandchild(), generateGrandchild()));
-		return generateParent(List.of(firstSubtreeChild1, firstSubtreeChild2), List.of(secondSubtreeChild1, secondSubtreeChild2));
+		return generateParent(Set.of(firstSubtreeChild1, firstSubtreeChild2), List.of(secondSubtreeChild1, secondSubtreeChild2));
 	}
 	
 	private static Grandchild generateGrandchild() {

@@ -136,36 +136,36 @@ public class AccountTest {
 //		assertAccountContains(replacement);
 //		assertAccountDoesNotContain(existing);
 //	}
-	
-	private void assertAccountContains(Transaction transaction) {
-		assertTrue(accountContains(transaction));
-	}
-	
-	private boolean accountContains(Transaction transaction) {
-		return account.getTransactions().stream()
-			.filter(t -> t == transaction)
-			.findFirst()
-			.isPresent();
-	}
-	
-	private void assertAccountDoesNotContain(Transaction transaction) {
-		assertFalse(accountContains(transaction));
-	}
-	
-	@Test
-	public void twoUnEqualTransactionsAddOrReplaceIfExistsEnsureTransactionAdded() {
-		Transaction existing = Transactions.withKey("foo");
-		Transaction different = Transactions.withKey("bar");
-		
-		account.addTransaction(existing);
-		assertAccountContains(existing);
-		assertAccountDoesNotContain(different);
-		
-		account.addTransactionOrUpdateIfExists(different);
-		assertAccountContains(existing);
-		assertAccountContains(different);
-	}
-	
+//	
+//	private void assertAccountContains(Transaction transaction) {
+//		assertTrue(accountContains(transaction));
+//	}
+//	
+//	private boolean accountContains(Transaction transaction) {
+//		return account.getTransactions().stream()
+//			.filter(t -> t == transaction)
+//			.findFirst()
+//			.isPresent();
+//	}
+//	
+//	private void assertAccountDoesNotContain(Transaction transaction) {
+//		assertFalse(accountContains(transaction));
+//	}
+//	
+//	@Test
+//	public void twoUnEqualTransactionsAddOrReplaceIfExistsEnsureTransactionAdded() {
+//		Transaction existing = Transactions.withKey("foo");
+//		Transaction different = Transactions.withKey("bar");
+//		
+//		account.addTransaction(existing);
+//		assertAccountContains(existing);
+//		assertAccountDoesNotContain(different);
+//		
+//		account.addTransactionOrUpdateIfExists(different);
+//		assertAccountContains(existing);
+//		assertAccountContains(different);
+//	}
+//	
 //	@Test
 //	public void twoUnEqualTransactionsAddOrReplaceIfExistsEnsureIdAndKeyAreUnchanged() {
 //		String commonKey = "foo";
