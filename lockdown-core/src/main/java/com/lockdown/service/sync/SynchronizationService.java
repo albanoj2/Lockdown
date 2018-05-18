@@ -1,19 +1,18 @@
 package com.lockdown.service.sync;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lockdown.domain.Account;
 import com.lockdown.domain.Credentials;
 import com.lockdown.domain.Portfolio;
-import com.lockdown.domain.Transaction;
 import com.lockdown.persist.store.PortfolioDataStore;
 import com.lockdown.service.sync.provider.AccountProvider;
+import com.lockdown.service.sync.provider.DiscoveredAccount;
+import com.lockdown.service.sync.provider.DiscoveredTransaction;
 import com.lockdown.service.sync.provider.ProviderFactory;
 import com.lockdown.service.sync.provider.TransactionProvider;
 
@@ -43,15 +42,15 @@ public class SynchronizationService {
 		
 		for (Credentials credentials: portfolioCredentials) {
 			AccountProvider accountProvider = providerFactory.createAccountProvider(credentials);
-			List<Account> foundAccounts = accountProvider.getAccounts();
+			List<DiscoveredAccount> foundAccounts = accountProvider.getAccounts();
 			System.out.println(foundAccounts);
-			synchronizeAccounts(foundAccounts, portfolio, credentials);
+			synchronizeAccounts(portfolio, credentials);
 		}
 	}
 	
-	private void synchronizeAccounts(List<Account> accounts, Portfolio portfolio, Credentials credentials) {
+	private void synchronizeAccounts(Portfolio portfolio, Credentials credentials) {
 		TransactionProvider transactionProvider = providerFactory.createTransactionProvider(credentials);
-		Map<Account, List<Transaction>> foundTransactions = transactionProvider.getTransactions(accounts);
+		List<DiscoveredTransaction> foundTransactions = transactionProvider.getTransactions();
 		System.out.println(foundTransactions);
 	}
 }

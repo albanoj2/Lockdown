@@ -4,38 +4,43 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.lockdown.domain.Account;
 import com.lockdown.domain.Credentials;
 import com.lockdown.service.sync.provider.AccountProvider;
+import com.lockdown.service.sync.provider.DiscoveredAccount;
 import com.lockdown.service.sync.provider.ProviderException;
-import com.plaid.client.request.AccountsGetRequest;
-import com.plaid.client.response.AccountsGetResponse;
+import com.plaid.client.response.Account;
 
-import retrofit2.Response;
-
-public class PlaidAccountProvider extends PlaidServiceConsumer implements AccountProvider {
+public class PlaidAccountProvider implements AccountProvider {
 	
+	private final PlaidConnection connection;
 	private final Credentials credentials;
 	
 	public PlaidAccountProvider(PlaidConnection connection, Credentials credentials) {
-		super(connection);
+		this.connection = connection;
 		this.credentials = credentials;
 	}
 
 	@Override
-	public List<Account> getAccounts() {
+	public List<DiscoveredAccount> getAccounts() {
 		
 		try {
-			Response<AccountsGetResponse> response = getService()
-				.accountsGet(new AccountsGetRequest(credentials.getAccessToken()))
-				.execute();
-			
-			return response.body().getAccounts().stream()
-				.map(PlaidConverter::toAccount)
+			return connection
+				.getRemoteAccounts(credentials.getAccessToken())
+				.stream()
+				.map(PlaidAccountProvider::toDiscoveredAccount)
 				.collect(Collectors.toList());
 		} 
 		catch (IOException e) {
 			throw new ProviderException(e);
 		}
+	}
+	
+	public static DiscoveredAccount toDiscoveredAccount(Account input) {
+		return new DiscoveredAccount(
+			input.getAccountId(), 
+			input.getName(), 
+			input.getType(), 
+			input.getSubtype()
+		);
 	}
 }

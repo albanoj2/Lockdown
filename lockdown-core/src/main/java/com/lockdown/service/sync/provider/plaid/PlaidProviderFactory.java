@@ -12,7 +12,7 @@ import com.lockdown.service.sync.provider.TransactionProvider;
 public class PlaidProviderFactory implements ProviderFactory {
 	
 	@Autowired
-	private PlaidConnection connection;
+	private DefaultPlaidConnection connection;
 
 	@Override
 	public AccountProvider createAccountProvider(Credentials credentials) {

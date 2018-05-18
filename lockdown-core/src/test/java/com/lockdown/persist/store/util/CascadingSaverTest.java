@@ -2,7 +2,6 @@ package com.lockdown.persist.store.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.Mockito.doAnswer;
 
 import java.util.ArrayList;
@@ -66,6 +65,7 @@ public class CascadingSaverTest {
 		Mockito.reset(parentDataStore);
 		Mockito.reset(childDataStore);
 		Mockito.reset(grandchildDataStore);
+		Mockito.reset(domainSubclassDataStore);
 		doAnswer(assignId()).when(parentDataStore).save(any(Parent.class));
 		doAnswer(assignId()).when(childDataStore).save(any(Child.class));
 		doAnswer(assignId()).when(grandchildDataStore).save(any(Grandchild.class));
