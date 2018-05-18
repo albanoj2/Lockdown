@@ -72,6 +72,6 @@ public class PlaidTransactionProvider extends PlaidServiceConsumer implements Tr
 		return accounts.stream()
 			.filter(a -> a.getKey().equals(transaction.getAccountId()))
 			.findFirst()
-			.orElseThrow();
+			.get();
 	}
 }
