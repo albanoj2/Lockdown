@@ -2,12 +2,10 @@ package com.lockdown.domain;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDate;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import com.lockdown.domain.Account;
-import com.lockdown.domain.Money;
-import com.lockdown.domain.Transaction;
 
 public class AccountTest {
 
@@ -122,61 +120,63 @@ public class AccountTest {
 		assertAccountUnbudgetedBalanceIs(Money.cents(19));
 	}
 	
-//	@Test
-//	public void twoEqualTransactionsAddOrReplaceIfExistsEnsureTransactionReplaced() {
-//		String commonKey = "foo";
-//		Transaction existing = Transactions.withKey(commonKey);
-//		Transaction replacement = Transactions.withKey(commonKey);
-//		
-//		account.addTransaction(existing);
-//		assertAccountContains(existing);
-//		assertAccountDoesNotContain(replacement);
-//		
-//		account.addTransactionOrUpdateIfExists(replacement);
-//		assertAccountContains(replacement);
-//		assertAccountDoesNotContain(existing);
-//	}
-//	
-//	private void assertAccountContains(Transaction transaction) {
-//		assertTrue(accountContains(transaction));
-//	}
-//	
-//	private boolean accountContains(Transaction transaction) {
-//		return account.getTransactions().stream()
-//			.filter(t -> t == transaction)
-//			.findFirst()
-//			.isPresent();
-//	}
-//	
-//	private void assertAccountDoesNotContain(Transaction transaction) {
-//		assertFalse(accountContains(transaction));
-//	}
-//	
-//	@Test
-//	public void twoUnEqualTransactionsAddOrReplaceIfExistsEnsureTransactionAdded() {
-//		Transaction existing = Transactions.withKey("foo");
-//		Transaction different = Transactions.withKey("bar");
-//		
-//		account.addTransaction(existing);
-//		assertAccountContains(existing);
-//		assertAccountDoesNotContain(different);
-//		
-//		account.addTransactionOrUpdateIfExists(different);
-//		assertAccountContains(existing);
-//		assertAccountContains(different);
-//	}
-//	
-//	@Test
-//	public void twoUnEqualTransactionsAddOrReplaceIfExistsEnsureIdAndKeyAreUnchanged() {
-//		String commonKey = "foo";
-//		Transaction existing = Transactions.withIdAndKey("foo", commonKey);
-//		Transaction replacement = Transactions.withIdAndKey("bar", commonKey);
-//		
-//		account.addTransaction(existing);
-//		account.addTransactionOrUpdateIfExists(replacement);
-//		
-//		assertAccountContains(replacement);
-//		assertEquals(existing.getId(), account.getTransactions().get(0).getId());
-//		assertEquals(existing.getKey(), account.getTransactions().get(0).getKey());
-//	}
+	@Test
+	public void addOrUpdateWithNonExistentKeyEnsureTransactionCreated() {
+		String key = "foo";
+		TransactionBody body = createTransactionBody();
+		assertNoTransactions();
+		account.addTransactionOrUpdateIfExists(key, body);
+		
+		assertEquals(1, account.getTransactionCount());
+		Transaction createdTransaction = account.getTransactions().get(0);
+		assertNull(createdTransaction.getId());
+		assertEquals(key, createdTransaction.getKey());
+		assertBodyMatchesTransaction(body, createdTransaction);
+		assertFalse(createdTransaction.getBudgetItemMapping().isPresent());
+	}
+
+	private void assertBodyMatchesTransaction(TransactionBody body, Transaction createdTransaction) {
+		assertEquals(body.getAmount(), createdTransaction.getAmount());
+		assertEquals(body.getDate(), createdTransaction.getDate());
+		assertEquals(body.getDescription(), createdTransaction.getDescription());
+		assertEquals(body.getName(), createdTransaction.getName());
+	}
+	
+	private static TransactionBody createTransactionBody() {
+		return new TransactionBody(LocalDate.of(2000, 1, 20), Money.dollars(100), "A test body", "Some transaction", true);
+	}
+
+	private void assertNoTransactions() {
+		assertEquals(0, account.getTransactionCount());
+	}
+	
+	@Test
+	public void addOrUpdateWithExistingKeyEnsureTransactionBodyUpdated() {
+		Transaction existingTransaction = Transactions.budgetedForAmount(Money.dollars(200));
+		String idBeforeUpdate = existingTransaction.getId();
+		String keyBeforeUpdate = existingTransaction.getKey();
+		BudgetItemMapping mappingBeforeUpdate = existingTransaction.getBudgetItemMapping().orElse(null);
+		
+		account.addTransaction(existingTransaction);
+		
+		TransactionBody updatedBody = createTransactionBody();
+		assertBodyDoesNotMatchTransaction(existingTransaction, updatedBody);
+		
+		account.addTransactionOrUpdateIfExists(existingTransaction.getKey(), updatedBody);
+		Transaction updatedTransaction = account.getTransactions().get(0);
+		
+		assertEquals(idBeforeUpdate, updatedTransaction.getId());
+		assertEquals(keyBeforeUpdate, updatedTransaction.getKey());
+		assertBodyMatchesTransaction(updatedBody, updatedTransaction);
+		assertEquals(mappingBeforeUpdate, updatedTransaction.getBudgetItemMapping().orElse(null));
+	}
+	
+	private static void assertBodyDoesNotMatchTransaction(Transaction transaction, TransactionBody body) {
+		assertNotEquals(transaction.getAmount(), body.getAmount());
+		assertNotEquals(transaction.getDate(), body.getDate());
+		assertNotEquals(transaction.getName(), body.getName());
+		assertNotEquals(transaction.getDescription(), body.getDescription());
+		assertNotEquals(transaction.isPending(), body.isPending());
+	}
+	
 }

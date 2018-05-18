@@ -6,29 +6,29 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public final class Transaction extends DomainObject {
+public final class Transaction extends Identifiable {
 
-	private final LocalDate date;
-	private final Money amount;
 	private final String key;
-	private final String name;
-	private final String description;
-	private boolean isPending;
+	private TransactionBody body;
 	private final Optional<BudgetItemMapping> budgetItemMapping;
 	
 	public Transaction(String id, LocalDate date, Money amount, String key, String name, String description, boolean isPending, Optional<BudgetItemMapping> budgetItemMapping) {
+		this(id, key, new TransactionBody(date, amount, name, description, isPending), budgetItemMapping);
+	}
+	
+	public Transaction(String id, String key, TransactionBody body, Optional<BudgetItemMapping> budgetItemMapping) {
 		super(id);
-		this.date = date;
-		this.amount = amount;
 		this.key = key;
-		this.name = name;
-		this.description = description;
-		this.isPending = isPending;
+		this.body = body;
 		this.budgetItemMapping = budgetItemMapping;
 	}
 	
 	public static Transaction unbudgeted(String id, LocalDate date, Money amount, String key, String name, String description, boolean isPending) {
-		return new Transaction(id, date, amount, key, name, description, isPending, Optional.empty());
+		return new Transaction(id, date, amount, key, name, description, isPending, noMapping());
+	}
+	
+	public static Optional<BudgetItemMapping> noMapping() {
+		return Optional.empty();
 	}
 	
 	public Transaction() {
@@ -36,11 +36,11 @@ public final class Transaction extends DomainObject {
 	}
 
 	public LocalDate getDate() {
-		return date;
+		return body.getDate();
 	}
 
 	public Money getAmount() {
-		return amount;
+		return body.getAmount();
 	}
 
 	public String getKey() {
@@ -48,15 +48,15 @@ public final class Transaction extends DomainObject {
 	}
 
 	public String getName() {
-		return name;
+		return body.getName();
 	}
 
 	public String getDescription() {
-		return description;
+		return body.getDescription();
 	}
 
 	public boolean isPending() {
-		return isPending;
+		return body.isPending();
 	}
 
 	@JsonIgnore
@@ -68,6 +68,10 @@ public final class Transaction extends DomainObject {
 		return budgetItemMapping.isPresent();
 	}
 	
+	public synchronized void updateBody(TransactionBody body) {
+		this.body = body;
+	}
+	
 	@JsonIgnore
 	public boolean isUnbudgeted() {
 		return !isBudgeted();
@@ -75,12 +79,12 @@ public final class Transaction extends DomainObject {
 	
 	@JsonIgnore
 	public boolean isExpense() {
-		return amount.isNegative();
+		return getAmount().isNegative();
 	}
 
 	@JsonIgnore
 	public boolean isDeposit() {
-		return amount.isPositive();
+		return getAmount().isPositive();
 	}
 	
 	@JsonIgnore
@@ -126,7 +130,7 @@ public final class Transaction extends DomainObject {
 
 	@Override
 	public String toString() {
-		return "Transaction [date=" + date + ", amount=" + amount + ", key=" + key + ", name=" + name + ", description="
-				+ description + ", isPending=" + isPending + ", budgetItemMapping=" + budgetItemMapping + "]";
+		return "Transaction [date=" + getDate() + ", amount=" + getAmount() + ", key=" + key + ", name=" + getName() + ", description="
+				+ getDescription() + ", isPending=" + isPending() + ", budgetItemMapping=" + budgetItemMapping + "]";
 	}
 }

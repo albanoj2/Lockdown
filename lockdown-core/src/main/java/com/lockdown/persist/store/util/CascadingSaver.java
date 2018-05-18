@@ -23,7 +23,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lockdown.domain.DomainObject;
+import com.lockdown.domain.Identifiable;
 import com.lockdown.persist.store.DataStore;
 import com.lockdown.persist.store.DataStoreFor;
 
@@ -35,7 +35,7 @@ public final class CascadingSaver {
 	@Autowired
 	private ListableBeanFactory beanFactory;
 	
-	private Map<Class<? extends DomainObject>, DataStore<? extends DomainObject>> dataStoreMap = new HashMap<>();
+	private Map<Class<? extends Identifiable>, DataStore<? extends Identifiable>> dataStoreMap = new HashMap<>();
 	
 	@PostConstruct
 	@SuppressWarnings("unchecked")
@@ -43,10 +43,10 @@ public final class CascadingSaver {
 		Map<String, Object> dataStores = beanFactory.getBeansWithAnnotation(DataStoreFor.class);
 		
 		for (Object dataStore: dataStores.values()) {
-			Class<? extends DomainObject> forClass = dataStore.getClass().getAnnotation(DataStoreFor.class).value();
+			Class<? extends Identifiable> forClass = dataStore.getClass().getAnnotation(DataStoreFor.class).value();
 			
 			if (dataStore instanceof DataStore) {
-				dataStoreMap.put(forClass, (DataStore<? extends DomainObject>) dataStore);
+				dataStoreMap.put(forClass, (DataStore<? extends Identifiable>) dataStore);
 			}
 			else {
 				throw new IllegalStateException("Found object annotated as @DataStoreFor but was not a DataStore instance: " + dataStore.getClass().getName());
@@ -56,14 +56,14 @@ public final class CascadingSaver {
 		logger.info("Found " + dataStoreMap.size() + " data stores: " + dataStoreMap);
 	}
 
-	public <T extends DomainObject> T saveAndCascade(T object) {
+	public <T extends Identifiable> T saveAndCascade(T object) {
 
 		Objects.requireNonNull(object);
 		return saveRootAndCascade(object);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends DomainObject> T saveRootAndCascade(T root) {
+	private <T extends Identifiable> T saveRootAndCascade(T root) {
 		
 		try {
 			for (Field field: getAllFields(root)) {
@@ -72,12 +72,12 @@ public final class CascadingSaver {
 				Object fieldValue = field.get(root);
 				
 				if (isFieldDomainObject(field)) {
-					DomainObject savedField = saveRootAndCascade((DomainObject) fieldValue);
+					Identifiable savedField = saveRootAndCascade((Identifiable) fieldValue);
 					updateField(field, root, savedField);
 				}
 				else if (isFieldDomainObjectListOrSet(field, root)) {
-					Collection<DomainObject> collection = (Collection<DomainObject>) fieldValue;
-					Stream<DomainObject> stream = collection.stream().map(this::saveRootAndCascade);
+					Collection<Identifiable> collection = (Collection<Identifiable>) fieldValue;
+					Stream<Identifiable> stream = collection.stream().map(this::saveRootAndCascade);
 					
 					if (collection instanceof Set) {
 						updateField(field, root, stream.collect(Collectors.toSet()));
@@ -106,7 +106,7 @@ public final class CascadingSaver {
 	}
 
 	private static boolean isFieldDomainObject(Field field) {
-		return DomainObject.class.isAssignableFrom(field.getType());
+		return Identifiable.class.isAssignableFrom(field.getType());
 	}
 	
 	private static boolean isFieldDomainObjectListOrSet(Field field, Object object) throws IllegalArgumentException, IllegalAccessException {
@@ -115,7 +115,7 @@ public final class CascadingSaver {
 			Iterable<?> iterable = (Iterable<?>) field.get(object);
 			Iterator<?> it = iterable.iterator();
 
-			return it.hasNext() && it.next() instanceof DomainObject;
+			return it.hasNext() && it.next() instanceof Identifiable;
 		}
 		
 		return false;
@@ -139,7 +139,7 @@ public final class CascadingSaver {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T extends DomainObject> T saveDomainObject(T object) 
+	private <T extends Identifiable> T saveDomainObject(T object) 
 			throws IllegalArgumentException, IllegalAccessException {
 		
 		DataStore<T> dataStore = (DataStore<T>) dataStoreMap.get(object.getClass());
@@ -152,7 +152,7 @@ public final class CascadingSaver {
 		}
 	}
 
-	Map<Class<? extends DomainObject>, DataStore<? extends DomainObject>> getFoundDataStores() {
+	Map<Class<? extends Identifiable>, DataStore<? extends Identifiable>> getFoundDataStores() {
 		return dataStoreMap;
 	}
 }

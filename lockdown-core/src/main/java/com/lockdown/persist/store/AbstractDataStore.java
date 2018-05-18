@@ -8,12 +8,12 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.lockdown.domain.DomainObject;
+import com.lockdown.domain.Identifiable;
 import com.lockdown.persist.dto.Dto;
 import com.lockdown.persist.repository.LockdownRepository;
 import com.lockdown.persist.store.util.CascadingSaver;
 
-public abstract class AbstractDataStore<DomainObjectType extends DomainObject, DtoType extends Dto> implements DataStore<DomainObjectType> {
+public abstract class AbstractDataStore<DomainObjectType extends Identifiable, DtoType extends Dto> implements DataStore<DomainObjectType> {
 	
 	@Autowired
 	private LockdownRepository<DtoType> repository;

@@ -2,7 +2,7 @@ package com.lockdown.domain;
 
 import java.util.Objects;
 
-public class SingleBudgetItemMapping extends DomainObject implements BudgetItemMapping {
+public class SingleBudgetItemMapping extends Identifiable implements BudgetItemMapping {
 
 	private final BudgetItem to;
 	

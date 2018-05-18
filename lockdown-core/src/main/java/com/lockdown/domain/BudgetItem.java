@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.lockdown.domain.util.Periods;
 
-public class BudgetItem extends DomainObject {
+public class BudgetItem extends Identifiable {
 
 	private String name;
 	private final String description;

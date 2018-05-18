@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class MultipleBudgetItemMapping extends DomainObject implements BudgetItemMapping {
+public class MultipleBudgetItemMapping extends Identifiable implements BudgetItemMapping {
 
 	private final Map<BudgetItem, Money> mappings = new HashMap<>();
 	

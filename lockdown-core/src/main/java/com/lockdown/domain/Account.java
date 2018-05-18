@@ -3,11 +3,12 @@ package com.lockdown.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public final class Account extends DomainObject {
+public final class Account extends Identifiable {
 
 	private final String key;
 	private final String name;
@@ -53,6 +54,10 @@ public final class Account extends DomainObject {
 		return transactions;
 	}
 	
+	public int getTransactionCount() {
+		return transactions.size();
+	}
+	
 	public Account addTransaction(Transaction transaction) {
 		transactions.add(transaction);
 		return this;
@@ -60,6 +65,20 @@ public final class Account extends DomainObject {
 	
 	public Account removeTransaction(Transaction transaction) {
 		transactions.remove(transaction);
+		return this;
+	}
+	
+	public Account addTransactionOrUpdateIfExists(String key, TransactionBody body) {
+		
+		Optional<Transaction> existingTransaction = transactions.stream()
+			.filter(t -> t.getKey().equals(key))
+			.findFirst();
+		
+		existingTransaction.ifPresentOrElse(
+			t -> t.updateBody(body), 
+			() -> addTransaction(new Transaction(null, key, body, Transaction.noMapping()))
+		);
+		
 		return this;
 	}
 	

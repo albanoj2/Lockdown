@@ -14,15 +14,15 @@ public class Transactions {
 	public static final Optional<BudgetItemMapping> BLANK_MAPPING = Optional.of(RAW_BLANK_MAPPING);
 
 	public static Transaction unbudgetedForAmount(Money amount) {
-		return Transaction.unbudgeted("1", LocalDate.now(), amount, "", "Unnamed", "", false);
+		return Transaction.unbudgeted("1", LocalDate.now(), amount, "foo", "Unnamed", "", false);
 	}
 
 	public static Transaction budgetedForAmount(Money amount) {
-		return new Transaction("1", LocalDate.now(), amount, "", "Unnamed", "", false, BLANK_MAPPING);
+		return new Transaction("1", LocalDate.now(), amount, "foo", "Unnamed", "", false, BLANK_MAPPING);
 	}
 
 	public static Transaction budgetedForAmountWithMapping(Money amount, BudgetItemMapping mapping) {
-		return new Transaction("1", LocalDate.now(), amount, "", "Unnamed", "", false, Optional.of(mapping));
+		return new Transaction("1", LocalDate.now(), amount, "foo", "Unnamed", "", false, Optional.of(mapping));
 	}
 	
 	public static Transaction withKey(String key) {

@@ -3,7 +3,7 @@ package com.lockdown.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Portfolio extends DomainObject {
+public class Portfolio extends Identifiable {
 
 	private final Budget budget;
 	private final List<Account> accounts;

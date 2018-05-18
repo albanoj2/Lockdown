@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.lockdown.domain.DomainObject;
+import com.lockdown.domain.Identifiable;
 import com.lockdown.persist.store.DataStore;
 import com.lockdown.persist.store.util.config.CascadingSaverConfig;
 import com.lockdown.persist.store.util.data.cascade.domain.Child;
@@ -92,13 +92,13 @@ public class CascadingSaverTest {
 		saver.saveAndCascade(domainObjectWithoutDataStore());
 	}
 	
-	private static DomainObject domainObjectWithoutDataStore() {
-		return Mockito.mock(DomainObject.class);
+	private static Identifiable domainObjectWithoutDataStore() {
+		return Mockito.mock(Identifiable.class);
 	}
 	
 	@Test
 	public void givenFourValidDataStoresRegisteredWhenInitializingThenHaveValidDataStoresFound() {
-		Map<Class<? extends DomainObject>, DataStore<? extends DomainObject>> foundDataStores = saver.getFoundDataStores();
+		Map<Class<? extends Identifiable>, DataStore<? extends Identifiable>> foundDataStores = saver.getFoundDataStores();
 		
 		assertEquals(4, foundDataStores.size());
 		assertEquals(parentDataStore, foundDataStores.get(Parent.class));
