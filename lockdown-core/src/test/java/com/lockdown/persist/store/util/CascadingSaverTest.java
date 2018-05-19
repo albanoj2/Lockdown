@@ -2,6 +2,7 @@ package com.lockdown.persist.store.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+
 import static org.mockito.Mockito.doAnswer;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -62,15 +64,16 @@ public class CascadingSaverTest {
 	
 	@Before
 	public void setUp() {
-		Mockito.reset(parentDataStore);
-		Mockito.reset(childDataStore);
-		Mockito.reset(grandchildDataStore);
-		Mockito.reset(domainSubclassDataStore);
-		doAnswer(assignId()).when(parentDataStore).save(any(Parent.class));
-		doAnswer(assignId()).when(childDataStore).save(any(Child.class));
-		doAnswer(assignId()).when(grandchildDataStore).save(any(Grandchild.class));
-		doAnswer(assignId()).when(domainSubclassDataStore).save(any(DomainSubclass.class));
+//		Mockito.reset(parentDataStore);
+//		Mockito.reset(childDataStore);
+//		Mockito.reset(grandchildDataStore);
+//		Mockito.reset(domainSubclassDataStore);
+//		doAnswer(assignId()).when(parentDataStore).save(any(Parent.class));
+//		doAnswer(assignId()).when(childDataStore).save(any(Child.class));
+//		doAnswer(assignId()).when(grandchildDataStore).save(any(Grandchild.class));
+//		doAnswer(assignId()).when(domainSubclassDataStore).save(any(DomainSubclass.class));
 		dataStoresWatcher.clearSavedObjects();
+		dataStoresWatcher.clearListeners();
 	}
 	
 	private static Answer<MockDomainObject> assignId() {

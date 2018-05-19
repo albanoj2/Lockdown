@@ -23,11 +23,15 @@ public class DataStoresWatcher {
 		savedObjects.clear();
 	}
 	
+	public void clearListeners() {
+		onSaveListeners.clear();
+	}
+	
 	public List<MockDomainObject> getSavedObjects() {
 		return savedObjects;
 	}
 
-	@AfterReturning(pointcut = "execution(public * com.lockdown.persist.store.util.data.cascade.store.*.save(..))", returning = "savedObject")
+	@AfterReturning(pointcut = "execution(* com.lockdown.persist.store.DataStore+.save(..))", returning = "savedObject")
 	public void onSave(MockDomainObject savedObject) {
 		
 		if (savedObject != null) {

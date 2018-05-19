@@ -1,6 +1,5 @@
 package com.lockdown.persist.store.util.config;
 
-import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,22 +18,22 @@ public class CascadingSaverConfig {
 
 	@Bean
 	public ParentDataStore parentDataStore() {
-		return Mockito.mock(ParentDataStore.class);
+		return new ParentDataStore();
 	}
 	
 	@Bean
 	public ChildDataStore childDataStore() {
-		return Mockito.mock(ChildDataStore.class);
+		return new ChildDataStore();
 	}
 	
 	@Bean
 	public GrandchildDataStore grandchildDataStore() {
-		return Mockito.mock(GrandchildDataStore.class);
+		return new GrandchildDataStore();
 	}
 	
 	@Bean
 	public DomainSubclassDataStore domainSubclassDataStore() {
-		return Mockito.mock(DomainSubclassDataStore.class);
+		return new DomainSubclassDataStore();
 	}
 	
 	@Bean
