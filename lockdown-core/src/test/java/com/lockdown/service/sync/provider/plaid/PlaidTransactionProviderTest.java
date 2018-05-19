@@ -83,11 +83,11 @@ public class PlaidTransactionProviderTest {
 	
 	private static void assertEqualTransactionData(DiscoveredTransaction discovered, Transaction original) {
 		assertEquals(original.getAccountId(), discovered.getAccountKey());
-		assertEquals(PlaidConverter.toLocalDate(original.getDate()), discovered.getBody().getDate());
-		assertEquals(PlaidConverter.toMoney(original.getAmount()), discovered.getBody().getAmount());
-		assertEquals(original.getName(), discovered.getBody().getName());
-		assertEquals(original.getOriginalDescription(), discovered.getBody().getDescription());
-		assertEquals(original.getPending(), discovered.getBody().isPending());
+		assertEquals(PlaidConverter.toLocalDate(original.getDate()), discovered.getDate());
+		assertEquals(PlaidConverter.toMoney(original.getAmount()), discovered.getAmount());
+		assertEquals(original.getName(), discovered.getName());
+		assertEquals(original.getOriginalDescription(), discovered.getDescription());
+		assertEquals(original.getPending(), discovered.isPending());
 	}
 	
 	@Test

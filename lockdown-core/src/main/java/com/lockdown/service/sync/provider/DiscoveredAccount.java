@@ -1,5 +1,9 @@
 package com.lockdown.service.sync.provider;
 
+import java.util.ArrayList;
+
+import com.lockdown.domain.Account;
+
 public class DiscoveredAccount {
 
 	private final String key;
@@ -28,5 +32,9 @@ public class DiscoveredAccount {
 
 	public String getSubtype() {
 		return subtype;
+	}
+	
+	public Account toAccount() {
+		return new Account(null, key, name, type, subtype, new ArrayList<>());	
 	}
 }

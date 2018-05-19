@@ -30,6 +30,26 @@ public class DiscoveredTransaction {
 		return body;
 	}
 	
+	public LocalDate getDate() {
+		return body.getDate();
+	}
+	
+	public Money getAmount() {
+		return body.getAmount();
+	}
+	
+	public String getName() {
+		return body.getName();
+	}
+	
+	public String getDescription() {
+		return body.getDescription();
+	}
+	
+	public boolean isPending() {
+		return body.isPending();
+	}
+	
 	public boolean isAssociatedWith(Account account) {
 		return account.getKey().equals(accountKey);
 	}

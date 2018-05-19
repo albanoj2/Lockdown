@@ -1,9 +1,6 @@
 package com.lockdown.persist.store.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-
-import static org.mockito.Mockito.doAnswer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,10 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -28,7 +22,6 @@ import com.lockdown.persist.store.util.config.CascadingSaverConfig;
 import com.lockdown.persist.store.util.data.cascade.domain.Child;
 import com.lockdown.persist.store.util.data.cascade.domain.DomainSubclass;
 import com.lockdown.persist.store.util.data.cascade.domain.Grandchild;
-import com.lockdown.persist.store.util.data.cascade.domain.MockDomainObject;
 import com.lockdown.persist.store.util.data.cascade.domain.Parent;
 import com.lockdown.persist.store.util.data.cascade.store.ChildDataStore;
 import com.lockdown.persist.store.util.data.cascade.store.DomainSubclassDataStore;
