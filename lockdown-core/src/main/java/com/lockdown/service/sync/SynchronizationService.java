@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.Credentials;
 import com.lockdown.domain.Portfolio;
+import com.lockdown.domain.SynchronizationLogEntry;
 import com.lockdown.persist.store.PortfolioDataStore;
+import com.lockdown.persist.store.SynchronizationLogEntryDataStore;
 import com.lockdown.service.sync.provider.AccountProvider;
 import com.lockdown.service.sync.provider.DiscoveredAccount;
 import com.lockdown.service.sync.provider.DiscoveredTransaction;
@@ -32,6 +34,9 @@ public class SynchronizationService {
 	@Autowired
 	private PortfolioSynchronizer synchronizer;
 	
+	@Autowired
+	private SynchronizationLogEntryDataStore synchronizationLogEntryDataStore;
+	
 	@PostConstruct
 	public void onCreate() {
 		synchronize();
@@ -41,24 +46,49 @@ public class SynchronizationService {
 		
 		List<Portfolio> portfolios = portfolioDataStore.findAll();
 				
+		SynchronizationLogEntry logEntry = new SynchronizationLogEntry();
+		logEntry.start();
+		
 		for (Portfolio portfolio: portfolios) {
-			logger.info("Starting synchronization for portfolio [number of credentials: " + portfolio.getCredentials().size() + "]");
-			synchronizePortfolio(portfolio);
+			beforeSynchronization(portfolio);
+			synchronizePortfolio(portfolio, logEntry);
 			portfolioDataStore.saveAndCascade(portfolio);
-			logger.info("Completed synchronization");
+		}
+		
+		logEntry.stop();
+		afterSynchronization(logEntry);
+	}
+
+	private void beforeSynchronization(Portfolio portfolio) {
+		logger.info("Starting synchronization for portfolio [number of credentials: " + portfolio.getCredentials().size() + "]");
+	}
+	
+	private void synchronizePortfolio(Portfolio portfolio, SynchronizationLogEntry logEntry) {
+		
+		for (Credentials credentials: portfolio.getCredentials()) {
+			
+			List<DiscoveredAccount> discoveredAccounts = discoverAccounts(credentials);
+			List<DiscoveredTransaction> discoveredTransactions = discoverTransactions(credentials);
+			
+			logEntry.incrementAccountsDiscoveredBy(discoveredAccounts.size());
+			logEntry.incrementTransactionsDiscoveredBy(discoveredTransactions.size());
+			
+			synchronizer.synchronize(portfolio, discoveredAccounts, discoveredTransactions, logEntry);
 		}
 	}
 	
-	private void synchronizePortfolio(Portfolio portfolio) {
-		
-		List<Credentials> portfolioCredentials = portfolio.getCredentials();
-		
-		for (Credentials credentials: portfolioCredentials) {
-			AccountProvider accountProvider = providerFactory.createAccountProvider(credentials);
-			TransactionProvider transactionProvider = providerFactory.createTransactionProvider(credentials);
-			List<DiscoveredAccount> discoveredAccounts = accountProvider.getAccounts();
-			List<DiscoveredTransaction> discoveredTransactions = transactionProvider.getTransactions();
-			synchronizer.synchronize(portfolio, discoveredAccounts, discoveredTransactions);
-		}
+	private List<DiscoveredAccount> discoverAccounts(Credentials credentials) {
+		AccountProvider accountProvider = providerFactory.createAccountProvider(credentials);
+		return accountProvider.getAccounts();
+	}
+	
+	private List<DiscoveredTransaction> discoverTransactions(Credentials credentials) {
+		TransactionProvider transactionProvider = providerFactory.createTransactionProvider(credentials);
+		return transactionProvider.getTransactions();
+	}
+
+	private void afterSynchronization(SynchronizationLogEntry logEntry) {
+		logger.info("Completed synchronization: " + logEntry);
+		synchronizationLogEntryDataStore.saveAndCascade(logEntry);
 	}
 }
