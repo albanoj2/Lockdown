@@ -64,25 +64,8 @@ public class CascadingSaverTest {
 	
 	@Before
 	public void setUp() {
-//		Mockito.reset(parentDataStore);
-//		Mockito.reset(childDataStore);
-//		Mockito.reset(grandchildDataStore);
-//		Mockito.reset(domainSubclassDataStore);
-//		doAnswer(assignId()).when(parentDataStore).save(any(Parent.class));
-//		doAnswer(assignId()).when(childDataStore).save(any(Child.class));
-//		doAnswer(assignId()).when(grandchildDataStore).save(any(Grandchild.class));
-//		doAnswer(assignId()).when(domainSubclassDataStore).save(any(DomainSubclass.class));
 		dataStoresWatcher.clearSavedObjects();
 		dataStoresWatcher.clearListeners();
-	}
-	
-	private static Answer<MockDomainObject> assignId() {
-		return (InvocationOnMock invocation) -> {
-			MockDomainObject mock = (MockDomainObject) invocation.getArguments()[0];
-			MockDomainObject copy = mock.copy();
-			copy.setId("someId");
-			return copy;
-		};
 	}
 	
 	@Test(expected = NullPointerException.class)

@@ -1,18 +1,22 @@
 package com.lockdown.service.sync.provider.plaid;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.lockdown.domain.Credentials;
+import com.lockdown.service.sync.provider.DiscoveredTransaction;
 import com.lockdown.service.sync.provider.ProviderException;
 import com.plaid.client.response.TransactionsGetResponse.Transaction;
 
@@ -49,9 +53,51 @@ public class PlaidTransactionProviderTest {
 		doReturn(remoteTransactions).when(connection).getRemoteTransactions(any(), any(), any());
 	}
 	
-//	@Test
-//	public void givenOneRemoteTransactionsWhenGetTransactionsEnsureNoDiscoveredTransactions() throws Exception {
-//		configureRemoteTransactions(List.of(mock(Transaction.class)));
-//		assertEquals(1, provider.getTransactions().size());
-//	}
+	@Test
+	public void givenOneRemoteTransactionsWhenGetTransactionsEnsureOneDiscoveredTransactions() throws Exception {
+		Transaction transaction = mockTransaction("foo", "2018-01-30", 1.00, "foo", "foo", false);
+		configureRemoteTransactions(List.of(transaction));
+		
+		assertNumberOfTransactionsDiscovered(1);
+		assertTransactionDataAtIndexEquals(0, transaction);
+	}
+
+	private void assertNumberOfTransactionsDiscovered(int number) {
+		assertEquals(number, provider.getTransactions().size());
+	}
+
+	private void assertTransactionDataAtIndexEquals(int index, Transaction transaction) {
+		assertEqualTransactionData(provider.getTransactions().get(index), transaction);
+	}
+	
+	private static Transaction mockTransaction(String accountId, String date, double amount, String name, String description, boolean isPending) {
+		Transaction transaction = mock(Transaction.class);
+		doReturn(accountId).when(transaction).getAccountId();
+		doReturn(date).when(transaction).getDate();
+		doReturn(amount).when(transaction).getAmount();
+		doReturn(name).when(transaction).getName();
+		doReturn(description).when(transaction).getOriginalDescription();
+		doReturn(isPending).when(transaction).getPending();
+		return transaction;
+	}
+	
+	private static void assertEqualTransactionData(DiscoveredTransaction discovered, Transaction original) {
+		assertEquals(original.getAccountId(), discovered.getAccountKey());
+		assertEquals(PlaidConverter.toLocalDate(original.getDate()), discovered.getBody().getDate());
+		assertEquals(PlaidConverter.toMoney(original.getAmount()), discovered.getBody().getAmount());
+		assertEquals(original.getName(), discovered.getBody().getName());
+		assertEquals(original.getOriginalDescription(), discovered.getBody().getDescription());
+		assertEquals(original.getPending(), discovered.getBody().isPending());
+	}
+	
+	@Test
+	public void givenTwoRemoteTransactionsWhenGetTransactionsEnsureTwoDiscoveredTransactions() throws Exception {
+		Transaction transaction1 = mockTransaction("foo", "2018-01-30", 1.00, "foo", "foo", false);
+		Transaction transaction2 = mockTransaction("bar", "2018-02-15", 2.00, "bar", "bar", true);
+		configureRemoteTransactions(List.of(transaction1, transaction2));
+		
+		assertNumberOfTransactionsDiscovered(2);
+		assertTransactionDataAtIndexEquals(0, transaction1);
+		assertTransactionDataAtIndexEquals(1, transaction2);
+	}
 }

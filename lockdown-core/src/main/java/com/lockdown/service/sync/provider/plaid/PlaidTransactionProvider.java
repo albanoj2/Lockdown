@@ -1,15 +1,12 @@
 package com.lockdown.service.sync.provider.plaid;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.lockdown.domain.Credentials;
-import com.lockdown.domain.Money;
 import com.lockdown.service.sync.provider.DiscoveredTransaction;
 import com.lockdown.service.sync.provider.ProviderException;
 import com.lockdown.service.sync.provider.TransactionProvider;
@@ -53,15 +50,11 @@ public class PlaidTransactionProvider implements TransactionProvider {
 		return new DiscoveredTransaction(
 			rawTransaction.getTransactionId(),
 			rawTransaction.getAccountId(),
-			toLocalDate(rawTransaction.getDate()),
-			Money.fractionalDollars(rawTransaction.getAmount()),
+			PlaidConverter.toLocalDate(rawTransaction.getDate()),
+			PlaidConverter.toMoney(rawTransaction.getAmount()),
 			rawTransaction.getName(),
 			rawTransaction.getOriginalDescription(),
 			rawTransaction.getPending()
 		);
-	}
-	
-	private static LocalDate toLocalDate(String date) {
-		return LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
 	}
 }
