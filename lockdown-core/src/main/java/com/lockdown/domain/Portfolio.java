@@ -2,6 +2,7 @@ package com.lockdown.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Portfolio extends Identifiable {
 
@@ -36,5 +37,38 @@ public class Portfolio extends Identifiable {
 	
 	public void addCredentials(Credentials newCredentials) {
 		credentials.add(newCredentials);
+	}
+	
+	public void removeCredentials(Credentials credentialsToRemove) {
+		credentials.remove(credentialsToRemove);
+	}
+	
+	public void addAccount(Account account) {
+		accounts.add(account);
+	}
+	
+	public void removeAccount(Account account) {
+		accounts.remove(account);
+	}
+	
+	public boolean addAccountIfNotExists(Account account) {
+		
+		if (!hasAccountWithKey(account.getKey())) {
+			addAccount(account);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean hasAccountWithKey(String key) {
+		return getAccountWithKey(key)
+			.isPresent();
+	}
+	
+	public Optional<Account> getAccountWithKey(String key) {
+		return accounts.stream()
+			.filter(a -> a.getKey().equals(key))
+			.findFirst();
 	}
 }

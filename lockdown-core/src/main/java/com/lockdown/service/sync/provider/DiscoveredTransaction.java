@@ -26,7 +26,7 @@ public class DiscoveredTransaction {
 		return key;
 	}
 
-	public TransactionBody getBody() {
+	public TransactionBody toTransactionBody() {
 		return body;
 	}
 	

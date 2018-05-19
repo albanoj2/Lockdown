@@ -58,6 +58,10 @@ public final class Transaction extends Identifiable {
 	public boolean isPending() {
 		return body.isPending();
 	}
+	
+	TransactionBody getBody() {
+		return body;
+	}
 
 	@JsonIgnore
 	public Optional<BudgetItemMapping> getBudgetItemMapping() {

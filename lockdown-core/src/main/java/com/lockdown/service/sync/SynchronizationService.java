@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +20,17 @@ import com.lockdown.service.sync.provider.TransactionProvider;
 
 @Service
 public class SynchronizationService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SynchronizationService.class);
 
 	@Autowired
 	private PortfolioDataStore portfolioDataStore;
 	
 	@Autowired
 	private ProviderFactory providerFactory;
+	
+	@Autowired
+	private PortfolioSynchronizer synchronizer;
 	
 	@PostConstruct
 	public void onCreate() {
@@ -32,25 +39,26 @@ public class SynchronizationService {
 	
 	public void synchronize() {
 		
-		for (Portfolio portfolio: portfolioDataStore.findAll()) {
+		List<Portfolio> portfolios = portfolioDataStore.findAll();
+				
+		for (Portfolio portfolio: portfolios) {
+			logger.info("Starting synchronization for portfolio [number of credentials: " + portfolio.getCredentials().size() + "]");
 			synchronizePortfolio(portfolio);
+			portfolioDataStore.saveAndCascade(portfolio);
+			logger.info("Completed synchronization");
 		}
 	}
 	
 	private void synchronizePortfolio(Portfolio portfolio) {
+		
 		List<Credentials> portfolioCredentials = portfolio.getCredentials();
 		
 		for (Credentials credentials: portfolioCredentials) {
 			AccountProvider accountProvider = providerFactory.createAccountProvider(credentials);
-			List<DiscoveredAccount> foundAccounts = accountProvider.getAccounts();
-			System.out.println(foundAccounts);
-			synchronizeAccounts(portfolio, credentials);
+			TransactionProvider transactionProvider = providerFactory.createTransactionProvider(credentials);
+			List<DiscoveredAccount> discoveredAccounts = accountProvider.getAccounts();
+			List<DiscoveredTransaction> discoveredTransactions = transactionProvider.getTransactions();
+			synchronizer.synchronize(portfolio, discoveredAccounts, discoveredTransactions);
 		}
-	}
-	
-	private void synchronizeAccounts(Portfolio portfolio, Credentials credentials) {
-		TransactionProvider transactionProvider = providerFactory.createTransactionProvider(credentials);
-		List<DiscoveredTransaction> foundTransactions = transactionProvider.getTransactions();
-		System.out.println(foundTransactions);
 	}
 }

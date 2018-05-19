@@ -68,18 +68,27 @@ public final class Account extends Identifiable {
 		return this;
 	}
 	
-	public Account addTransactionOrUpdateIfExists(String key, TransactionBody body) {
+	public synchronized Delta addTransactionOrUpdateIfExists(String key, TransactionBody body) {
+		
+		Delta delta = Delta.UNCHANGED;
 		
 		Optional<Transaction> existingTransaction = transactions.stream()
 			.filter(t -> t.getKey().equals(key))
 			.findFirst();
 		
-		existingTransaction.ifPresentOrElse(
-			t -> t.updateBody(body), 
-			() -> addTransaction(new Transaction(null, key, body, Transaction.noMapping()))
-		);
-		
-		return this;
+		if (existingTransaction.isPresent()) {
+			existingTransaction.get().updateBody(body);
+			
+			if (!existingTransaction.get().getBody().equals(body)) {
+				delta = Delta.UPDATED;
+			}
+		}
+		else {
+			addTransaction(new Transaction(null, key, body, Transaction.noMapping()));
+			delta = Delta.ADDED;
+		}
+
+		return delta;
 	}
 	
 	public List<Transaction> getBudgetedTransactions() {
