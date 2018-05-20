@@ -9,7 +9,7 @@ public class TransactionBody {
 	private final Money amount;
 	private final String name;
 	private final String description;
-	private boolean isPending;
+	private final boolean isPending;
 	
 	public TransactionBody(LocalDate date, Money amount, String name, String description, boolean isPending) {
 		this.date = date;
@@ -21,10 +21,6 @@ public class TransactionBody {
 
 	public boolean isPending() {
 		return isPending;
-	}
-
-	public void setPending(boolean isPending) {
-		this.isPending = isPending;
 	}
 
 	public LocalDate getDate() {
