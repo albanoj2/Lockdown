@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import com.lockdown.persist.store.CredentialsDataStore;
 import com.lockdown.persist.store.PortfolioDataStore;
 
 @RestController
+@ExposesResourceFor(Credentials.class)
 @RequestMapping("/portfolio/{portfolioId}/credentials")
 public class CredentialsController {
 	
