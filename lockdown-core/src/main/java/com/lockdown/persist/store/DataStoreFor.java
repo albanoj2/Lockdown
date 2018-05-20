@@ -7,11 +7,11 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import com.lockdown.domain.Identifiable;
+import com.lockdown.domain.Identifable;
 
 @Retention(RUNTIME)
 @Target(TYPE)
 @Inherited
 public @interface DataStoreFor {
-	Class<? extends Identifiable> value();
+	Class<? extends Identifable> value();
 }

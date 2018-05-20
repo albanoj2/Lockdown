@@ -1,12 +1,12 @@
 package com.lockdown.domain;
 
-public abstract class Identifiable {
+public abstract class Identifable {
 
 	private String id;
 	
-	protected Identifiable() {}
+	protected Identifable() {}
 	
-	protected Identifiable(String id) {
+	protected Identifable(String id) {
 		this.id = id;
 	}
 

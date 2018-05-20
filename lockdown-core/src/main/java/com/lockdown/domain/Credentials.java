@@ -1,6 +1,6 @@
 package com.lockdown.domain;
 
-public class Credentials extends Identifiable {
+public class Credentials extends Identifable {
 	
 	private final String itemId;
 	private final String accessToken;

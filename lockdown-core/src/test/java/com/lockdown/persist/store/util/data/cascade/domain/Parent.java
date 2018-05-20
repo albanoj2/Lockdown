@@ -10,12 +10,14 @@ public class Parent extends MockDomainObject {
 	private final String name;
 	private final Set<Child> firstSubtree;
 	private final List<Child> secondSubtree;
+	private final List<String> strings;
 	
-	public Parent(String id, String name, Set<Child> firstSubtree, List<Child> secondSubtree) {
+	public Parent(String id, String name, Set<Child> firstSubtree, List<Child> secondSubtree, List<String> strings) {
 		super(id);
 		this.name = name;
 		this.firstSubtree = firstSubtree;
 		this.secondSubtree = secondSubtree;
+		this.strings = strings;
 	}
 
 	public String getName() {
@@ -32,6 +34,6 @@ public class Parent extends MockDomainObject {
 	
 	@Override
 	public Parent copy() {
-		return new Parent(getId(), name, new HashSet<>(firstSubtree), new ArrayList<>(secondSubtree));
+		return new Parent(getId(), name, new HashSet<>(firstSubtree), new ArrayList<>(secondSubtree), new ArrayList<>(strings));
 	}
 }

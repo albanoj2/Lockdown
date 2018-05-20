@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public final class Transaction extends Identifiable {
+public final class Transaction extends Identifable {
 
 	private final String key;
 	private TransactionBody body;

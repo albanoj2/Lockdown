@@ -3,7 +3,7 @@ package com.lockdown.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Budget extends Identifiable {
+public class Budget extends Identifable {
 
 	private final List<BudgetItem> entries;
 	

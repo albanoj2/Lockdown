@@ -23,30 +23,34 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lockdown.domain.Identifiable;
+import com.lockdown.domain.Identifable;
 import com.lockdown.persist.store.DataStore;
 import com.lockdown.persist.store.DataStoreFor;
 
 @Service
-public final class CascadingSaver {
+public class CascadingSaver {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CascadingSaver.class);
 	
-	@Autowired
-	private ListableBeanFactory beanFactory;
+	private final ListableBeanFactory beanFactory;
 	
-	private Map<Class<? extends Identifiable>, DataStore<? extends Identifiable>> dataStoreMap = new HashMap<>();
+	@Autowired
+	public CascadingSaver(ListableBeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
+	}
+	
+	private Map<Class<? extends Identifable>, DataStore<? extends Identifable>> dataStoreMap = new HashMap<>();
 	
 	@PostConstruct
 	@SuppressWarnings("unchecked")
-	private void retrieveDataStores() {
+	void retrieveDataStores() {
 		Map<String, Object> dataStores = beanFactory.getBeansWithAnnotation(DataStoreFor.class);
 		
 		for (Object dataStore: dataStores.values()) {
-			Class<? extends Identifiable> forClass = dataStore.getClass().getAnnotation(DataStoreFor.class).value();
+			Class<? extends Identifable> forClass = dataStore.getClass().getAnnotation(DataStoreFor.class).value();
 			
 			if (dataStore instanceof DataStore) {
-				dataStoreMap.put(forClass, (DataStore<? extends Identifiable>) dataStore);
+				dataStoreMap.put(forClass, (DataStore<? extends Identifable>) dataStore);
 			}
 			else {
 				throw new IllegalStateException("Found object annotated as @DataStoreFor but was not a DataStore instance: " + dataStore.getClass().getName());
@@ -56,14 +60,14 @@ public final class CascadingSaver {
 		logger.info("Found " + dataStoreMap.size() + " data stores: " + dataStoreMap);
 	}
 
-	public <T extends Identifiable> T saveAndCascade(T object) {
+	public <T extends Identifable> T saveAndCascade(T object) {
 
 		Objects.requireNonNull(object);
 		return saveRootAndCascade(object);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends Identifiable> T saveRootAndCascade(T root) {
+	private <T extends Identifable> T saveRootAndCascade(T root) {
 		
 		try {
 			for (Field field: getAllFields(root)) {
@@ -72,12 +76,12 @@ public final class CascadingSaver {
 				Object fieldValue = field.get(root);
 				
 				if (isFieldDomainObject(field)) {
-					Identifiable savedField = saveRootAndCascade((Identifiable) fieldValue);
+					Identifable savedField = saveRootAndCascade((Identifable) fieldValue);
 					updateField(field, root, savedField);
 				}
 				else if (isFieldDomainObjectListOrSet(field, root)) {
-					Collection<Identifiable> collection = (Collection<Identifiable>) fieldValue;
-					Stream<Identifiable> stream = collection.stream().map(this::saveRootAndCascade);
+					Collection<Identifable> collection = (Collection<Identifable>) fieldValue;
+					Stream<Identifable> stream = collection.stream().map(this::saveRootAndCascade);
 					
 					if (collection instanceof Set) {
 						updateField(field, root, stream.collect(Collectors.toSet()));
@@ -106,7 +110,7 @@ public final class CascadingSaver {
 	}
 
 	private static boolean isFieldDomainObject(Field field) {
-		return Identifiable.class.isAssignableFrom(field.getType());
+		return Identifable.class.isAssignableFrom(field.getType());
 	}
 	
 	private static boolean isFieldDomainObjectListOrSet(Field field, Object object) throws IllegalArgumentException, IllegalAccessException {
@@ -115,7 +119,7 @@ public final class CascadingSaver {
 			Iterable<?> iterable = (Iterable<?>) field.get(object);
 			Iterator<?> it = iterable.iterator();
 
-			return it.hasNext() && it.next() instanceof Identifiable;
+			return it.hasNext() && it.next() instanceof Identifable;
 		}
 		
 		return false;
@@ -139,7 +143,7 @@ public final class CascadingSaver {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T extends Identifiable> T saveDomainObject(T object) 
+	private <T extends Identifable> T saveDomainObject(T object) 
 			throws IllegalArgumentException, IllegalAccessException {
 		
 		DataStore<T> dataStore = (DataStore<T>) dataStoreMap.get(object.getClass());
@@ -152,7 +156,7 @@ public final class CascadingSaver {
 		}
 	}
 
-	Map<Class<? extends Identifiable>, DataStore<? extends Identifiable>> getFoundDataStores() {
+	Map<Class<? extends Identifable>, DataStore<? extends Identifable>> getFoundDataStores() {
 		return dataStoreMap;
 	}
 }

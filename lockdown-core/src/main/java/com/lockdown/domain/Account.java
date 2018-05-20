@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public final class Account extends Identifiable {
+public final class Account extends Identifable {
 
 	private final String key;
 	private final String name;

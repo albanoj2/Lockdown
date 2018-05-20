@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Portfolio extends Identifiable {
+public class Portfolio extends Identifable {
 
 	private final Budget budget;
 	private final List<Account> accounts;

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 
-import com.lockdown.domain.Identifiable;
+import com.lockdown.domain.Identifable;
 
 public abstract class Dto {
 
@@ -24,7 +24,7 @@ public abstract class Dto {
 		return id;
 	}
 	
-	protected static List<String> toIdList(List<? extends Identifiable> objects) {
+	protected static List<String> toIdList(List<? extends Identifable> objects) {
 		return objects.stream()
 			.map(o -> o.getId())
 			.collect(Collectors.toList());
