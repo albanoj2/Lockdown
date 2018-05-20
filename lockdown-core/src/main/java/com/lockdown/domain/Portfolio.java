@@ -51,14 +51,14 @@ public class Portfolio extends Identifiable {
 		accounts.remove(account);
 	}
 	
-	public boolean addAccountIfNotExists(Account account) {
+	public Delta addAccountIfNotExists(Account account) {
 		
 		if (!hasAccountWithKey(account.getKey())) {
 			addAccount(account);
-			return true;
+			return Delta.ADDED;
 		}
 		
-		return false;
+		return Delta.UNCHANGED;
 	}
 	
 	public boolean hasAccountWithKey(String key) {

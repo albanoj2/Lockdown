@@ -23,9 +23,9 @@ public class AppendingPortfolioSynchronizer extends PortfolioSynchronizer {
 	protected void synchronizeAccounts(Portfolio portfolio, List<DiscoveredAccount> discoveredAccounts, SynchronizationLogEntry logEntry) {
 		
 		for (DiscoveredAccount discoveredAccount: discoveredAccounts) {
-			boolean accountWasAdded = portfolio.addAccountIfNotExists(discoveredAccount.toAccount());
+			Delta delta = portfolio.addAccountIfNotExists(discoveredAccount.toAccount());
 			
-			if (accountWasAdded) {
+			if (delta == Delta.ADDED) {
 				logEntry.incrementAccountsAdded();
 			}
 		}

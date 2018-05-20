@@ -12,6 +12,6 @@ public class PlaidConverter {
 	}
 	
 	public static Money toMoney(double amount) {
-		return Money.fractionalDollars(amount);
+		return Money.fractionalDollars(-amount);
 	}
 }
