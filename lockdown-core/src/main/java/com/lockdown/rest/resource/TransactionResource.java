@@ -1,7 +1,5 @@
 package com.lockdown.rest.resource;
 
-import java.time.LocalDate;
-
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
