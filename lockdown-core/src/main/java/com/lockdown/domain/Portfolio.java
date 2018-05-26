@@ -30,6 +30,12 @@ public class Portfolio extends Identifable {
 	public List<Account> getAccounts() {
 		return accounts;
 	}
+	
+	public Optional<Account> getAccountWithId(String id) {
+		return accounts.stream()
+			.filter(account -> account.getId().equals(id))
+			.findFirst();
+	}
 
 	public List<Credentials> getCredentials() {
 		return credentials;

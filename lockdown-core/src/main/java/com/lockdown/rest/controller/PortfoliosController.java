@@ -22,7 +22,7 @@ import com.lockdown.rest.resource.assembler.PortfolioResourceAssembler;
 @RestController
 @ExposesResourceFor(Portfolio.class)
 @RequestMapping("/portfolio")
-public class PortfolioController {
+public class PortfoliosController {
 	
 	@Autowired
 	private PortfolioDataStore dataStore;
