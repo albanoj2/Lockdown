@@ -57,7 +57,8 @@ public class AccountsController {
 			Optional<Account> account = portfolio.get().getAccountWithId(accountId);
 			
 			if (account.isPresent()) {
-				return new ResponseEntity<>(assembler.toResource(new AccountModel(account.get(), portfolioId)), HttpStatus.OK);
+				AccountModel model = new AccountModel(account.get(), portfolioId);
+				return new ResponseEntity<>(assembler.toResource(model), HttpStatus.OK);
 			}
 			else {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);

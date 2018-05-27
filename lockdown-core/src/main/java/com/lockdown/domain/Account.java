@@ -68,6 +68,12 @@ public final class Account extends Identifable {
 		return this;
 	}
 	
+	public Optional<Transaction> getTransactionById(String id) {
+		return transactions.stream()
+			.filter(transaction -> transaction.getId().equals(id))
+			.findFirst();
+	}
+	
 	public synchronized Delta addTransactionOrUpdateIfExists(String key, TransactionBody body) {
 		
 		Delta delta = Delta.UNCHANGED;
