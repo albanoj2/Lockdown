@@ -4,6 +4,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 
 import com.lockdown.domain.Transaction;
 import com.lockdown.rest.LinkRel;
@@ -41,11 +42,19 @@ public class TransactionModel {
 	}
 
 	public Link getSelfLink() {
+		return getSelf().withSelfRel();
+	}
+	
+	public Link getUpdateCommentLink() {
+		return getSelf().slash("comment").withRel("updateComment");
+	}
+	
+	public ControllerLinkBuilder getSelf() {
 		return linkTo(methodOn(TransactionsController.class).getTransaction(
 			getPortfolioId(), 
 			getAccountId(), 
 			getTransactionId()
-		)).withSelfRel();
+		));
 	}
 	
 	public Link getPortfolioLink() {

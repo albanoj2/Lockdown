@@ -19,6 +19,7 @@ public class TransactionResourceAssembler extends ResourceAssemblerSupport<Trans
 		resource.add(model.getPortfolioLink());
 		resource.add(model.getAccountLink());
 		resource.add(model.getSelfLink());
+		resource.add(model.getUpdateCommentLink());
 		return resource;
 	}
 }
