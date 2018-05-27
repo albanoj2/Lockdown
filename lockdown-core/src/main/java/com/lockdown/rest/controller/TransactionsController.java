@@ -80,7 +80,7 @@ public class TransactionsController {
 		return new ResponseEntity<>(assembler.toResource(model), HttpStatus.OK);
 	}
 	
-	@PatchMapping("/{transactionId}")
+	@PatchMapping("/{transactionId}/comment")
 	public ResponseEntity<?> addComment(@PathVariable String portfolioId, @PathVariable String accountId, @PathVariable String transactionId, @RequestBody String comment) {
 		Transaction transaction = getTransactionFromDataStore(portfolioId, accountId, transactionId);
 		transaction.updateComment(comment);
