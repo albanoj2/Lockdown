@@ -10,21 +10,23 @@ public final class Transaction extends Identifable {
 
 	private final String key;
 	private TransactionBody body;
+	private Optional<String> comment;
 	private final Optional<BudgetItemMapping> budgetItemMapping;
 	
-	public Transaction(String id, LocalDate date, Money amount, String key, String name, String description, boolean isPending, Optional<BudgetItemMapping> budgetItemMapping) {
-		this(id, key, new TransactionBody(date, amount, name, description, isPending), budgetItemMapping);
+	public Transaction(String id, LocalDate date, Money amount, String key, String name, String description, boolean isPending, Optional<String> comment, Optional<BudgetItemMapping> budgetItemMapping) {
+		this(id, key, new TransactionBody(date, amount, name, description, isPending), comment, budgetItemMapping);
 	}
 	
-	public Transaction(String id, String key, TransactionBody body, Optional<BudgetItemMapping> budgetItemMapping) {
+	public Transaction(String id, String key, TransactionBody body, Optional<String> comment, Optional<BudgetItemMapping> budgetItemMapping) {
 		super(id);
 		this.key = key;
 		this.body = body;
+		this.comment = comment;
 		this.budgetItemMapping = budgetItemMapping;
 	}
 	
-	public static Transaction unbudgeted(String id, LocalDate date, Money amount, String key, String name, String description, boolean isPending) {
-		return new Transaction(id, date, amount, key, name, description, isPending, noMapping());
+	public static Transaction unbudgeted(String id, LocalDate date, Money amount, String key, String name, String description, boolean isPending, Optional<String> comment) {
+		return new Transaction(id, date, amount, key, name, description, isPending, comment, noMapping());
 	}
 	
 	public static Optional<BudgetItemMapping> noMapping() {
@@ -32,7 +34,7 @@ public final class Transaction extends Identifable {
 	}
 	
 	public Transaction() {
-		this(null, LocalDate.now(), Money.zero(), "", "Unnamed", "", false, Optional.empty());
+		this(null, LocalDate.now(), Money.zero(), "", "Unnamed", "", false, Optional.empty(), Optional.empty());
 	}
 
 	public LocalDate getDate() {
@@ -61,6 +63,14 @@ public final class Transaction extends Identifable {
 	
 	TransactionBody getBody() {
 		return body;
+	}
+	
+	public Optional<String> getComment() {
+		return comment;
+	}
+	
+	public void updateComment(String comment) {
+		this.comment = Optional.ofNullable(comment);
 	}
 
 	@JsonIgnore

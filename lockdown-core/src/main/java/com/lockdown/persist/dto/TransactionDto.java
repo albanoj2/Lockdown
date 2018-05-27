@@ -15,6 +15,7 @@ public class TransactionDto extends Dto {
 	private final String name;
 	private final String description;
 	private final boolean isPending;
+	private final String comment;
 	private final BudgetItemMapping mapping;
 
 	public TransactionDto(Transaction transaction) {
@@ -25,6 +26,7 @@ public class TransactionDto extends Dto {
 		this.name = transaction.getName();
 		this.description = transaction.getDescription();
 		this.isPending = transaction.isPending();
+		this.comment = transaction.getComment().orElse(null);
 		this.mapping = transaction.getBudgetItemMapping().orElse(null);
 	}
 	
@@ -35,11 +37,12 @@ public class TransactionDto extends Dto {
 		this.name = null;
 		this.description = null;
 		this.isPending = false;
+		this.comment = null;
 		this.mapping = null;
 	}
 
 	public Transaction toTransaction() {
-		return new Transaction(getId(), date, Money.cents(amountInCents), key, name, description, isPending, Optional.ofNullable(mapping));
+		return new Transaction(getId(), date, Money.cents(amountInCents), key, name, description, isPending, Optional.ofNullable(comment), Optional.ofNullable(mapping));
 	}
 
 	public LocalDate getDate() {

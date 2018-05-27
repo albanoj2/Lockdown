@@ -90,7 +90,7 @@ public final class Account extends Identifable {
 			}
 		}
 		else {
-			addTransaction(new Transaction(null, key, body, Transaction.noMapping()));
+			addTransaction(new Transaction(null, key, body, null, Transaction.noMapping()));
 			delta = Delta.ADDED;
 		}
 

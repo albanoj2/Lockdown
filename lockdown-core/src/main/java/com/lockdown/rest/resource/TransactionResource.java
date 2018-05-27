@@ -16,6 +16,7 @@ public class TransactionResource extends ResourceSupport {
 	private final String name;
 	private final String description;
 	private final boolean isPending; 
+	private final String comment;
 	
 	public TransactionResource(Transaction transaction) {
 		this.transactionId = transaction.getId();
@@ -24,6 +25,7 @@ public class TransactionResource extends ResourceSupport {
 		this.name = transaction.getName();
 		this.description = transaction.getDescription();
 		this.isPending = transaction.isPending();
+		this.comment = transaction.getComment().orElse(null);
 	}
 
 	@JsonProperty("id")
@@ -49,5 +51,9 @@ public class TransactionResource extends ResourceSupport {
 
 	public boolean isPending() {
 		return isPending;
+	}
+	
+	public String getComment() {
+		return comment;
 	}
 }
