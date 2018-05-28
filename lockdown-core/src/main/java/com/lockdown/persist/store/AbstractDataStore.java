@@ -77,6 +77,10 @@ public abstract class AbstractDataStore<DomainObjectType extends Identifable, Dt
 		return saver.saveAndCascade(toSave);
 	}
 
+	protected LockdownRepository<DtoType> getRepository() {
+		return repository;
+	}
+
 	protected abstract DtoType fromDomainObject(DomainObjectType domainObject);
 	protected abstract DomainObjectType toDomainObject(DtoType dto);
 }

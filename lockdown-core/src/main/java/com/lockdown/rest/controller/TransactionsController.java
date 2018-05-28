@@ -1,7 +1,6 @@
 package com.lockdown.rest.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
@@ -14,22 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lockdown.domain.Account;
 import com.lockdown.domain.Transaction;
-import com.lockdown.persist.store.PortfolioDataStore;
 import com.lockdown.persist.store.TransactionDataStore;
-import com.lockdown.rest.controller.model.TransactionModel;
 import com.lockdown.rest.error.ResourceNotFoundException;
 import com.lockdown.rest.resource.TransactionResource;
 import com.lockdown.rest.resource.assembler.TransactionResourceAssembler;
 
 @RestController
 @ExposesResourceFor(Transaction.class)
-@RequestMapping("/portfolio/{portfolioId}/account/{accountId}/transaction")
+@RequestMapping("/transaction")
 public class TransactionsController {
-
-	@Autowired
-	private PortfolioDataStore portfolioDataStore;
 	
 	@Autowired
 	private TransactionDataStore transactionDataStore;
@@ -38,37 +31,25 @@ public class TransactionsController {
 	private TransactionResourceAssembler assembler;
 
 	@GetMapping
-	public ResponseEntity<List<TransactionResource>> getTransactions(@PathVariable String portfolioId, @PathVariable String accountId) {
-		List<Transaction> transactions = getAccountFromDataStore(portfolioId, accountId).getTransactions();
-		List<TransactionModel> models = transactions.stream()
-			.map(transaction -> new TransactionModel(transaction, portfolioId, accountId))
-			.collect(Collectors.toList());
-		return new ResponseEntity<>(assembler.toResources(models), HttpStatus.OK);
-	}
-	
-	private Account getAccountFromDataStore(String portfolioId, String accountId) {
-		return portfolioDataStore.findById(portfolioId)
-			.orElseThrow(ResourceNotFoundException.supplierForResource("portfolio", portfolioId))
-			.getAccountWithId(accountId)
-			.orElseThrow(ResourceNotFoundException.supplierForResource("account", accountId));
-	}
-	
-	private Transaction getTransactionFromDataStore(String portfolioId, String accountId, String transactionId) {
-		return getAccountFromDataStore(portfolioId, accountId)
-			.getTransactionById(transactionId)
-			.orElseThrow(ResourceNotFoundException.supplierForResource("transaction", transactionId));
+	public ResponseEntity<List<TransactionResource>> getTransactions(@PathVariable String accountId) {
+		List<Transaction> transactions = transactionDataStore.findAll();
+		return new ResponseEntity<>(assembler.toResources(transactions), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{transactionId}")
-	public ResponseEntity<TransactionResource> getTransaction(@PathVariable String portfolioId, @PathVariable String accountId, @PathVariable String transactionId) {
-		Transaction transaction = getTransactionFromDataStore(portfolioId, accountId, transactionId);
-		TransactionModel model = new TransactionModel(transaction, portfolioId, accountId);
-		return new ResponseEntity<>(assembler.toResource(model), HttpStatus.OK);
+	public ResponseEntity<TransactionResource> getTransaction(@PathVariable String transactionId) {
+		Transaction transaction = getTransactionFromDataStore(transactionId);
+		return new ResponseEntity<>(assembler.toResource(transaction), HttpStatus.OK);
+	}
+
+	private Transaction getTransactionFromDataStore(String transactionId) {
+		return transactionDataStore.findById(transactionId)
+			.orElseThrow(ResourceNotFoundException.supplierForResource("transaction", transactionId));
 	}
 	
 	@PatchMapping("/{transactionId}/comment")
-	public ResponseEntity<?> addComment(@PathVariable String portfolioId, @PathVariable String accountId, @PathVariable String transactionId, @RequestBody String comment) {
-		Transaction transaction = getTransactionFromDataStore(portfolioId, accountId, transactionId);
+	public ResponseEntity<?> addComment(@PathVariable String transactionId, @RequestBody String comment) {
+		Transaction transaction = getTransactionFromDataStore(transactionId);
 		transaction.updateComment(comment);
 		transactionDataStore.save(transaction);
 		return new ResponseEntity<>(HttpStatus.OK);

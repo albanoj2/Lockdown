@@ -1,8 +1,6 @@
 package com.lockdown.rest.controller;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
@@ -14,58 +12,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lockdown.domain.Account;
-import com.lockdown.domain.Portfolio;
-import com.lockdown.persist.store.PortfolioDataStore;
-import com.lockdown.rest.controller.model.AccountModel;
+import com.lockdown.domain.Transaction;
+import com.lockdown.persist.store.AccountDataStore;
+import com.lockdown.persist.store.TransactionDataStore;
+import com.lockdown.rest.error.ResourceNotFoundException;
 import com.lockdown.rest.resource.AccountResource;
+import com.lockdown.rest.resource.TransactionResource;
 import com.lockdown.rest.resource.assembler.AccountResourceAssembler;
+import com.lockdown.rest.resource.assembler.TransactionResourceAssembler;
 
 @RestController
 @ExposesResourceFor(Account.class)
-@RequestMapping("/portfolio/{portfolioId}/account")
+@RequestMapping("/account")
 public class AccountsController {
 	
 	@Autowired
-	private PortfolioDataStore dataStore;
+	private AccountDataStore accountDataStore;
 	
 	@Autowired
-	private AccountResourceAssembler assembler;
+	private TransactionDataStore transactionDataStore;
+	
+	@Autowired
+	private AccountResourceAssembler accountResourceAssembler;
+	
+	@Autowired
+	private TransactionResourceAssembler transactionResourceAssembler;
 
 	@GetMapping
-	public ResponseEntity<List<AccountResource>> getAccounts(@PathVariable String portfolioId) {
-		
-		Optional<Portfolio> portfolio = dataStore.findById(portfolioId);
-		
-		if (portfolio.isPresent()) {
-			List<Account> accounts = portfolio.get().getAccounts();
-			List<AccountModel> models = accounts.stream()
-				.map(account -> new AccountModel(account, portfolioId))
-				.collect(Collectors.toList());
-			return new ResponseEntity<>(assembler.toResources(models), HttpStatus.OK);
-		}
-		else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	public ResponseEntity<List<AccountResource>> getAccounts() {
+		List<Account> accounts = accountDataStore.findAll();
+		return new ResponseEntity<>(accountResourceAssembler.toResources(accounts), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{accountId}")
-	public ResponseEntity<AccountResource> getAccount(@PathVariable String portfolioId, @PathVariable String accountId) {
-		
-		Optional<Portfolio> portfolio = dataStore.findById(portfolioId);
-		
-		if (portfolio.isPresent()) {
-			Optional<Account> account = portfolio.get().getAccountWithId(accountId);
-			
-			if (account.isPresent()) {
-				AccountModel model = new AccountModel(account.get(), portfolioId);
-				return new ResponseEntity<>(assembler.toResource(model), HttpStatus.OK);
-			}
-			else {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-		}
-		else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	public ResponseEntity<AccountResource> getAccount(@PathVariable String accountId) {
+		Account account = accountDataStore.findById(accountId)
+			.orElseThrow(ResourceNotFoundException.supplierForResource("account", accountId));
+		return new ResponseEntity<>(accountResourceAssembler.toResource(account), HttpStatus.OK);
+	}
+	
+	@GetMapping("/{accountId}/transactions")
+	public ResponseEntity<List<TransactionResource>> getTransactions(@PathVariable String accountId) {
+		List<String> transactionIds = accountDataStore.getTransactionIds(accountId);
+		List<Transaction> transactions = transactionDataStore.findAllById(transactionIds);
+		return new ResponseEntity<>(transactionResourceAssembler.toResources(transactions), HttpStatus.OK);
 	}
 }
