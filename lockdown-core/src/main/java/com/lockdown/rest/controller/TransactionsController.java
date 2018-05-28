@@ -1,7 +1,6 @@
 package com.lockdown.rest.controller;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lockdown.domain.Account;
-import com.lockdown.domain.Portfolio;
 import com.lockdown.domain.Transaction;
 import com.lockdown.persist.store.PortfolioDataStore;
 import com.lockdown.persist.store.TransactionDataStore;
@@ -41,34 +39,22 @@ public class TransactionsController {
 
 	@GetMapping
 	public ResponseEntity<List<TransactionResource>> getTransactions(@PathVariable String portfolioId, @PathVariable String accountId) {
-		
-		Optional<Portfolio> portfolio = portfolioDataStore.findById(portfolioId);
-		
-		if (portfolio.isPresent()) {
-			Optional<Account> account = portfolio.get().getAccountWithId(accountId);
-			
-			if (account.isPresent()) {
-				List<TransactionModel> models = account.get().getTransactions()
-					.stream()
-					.map(transaction -> new TransactionModel(transaction, portfolioId, accountId))
-					.collect(Collectors.toList());
-				
-				return new ResponseEntity<>(assembler.toResources(models), HttpStatus.OK);
-			}
-			else {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-		}
-		else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		List<Transaction> transactions = getAccountFromDataStore(portfolioId, accountId).getTransactions();
+		List<TransactionModel> models = transactions.stream()
+			.map(transaction -> new TransactionModel(transaction, portfolioId, accountId))
+			.collect(Collectors.toList());
+		return new ResponseEntity<>(assembler.toResources(models), HttpStatus.OK);
 	}
 	
-	private Transaction getTransactionFromDataStore(String portfolioId, String accountId, String transactionId) throws ResourceNotFoundException {
+	private Account getAccountFromDataStore(String portfolioId, String accountId) {
 		return portfolioDataStore.findById(portfolioId)
 			.orElseThrow(ResourceNotFoundException.supplierForResource("portfolio", portfolioId))
 			.getAccountWithId(accountId)
-			.orElseThrow(ResourceNotFoundException.supplierForResource("account", accountId))
+			.orElseThrow(ResourceNotFoundException.supplierForResource("account", accountId));
+	}
+	
+	private Transaction getTransactionFromDataStore(String portfolioId, String accountId, String transactionId) {
+		return getAccountFromDataStore(portfolioId, accountId)
 			.getTransactionById(transactionId)
 			.orElseThrow(ResourceNotFoundException.supplierForResource("transaction", transactionId));
 	}
