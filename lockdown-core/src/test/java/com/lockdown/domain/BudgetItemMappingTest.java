@@ -9,16 +9,16 @@ import org.junit.Test;
 
 import com.lockdown.domain.BudgetItem;
 import com.lockdown.domain.Money;
-import com.lockdown.domain.MultipleBudgetItemMapping;
+import com.lockdown.domain.BudgetItemMapping;
 import com.lockdown.domain.Transaction;
 
-public class MultipleBudgetItemMappingTest {
+public class BudgetItemMappingTest {
 
-	private MultipleBudgetItemMapping mapping;
+	private BudgetItemMapping mapping;
 	
 	@Before
 	public void setUp() {
-		mapping = new MultipleBudgetItemMapping(null);
+		mapping = new BudgetItemMapping();
 	}
 	
 	@Test(expected = NullPointerException.class)

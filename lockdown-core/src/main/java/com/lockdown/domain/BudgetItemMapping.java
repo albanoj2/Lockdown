@@ -1,15 +1,48 @@
 package com.lockdown.domain;
 
-@FunctionalInterface
-public interface BudgetItemMapping {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public class BudgetItemMapping {
 	
-	public Money amountFor(Transaction transaction, BudgetItem item);
+	private final Map<BudgetItem, Money> mappings = new HashMap<>();
 	
-	public default Money mappedAmount(Transaction transaction) {
-		return transaction.getAmount();
+	public static BudgetItemMapping blank() {
+		return new BudgetItemMapping();
 	}
 	
-	public default boolean isValidFor(Transaction transaction) {
+	public static BudgetItemMapping withMapping(BudgetItem item, Money amount) {
+		BudgetItemMapping mapping = new BudgetItemMapping();
+		mapping.addMapping(item, amount);
+		return mapping;
+	}
+
+	public void addMapping(BudgetItem item, Money amount) {
+		Objects.requireNonNull(item);
+		Objects.requireNonNull(amount);
+		mappings.put(item, amount);
+	}
+
+	public void removeMapping(BudgetItem item) {
+		mappings.remove(item);
+	}
+
+	public Money amountFor(Transaction transaction, BudgetItem item) {
+		return mappings.getOrDefault(item, Money.zero());
+	}
+
+	public Money mappedAmount(Transaction transaction) {
+		return mappings.values().stream()
+			.reduce((amount1, amount2) -> amount1.sum(amount2))
+			.orElseGet(() -> Money.zero());
+	}
+	
+	public boolean isValidFor(Transaction transaction) {
 		return mappedAmount(transaction).equals(transaction.getAmount());
+	}
+
+	public Map<BudgetItem, Money> getMappings() {
+		return new HashMap<>(mappings);
 	}
 }

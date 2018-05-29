@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.lockdown.domain.Identifable;
+import com.lockdown.domain.Identifiable;
 
-public interface DataStore<T extends Identifable> {
+public interface DataStore<T extends Identifiable> {
 	public boolean existsById(String id);
 	public List<T> findAll();
 	public List<T> findAllById(Iterable<String> ids);

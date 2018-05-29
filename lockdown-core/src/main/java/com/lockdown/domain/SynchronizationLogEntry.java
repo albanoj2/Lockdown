@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-public class SynchronizationLogEntry extends Identifable {
+public class SynchronizationLogEntry extends Identifiable {
 
 	private LocalDateTime start;
 	private LocalDateTime stop;

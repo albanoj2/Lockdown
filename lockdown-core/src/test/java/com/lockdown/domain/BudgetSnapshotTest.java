@@ -10,14 +10,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.lockdown.domain.Account;
-import com.lockdown.domain.Budget;
-import com.lockdown.domain.BudgetItem;
-import com.lockdown.domain.BudgetSnapshot;
-import com.lockdown.domain.Money;
-import com.lockdown.domain.SingleBudgetItemMapping;
-import com.lockdown.domain.Transaction;
-
 public class BudgetSnapshotTest {
 
 	@Test
@@ -43,8 +35,8 @@ public class BudgetSnapshotTest {
 		assertEquals(Money.dollars(10), snapshot.getBudgetEntrySnapshots().get(entry).getBalance());
 	}
 	
-	private static Transaction transactionFor(BudgetItem entry, long dollars) {
-		return Transactions.budgetedForAmountWithMapping(Money.dollars(dollars), new SingleBudgetItemMapping(null, entry));
+	private static Transaction transactionFor(BudgetItem item, long dollars) {
+		return Transactions.budgetedForAmountWithMapping(Money.dollars(dollars), BudgetItemMapping.withMapping(item, Money.dollars(dollars)));
 	}
 	
 	@Test

@@ -6,12 +6,12 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public final class Transaction extends Identifable {
+public final class Transaction extends Identifiable {
 
 	private final String key;
 	private TransactionBody body;
 	private Optional<String> comment;
-	private final Optional<BudgetItemMapping> budgetItemMapping;
+	private Optional<BudgetItemMapping> budgetItemMapping;
 	
 	public Transaction(String id, LocalDate date, Money amount, String key, String name, String description, boolean isPending, Optional<String> comment, Optional<BudgetItemMapping> budgetItemMapping) {
 		this(id, key, new TransactionBody(date, amount, name, description, isPending), comment, budgetItemMapping);
@@ -120,6 +120,11 @@ public final class Transaction extends Identifable {
 		else {
 			return Money.zero();
 		}
+	}
+	
+	public void mapTo(BudgetItem item) {
+		BudgetItemMapping mapping = BudgetItemMapping.withMapping(item, getAmount());
+		this.budgetItemMapping = Optional.of(mapping);
 	}
 
 	@Override

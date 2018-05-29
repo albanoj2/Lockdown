@@ -10,13 +10,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import com.lockdown.domain.BudgetItem;
-import com.lockdown.domain.BudgetItemMapping;
-import com.lockdown.domain.BudgetItemSnapshot;
-import com.lockdown.domain.Money;
-import com.lockdown.domain.SingleBudgetItemMapping;
-import com.lockdown.domain.Transaction;
-
 public class BudgetItemSnapshotTest {
 
 	@Test
@@ -41,13 +34,20 @@ public class BudgetItemSnapshotTest {
 	
 	private static BudgetItemSnapshot createSnapshotForTransactionAmounts(List<Integer> amounts) {
 		BudgetItem entry = createBlankEntry();
-		BudgetItemMapping mapping = createMappingFor(entry);
-		return createSnapshotForTransactionAmounts(entry, mapping, amounts);
+		return createSnapshotForTransactionAmounts(entry, amounts);
 	}
 	
 	private static BudgetItemSnapshot createSnapshotForTransactionAmounts(BudgetItem entry, BudgetItemMapping mapping, List<Integer> amounts) {
 		List<Transaction> budgetedTransactions = amounts.stream()
 			.map(amount -> Transactions.budgetedForAmountWithMapping(Money.dollars(amount), mapping))
+			.collect(Collectors.toList());
+		
+		return new BudgetItemSnapshot(entry, budgetedTransactions);
+	}
+	
+	private static BudgetItemSnapshot createSnapshotForTransactionAmounts(BudgetItem entry, List<Integer> amounts) {
+		List<Transaction> budgetedTransactions = amounts.stream()
+			.map(amount -> Transactions.budgetedForAmountWithMapping(Money.dollars(amount), BudgetItemMapping.withMapping(entry, Money.dollars(amount))))
 			.collect(Collectors.toList());
 		
 		return new BudgetItemSnapshot(entry, budgetedTransactions);
@@ -65,10 +65,6 @@ public class BudgetItemSnapshotTest {
 			.build();
 	}
 	
-	private static BudgetItemMapping createMappingFor(BudgetItem entry) {
-		return new SingleBudgetItemMapping(null, entry);
-	}
-	
 	@Test
 	public void twoNegativeTransactionsEnsureCorrectExpensedAmount() {
 		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(List.of(-3, -7));
@@ -84,7 +80,7 @@ public class BudgetItemSnapshotTest {
 	@Test
 	public void twoNegativeTransactionsWithFixedMappingAmountEnsureCorrectExpensedAmount() {
 		BudgetItem entry = createBlankEntry();
-		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, (t, e) -> Money.zero(), List.of(-3, -7));
+		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, BudgetItemMapping.blank(), List.of(-3, -7));
 		assertEquals(Money.zero(), snapshot.getExpensedAmount());
 	}
 
@@ -98,7 +94,7 @@ public class BudgetItemSnapshotTest {
 	}
 	
 	private static Transaction createMappedTransaction(Money amount, BudgetItem entry) {
-		return Transactions.budgetedForAmountWithMapping(amount, createMappingFor(entry));
+		return Transactions.budgetedForAmountWithMapping(amount, BudgetItemMapping.withMapping(entry, amount));
 	}
 	
 	private static Transaction createUnmappedTransaction(Money amount) {
@@ -126,7 +122,7 @@ public class BudgetItemSnapshotTest {
 	@Test
 	public void twoPositiveTransactionsWithFixedMappingAmountEnsureCorrectDepositedAmount() {
 		BudgetItem entry = createBlankEntry();
-		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, (t, e) -> Money.zero(), List.of(3, 7));
+		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, BudgetItemMapping.blank(), List.of(3, 7));
 		assertEquals(Money.zero(), snapshot.getDepositedAmount());
 	}
 
@@ -142,7 +138,7 @@ public class BudgetItemSnapshotTest {
 	@Test
 	public void cononicalTransactionsEnsureCorrectRemainingAmount() {
 		BudgetItem entry = tenDollarsEachWeekForTwoWeeks();
-		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, new SingleBudgetItemMapping(null, entry), List.of(5, -10, 30, -20));
+		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, List.of(5, -10, 30, -20));
 		
 		// Accumulated amount:    $10/week * 2 weeks     = $20
 		// Transaction total:     $5 - $10 + $30 - $20   = $5
@@ -161,7 +157,7 @@ public class BudgetItemSnapshotTest {
 	@Test
 	public void cononicalTransactionsWithExpectedNegativeValueEnsureCorrectRemainingAmount() {
 		BudgetItem entry = tenDollarsEachWeekForTwoWeeks();
-		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, new SingleBudgetItemMapping(null, entry), List.of(5, -10, -30, -20));
+		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, List.of(5, -10, -30, -20));
 		
 		// Accumulated amount:    $10/week * 2 weeks     = $20
 		// Transaction total:     $5 - $10 - $30 - $20   = -$55

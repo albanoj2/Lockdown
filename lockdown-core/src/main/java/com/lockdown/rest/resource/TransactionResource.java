@@ -1,10 +1,13 @@
 package com.lockdown.rest.resource;
 
+import java.util.Optional;
+
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.lockdown.domain.BudgetItemMapping;
 import com.lockdown.domain.Transaction;
 
 @JsonInclude(Include.NON_NULL)
@@ -17,6 +20,7 @@ public class TransactionResource extends ResourceSupport {
 	private final String description;
 	private final boolean isPending; 
 	private final String comment;
+	private final BudgetItemMappingResource budgetItemMapping;
 	
 	public TransactionResource(Transaction transaction) {
 		this.transactionId = transaction.getId();
@@ -26,6 +30,17 @@ public class TransactionResource extends ResourceSupport {
 		this.description = transaction.getDescription();
 		this.isPending = transaction.isPending();
 		this.comment = transaction.getComment().orElse(null);
+		this.budgetItemMapping = toResource(transaction.getBudgetItemMapping());
+	}
+	
+	private static BudgetItemMappingResource toResource(Optional<BudgetItemMapping> mapping) {
+		
+		if (mapping.isPresent()) {
+			return new BudgetItemMappingResource(mapping.get());
+		}
+		else {
+			return null;
+		}
 	}
 
 	@JsonProperty("id")
@@ -55,5 +70,9 @@ public class TransactionResource extends ResourceSupport {
 	
 	public String getComment() {
 		return comment;
+	}
+
+	protected BudgetItemMappingResource getBudgetItemMapping() {
+		return budgetItemMapping;
 	}
 }

@@ -3,15 +3,10 @@ package com.lockdown.domain;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import com.lockdown.domain.BudgetItem;
-import com.lockdown.domain.BudgetItemMapping;
-import com.lockdown.domain.Money;
-import com.lockdown.domain.Transaction;
-
 public class Transactions {
 	
 	private static final Optional<String> NO_COMMENT = Optional.empty();
-	private static final BudgetItemMapping RAW_BLANK_MAPPING = (Transaction t, BudgetItem i) -> Money.zero();
+	private static final BudgetItemMapping RAW_BLANK_MAPPING = BudgetItemMapping.blank();
 	public static final Optional<BudgetItemMapping> BLANK_MAPPING = Optional.of(RAW_BLANK_MAPPING);
 
 	public static Transaction unbudgetedForAmount(Money amount) {
