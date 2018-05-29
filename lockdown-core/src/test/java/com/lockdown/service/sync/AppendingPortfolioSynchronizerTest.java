@@ -19,62 +19,54 @@ import org.mockito.Mockito;
 
 import com.lockdown.domain.Account;
 import com.lockdown.domain.Delta;
-import com.lockdown.domain.Portfolio;
 import com.lockdown.domain.SynchronizationLogEntry;
+import com.lockdown.persist.store.AccountDataStore;
 import com.lockdown.service.sync.provider.DiscoveredAccount;
 import com.lockdown.service.sync.provider.DiscoveredTransaction;
 
 public class AppendingPortfolioSynchronizerTest {
 
+	private AccountDataStore accountDataStore;
 	private AppendingPortfolioSynchronizer synchronizer;
 	private SynchronizationLogEntry logEntry;
 	
 	@Before
 	public void setUp() {
-		synchronizer = new AppendingPortfolioSynchronizer();
+		accountDataStore = Mockito.mock(AccountDataStore.class);
+		synchronizer = new AppendingPortfolioSynchronizer(accountDataStore);
 		logEntry = Mockito.mock(SynchronizationLogEntry.class);
 	}
 	
 	@Test(expected = NullPointerException.class)
-	public void synchronizeWithNullPortfolioEnsureNullPointerExceptionThrown() {
-		synchronizer.synchronize(null, new ArrayList<>(), new ArrayList<>(), logEntry);
-	}
-	
-	@Test(expected = NullPointerException.class)
 	public void synchronizeWithNullDiscoveredAccountsEnsureNullPointerExceptionThrown() {
-		synchronizer.synchronize(new Portfolio(), null, new ArrayList<>(), logEntry);
+		synchronizer.synchronize(null, new ArrayList<>(), logEntry);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void synchronizeWithNullDiscoveredTransactionsEnsureNullPointerExceptionThrown() {
-		synchronizer.synchronize(new Portfolio(), new ArrayList<>(), null, logEntry);
+		synchronizer.synchronize(new ArrayList<>(), null, logEntry);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void synchronizeWithNullLogEntryEnsureNullPointerExceptionThrown() {
-		synchronizer.synchronize(new Portfolio(), new ArrayList<>(), new ArrayList<>(), null);
+		synchronizer.synchronize(new ArrayList<>(), new ArrayList<>(), null);
 	}
 	
 	@Test
 	public void synchronizeWithNoDiscoveredAccountsEnsureNoAccountsAdded() {
-		Portfolio portfolio = portfolioThatWillAddAccount();
-		synchronizer.synchronize(portfolio, new ArrayList<>(), new ArrayList<>(), logEntry);
-		assertNoAccountsAddedTo(portfolio);
+		ensureWillAddDiscoveredAccounts();
+		synchronizer.synchronize(new ArrayList<>(), new ArrayList<>(), logEntry);
+		assertNoAccountsAdded();
 		assertAccountsAddedNotIncremented();
 	}
 	
-	private static Portfolio portfolioThatWillAddAccount() {
-		Portfolio portfolio = Mockito.mock(Portfolio.class);
-		when(portfolio.addAccountIfNotExists(any())).thenReturn(Delta.ADDED);
-		return portfolio;
+	private void ensureWillAddDiscoveredAccounts() {
+		doReturn(false).when(accountDataStore).existsById(any(String.class));
 	}
 	
-	private static void assertNoAccountsAddedTo(Portfolio portfolio) {
-		assertAccountsAddedTo(portfolio, 0);
-	}
-	
-	private static void assertAccountsAddedTo(Portfolio portfolio, int numberOfAccounts) {
-		verify(portfolio, times(numberOfAccounts)).addAccountIfNotExists(any());
+	private void assertNoAccountsAdded() {
+		verify(accountDataStore, never()).saveAndCascade(any(Account.class));
+		verify(accountDataStore, never()).save(any(Account.class));
 	}
 	
 	private void assertAccountsAddedNotIncremented() {
@@ -83,11 +75,19 @@ public class AppendingPortfolioSynchronizerTest {
 	
 	@Test
 	public void synchronizeWithOneDiscoveredAccountEnsureOneAccountsAdded() {
-		DiscoveredAccount accountToAdd = Mockito.mock(DiscoveredAccount.class);
-		Portfolio portfolio = portfolioThatWillAddAccount();
-		synchronizer.synchronize(portfolio, List.of(accountToAdd), new ArrayList<>(), logEntry);
-		assertAccountsAddedTo(portfolio, 1);
+		DiscoveredAccount accountToAdd = discoveredAccountWithKey("foo");
+		ensureWillAddDiscoveredAccounts();
+		synchronizer.synchronize(List.of(accountToAdd), new ArrayList<>(), logEntry);
+		assertAccountsAdded(1);
 		assertNumberOfAddedAccountsIncremented();
+	}
+	
+	private static DiscoveredAccount discoveredAccountWithKey(String key) {
+		return new DiscoveredAccount(key, "someName", "someType", "someSubType");
+	}
+	
+	private void assertAccountsAdded(int count) {
+		verify(accountDataStore, times(count)).saveAndCascade(any(Account.class));
 	}
 	
 	private void assertNumberOfAddedAccountsIncremented() {
@@ -96,17 +96,16 @@ public class AppendingPortfolioSynchronizerTest {
 	
 	@Test
 	public void synchronizeWithOneDiscoveredAccountThatExistsEnsureAddedAccountsNotIncremented() {
-		DiscoveredAccount accountToAdd = Mockito.mock(DiscoveredAccount.class);
-		Portfolio portfolio = portfolioThatWillNotAddAccount();
-		synchronizer.synchronize(portfolio, List.of(accountToAdd), new ArrayList<>(), logEntry);
-		assertAccountsAddedTo(portfolio, 1);
+		String key = "foo";
+		DiscoveredAccount accountToAdd = discoveredAccountWithKey(key);
+		ensureAccountAlreadyExistsWithKey(key);
+		synchronizer.synchronize(List.of(accountToAdd), new ArrayList<>(), logEntry);
+		assertNoAccountsAdded();
 		assertNumberOfAddedAccountsNotIncremented();
 	}
 	
-	private static Portfolio portfolioThatWillNotAddAccount() {
-		Portfolio portfolio = Mockito.mock(Portfolio.class);
-		when(portfolio.addAccountIfNotExists(any())).thenReturn(Delta.UNCHANGED);
-		return portfolio;
+	private void ensureAccountAlreadyExistsWithKey(String key) {
+		doReturn(true).when(accountDataStore).existsByKey(eq(key));
 	}
 	
 	private void assertNumberOfAddedAccountsNotIncremented() {
@@ -115,24 +114,23 @@ public class AppendingPortfolioSynchronizerTest {
 	
 	@Test
 	public void synchronizeWithNoDiscoveredTransactionsEnsureNoTransactionsAdded() {
-		String accountKey = "foo";
-		Portfolio portfolio = portfolioThatWillAddTransactions(accountKey);
-		synchronizer.synchronize(portfolio, new ArrayList<>(), new ArrayList<>(), logEntry);
-		assertNoTransactionsAdded(portfolio.getAccountWithKey(accountKey).get());
+		Account account = accountWithKey("foo");
+		configureWillAddDiscoveredTransactions(account);
+		synchronizer.synchronize(new ArrayList<>(), new ArrayList<>(), logEntry);
+		assertNoTransactionsAdded(account);
 		assertTransactionsAddedNotIncremented();
 		assertTransactionsUpdatedNotIncremented();
 	}
 	
-	private static Portfolio portfolioThatWillAddTransactions(String accountKey) {
-		return portfolioThatWillOnAddTransaction(accountKey, Delta.ADDED);
+	private static Account accountWithKey(String key) {
+		Account account = Mockito.mock(Account.class);
+		doReturn(key).when(account).getKey();
+		return account;
 	}
 	
-	private static Portfolio portfolioThatWillOnAddTransaction(String accountKey, Delta delta) {
-		Portfolio portfolio = Mockito.mock(Portfolio.class);
-		Account account = Mockito.mock(Account.class);
-		doReturn(Optional.of(account)).when(portfolio).getAccountWithKey(eq(accountKey));
-		doReturn(delta).when(account).addTransactionOrUpdateIfExists(any(), any());
-		return portfolio;
+	private void configureWillAddDiscoveredTransactions(Account account) {
+		doReturn(Delta.ADDED).when(account).addTransactionOrUpdateIfExists(any(), any());
+		when(accountDataStore.findByKey(eq(account.getKey()))).thenReturn(Optional.of(account));
 	}
 	
 	private static void assertNoTransactionsAdded(Account account) {
@@ -153,11 +151,11 @@ public class AppendingPortfolioSynchronizerTest {
 	
 	@Test
 	public void synchronizeWithOneDiscoveredTransactionToBeAddedEnsureOneTransactionsAdded() {
-		String accountKey = "foo";
-		Portfolio portfolio = portfolioThatWillAddTransactions(accountKey);
-		DiscoveredTransaction transaction = discoveredTransactionWithAccountKey(accountKey);
-		synchronizer.synchronize(portfolio, new ArrayList<>(), List.of(transaction), logEntry);
-		assertTransactionsAdded(portfolio.getAccountWithKey(accountKey).get(), 1);
+		Account account = accountWithKey("foo");
+		configureWillAddDiscoveredTransactions(account);
+		DiscoveredTransaction transaction = discoveredTransactionWithAccountKey(account.getKey());
+		synchronizer.synchronize(new ArrayList<>(), List.of(transaction), logEntry);
+		assertTransactionsAdded(account, 1);
 		assertTransactionsAddedIncremented();
 		assertTransactionsUpdatedNotIncremented();
 	}
@@ -174,17 +172,18 @@ public class AppendingPortfolioSynchronizerTest {
 	
 	@Test
 	public void synchronizeWithOneDiscoveredTransactionToBeUpdatedEnsureOneTransactionsUpdated() {
-		String accountKey = "foo";
-		Portfolio portfolio = portfolioThatWillUpdateTransactions(accountKey);
-		DiscoveredTransaction transaction = discoveredTransactionWithAccountKey(accountKey);
-		synchronizer.synchronize(portfolio, new ArrayList<>(), List.of(transaction), logEntry);
-		assertTransactionsAdded(portfolio.getAccountWithKey(accountKey).get(), 1);
+		Account account = accountWithKey("foo");
+		configureWillUpdateDiscoveredTransactions(account);
+		DiscoveredTransaction transaction = discoveredTransactionWithAccountKey(account.getKey());
+		synchronizer.synchronize(new ArrayList<>(), List.of(transaction), logEntry);
+		assertTransactionsAdded(account, 1);
 		assertTransactionsAddedNotIncremented();
 		assertTransactionsUpdatedIncremented();
 	}
 	
-	private static Portfolio portfolioThatWillUpdateTransactions(String accountKey) {
-		return portfolioThatWillOnAddTransaction(accountKey, Delta.UPDATED);
+	private void configureWillUpdateDiscoveredTransactions(Account account) {
+		doReturn(Delta.UPDATED).when(account).addTransactionOrUpdateIfExists(any(), any());
+		when(accountDataStore.findByKey(eq(account.getKey()))).thenReturn(Optional.of(account));
 	}
 	
 	private void assertTransactionsUpdatedIncremented() {
@@ -194,16 +193,14 @@ public class AppendingPortfolioSynchronizerTest {
 	@Test
 	public void synchronizeWithDiscoveredTransactionsThatHasNoAssociatedAccountEnsureNoTransactionsAddedOrUpdated() {
 		String accountKey = "foo";
-		Portfolio portfolio = portfolioWithNoAccountFor(accountKey);
+		configureNoAccountFor(accountKey);
 		DiscoveredTransaction transaction = discoveredTransactionWithAccountKey(accountKey);
-		synchronizer.synchronize(portfolio, new ArrayList<>(), List.of(transaction), logEntry);
+		synchronizer.synchronize(new ArrayList<>(), List.of(transaction), logEntry);
 		assertTransactionsAddedNotIncremented();
 		assertTransactionsUpdatedNotIncremented();
 	}
 	
-	private static Portfolio portfolioWithNoAccountFor(String accountKey) {
-		Portfolio portfolio = Mockito.mock(Portfolio.class);
-		doReturn(Optional.empty()).when(portfolio).getAccountWithKey(eq(accountKey));
-		return portfolio;
+	private void configureNoAccountFor(String accountKey) {
+		doReturn(Optional.empty()).when(accountDataStore).findByKey(eq(accountKey));
 	}
 }

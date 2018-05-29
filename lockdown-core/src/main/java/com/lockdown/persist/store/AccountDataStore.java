@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.Account;
 import com.lockdown.persist.dto.AccountDto;
+import com.lockdown.persist.repository.AccountRepository;
 
 @Service
 @DataStoreFor(Account.class)
@@ -36,5 +37,16 @@ public class AccountDataStore extends AbstractDataStore<Account, AccountDto> {
 		else {
 			return new ArrayList<>();
 		}
+	}
+	
+	public boolean existsByKey(String key) {
+		return findByKey(key).isPresent();
+	}
+	
+	public Optional<Account> findByKey(String key) {
+		Optional<AccountDto> existingDto = ((AccountRepository) getRepository()).findByKey(key);
+		return existingDto.stream()
+			.map(dto -> toDomainObject(dto))
+			.findFirst();
 	}
 }

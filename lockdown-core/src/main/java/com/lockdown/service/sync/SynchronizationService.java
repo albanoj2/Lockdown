@@ -10,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.Credentials;
-import com.lockdown.domain.Portfolio;
 import com.lockdown.domain.SynchronizationLogEntry;
-import com.lockdown.persist.store.PortfolioDataStore;
+import com.lockdown.persist.store.CredentialsDataStore;
 import com.lockdown.persist.store.SynchronizationLogEntryDataStore;
 import com.lockdown.service.sync.provider.AccountProvider;
 import com.lockdown.service.sync.provider.DiscoveredAccount;
@@ -26,7 +25,7 @@ public class SynchronizationService {
 	private static final Logger logger = LoggerFactory.getLogger(SynchronizationService.class);
 
 	@Autowired
-	private PortfolioDataStore portfolioDataStore;
+	private CredentialsDataStore credentialsDataStore;
 	
 	@Autowired
 	private ProviderFactory providerFactory;
@@ -42,39 +41,27 @@ public class SynchronizationService {
 		synchronize();
 	}
 	
-	public void synchronize() {
+	private void synchronize() {
 		
-		List<Portfolio> portfolios = portfolioDataStore.findAll();
-				
+		List<Credentials> credentials = credentialsDataStore.findAll();
+		logger.info("Starting synchronization for portfolio [number of credentials: " + credentials.size() + "]");
+		
 		SynchronizationLogEntry logEntry = new SynchronizationLogEntry();
 		logEntry.start();
 		
-		for (Portfolio portfolio: portfolios) {
-			beforeSynchronization(portfolio);
-			synchronizePortfolio(portfolio, logEntry);
-			portfolioDataStore.saveAndCascade(portfolio);
-		}
-		
-		logEntry.stop();
-		afterSynchronization(logEntry);
-	}
-
-	private void beforeSynchronization(Portfolio portfolio) {
-		logger.info("Starting synchronization for portfolio [number of credentials: " + portfolio.getCredentials().size() + "]");
-	}
-	
-	private void synchronizePortfolio(Portfolio portfolio, SynchronizationLogEntry logEntry) {
-		
-		for (Credentials credentials: portfolio.getCredentials()) {
+		for (Credentials credential: credentials) {
 			
-			List<DiscoveredAccount> discoveredAccounts = discoverAccounts(credentials);
-			List<DiscoveredTransaction> discoveredTransactions = discoverTransactions(credentials);
+			List<DiscoveredAccount> discoveredAccounts = discoverAccounts(credential);
+			List<DiscoveredTransaction> discoveredTransactions = discoverTransactions(credential);
 			
 			logEntry.incrementAccountsDiscoveredBy(discoveredAccounts.size());
 			logEntry.incrementTransactionsDiscoveredBy(discoveredTransactions.size());
 			
-			synchronizer.synchronize(portfolio, discoveredAccounts, discoveredTransactions, logEntry);
+			synchronizer.synchronize(discoveredAccounts, discoveredTransactions, logEntry);
 		}
+		
+		logEntry.stop();
+		afterSynchronization(logEntry);
 	}
 	
 	private List<DiscoveredAccount> discoverAccounts(Credentials credentials) {
