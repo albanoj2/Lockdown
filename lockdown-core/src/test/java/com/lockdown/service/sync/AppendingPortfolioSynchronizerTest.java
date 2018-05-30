@@ -123,6 +123,7 @@ public class AppendingPortfolioSynchronizerTest {
 		assertNoTransactionsAdded(account);
 		assertTransactionsAddedNotIncremented();
 		assertTransactionsUpdatedNotIncremented();
+		assertAccountNotSavedAndCascaded(account);
 	}
 	
 	private static Account accountWithKey(String key) {
@@ -152,6 +153,14 @@ public class AppendingPortfolioSynchronizerTest {
 		verify(logEntry, never()).incrementTransactionsUpdated();
 	}
 	
+	private void assertAccountNotSavedAndCascaded(Account account) {
+		assertAccountSavedAndCascaded(account, 0);
+	}
+	
+	private void assertAccountSavedAndCascaded(Account account, int numberOfSaves) {
+		verify(accountDataStore, times(numberOfSaves)).saveAndCascade(eq(account));
+	}
+	
 	@Test
 	public void synchronizeWithOneDiscoveredTransactionToBeAddedEnsureOneTransactionsAdded() {
 		Account account = accountWithKey("foo");
@@ -161,6 +170,7 @@ public class AppendingPortfolioSynchronizerTest {
 		assertTransactionsAdded(account, 1);
 		assertTransactionsAddedIncremented();
 		assertTransactionsUpdatedNotIncremented();
+		assertAccountSavedAndCascaded(account, 1);
 	}
 	
 	private static DiscoveredTransaction discoveredTransactionWithAccountKey(String key) {
@@ -182,6 +192,7 @@ public class AppendingPortfolioSynchronizerTest {
 		assertTransactionsAdded(account, 1);
 		assertTransactionsAddedNotIncremented();
 		assertTransactionsUpdatedIncremented();
+		assertAccountSavedAndCascaded(account, 1);
 	}
 	
 	private void configureWillUpdateDiscoveredTransactions(Account account) {
@@ -201,9 +212,14 @@ public class AppendingPortfolioSynchronizerTest {
 		synchronizer.synchronize(new ArrayList<>(), List.of(transaction), logEntry);
 		assertTransactionsAddedNotIncremented();
 		assertTransactionsUpdatedNotIncremented();
+		assertNoAccountSavedAndCascaded();
 	}
 	
 	private void configureNoAccountFor(String accountKey) {
 		doReturn(Optional.empty()).when(accountDataStore).findByKey(eq(accountKey));
+	}
+	
+	private void assertNoAccountSavedAndCascaded() {
+		verify(accountDataStore, never()).saveAndCascade(any(Account.class));
 	}
 }
