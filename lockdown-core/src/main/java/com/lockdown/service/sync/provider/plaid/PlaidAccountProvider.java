@@ -39,8 +39,8 @@ public class PlaidAccountProvider implements AccountProvider {
 		return new DiscoveredAccount(
 			input.getAccountId(), 
 			input.getName(), 
-			input.getType(), 
-			input.getSubtype()
+			PlaidTypeMapper.toType(input.getType()), 
+			PlaidSubtypeMapper.toSubtype(input.getSubtype())
 		);
 	}
 }

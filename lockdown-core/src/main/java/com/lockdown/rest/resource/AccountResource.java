@@ -15,8 +15,8 @@ public class AccountResource  extends ResourceSupport {
 	public AccountResource(Account account) {
 		this.accountId = account.getId();
 		this.name = account.getName();
-		this.type = account.getType();
-		this.subType = account.getSubtype();
+		this.type = account.getType().name();
+		this.subType = account.getSubtype().name();
 	}
 
 	@JsonProperty("id")

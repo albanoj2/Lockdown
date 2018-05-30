@@ -18,6 +18,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.lockdown.domain.Account;
+import com.lockdown.domain.Account.Subtype;
+import com.lockdown.domain.Account.Type;
 import com.lockdown.domain.Delta;
 import com.lockdown.domain.SynchronizationLogEntry;
 import com.lockdown.persist.store.AccountDataStore;
@@ -83,7 +85,7 @@ public class AppendingPortfolioSynchronizerTest {
 	}
 	
 	private static DiscoveredAccount discoveredAccountWithKey(String key) {
-		return new DiscoveredAccount(key, "someName", "someType", "someSubType");
+		return new DiscoveredAccount(key, "someName", Type.OTHER, Subtype.OTHER);
 	}
 	
 	private void assertAccountsAdded(int count) {

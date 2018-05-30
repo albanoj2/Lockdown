@@ -3,15 +3,17 @@ package com.lockdown.service.sync.provider;
 import java.util.ArrayList;
 
 import com.lockdown.domain.Account;
+import com.lockdown.domain.Account.Subtype;
+import com.lockdown.domain.Account.Type;
 
 public class DiscoveredAccount {
 
 	private final String key;
 	private final String name;
-	private final String type;
-	private final String subtype;
+	private final Type type;
+	private final Subtype subtype;
 	
-	public DiscoveredAccount(String key, String name, String type, String subtype) {
+	public DiscoveredAccount(String key, String name, Type type, Subtype subtype) {
 		this.key = key;
 		this.name = name;
 		this.type = type;
@@ -26,11 +28,11 @@ public class DiscoveredAccount {
 		return name;
 	}
 
-	public String getType() {
+	public Type getType() {
 		return type;
 	}
 
-	public String getSubtype() {
+	public Subtype getSubtype() {
 		return subtype;
 	}
 	

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.Account;
+import com.lockdown.domain.Account.Subtype;
+import com.lockdown.domain.Account.Type;
 import com.lockdown.persist.dto.AccountDto;
 import com.lockdown.persist.repository.AccountRepository;
 
@@ -25,7 +27,7 @@ public class AccountDataStore extends AbstractDataStore<Account, AccountDto> {
 
 	@Override
 	protected Account toDomainObject(AccountDto dto) {
-		return new Account(dto.getId(), dto.getKey(), dto.getName(), dto.getType(), dto.getSubtype(), transactionDataStore.findAllById(dto.getTransactionIds()));
+		return new Account(dto.getId(), dto.getKey(), dto.getName(), Type.valueOf(dto.getType()), Subtype.valueOf(dto.getSubtype()), transactionDataStore.findAllById(dto.getTransactionIds()));
 	}
 	
 	public List<String> getTransactionIds(String accountId) {

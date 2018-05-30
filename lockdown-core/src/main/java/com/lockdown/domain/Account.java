@@ -9,14 +9,24 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public final class Account extends Identifiable {
+	
+	public static enum Type {
+		BROKERAGE, CREDIT, DEPOSITORY, LOAN, MORTGAGE, OTHER, UNKNOWN;
+	}
+	
+	public static enum Subtype {
+		_401K, _403B, BROKERAGE, IRA, RETIREMENT, ROTH, UGMA, CREDIT_CARD, PAYPAL, LINE_OF_CREDIT, REWARDS, CD, CHECKING, SAVINGS, 
+		MONEY_MARKET, PREPAID, AUTO, COMMERCIAL, CONSTRUCTION, CONSUMER, HOME, HOME_EQUITY, OVERDRAFT, STUDENT, 
+		CASH_MANAGEMENT, HSA, KOEGH, MUTUAL_FUND, RECURRING, SAFE_DEPOSIT, SARSEP, OTHER, UNKNOWN;
+	}
 
 	private final String key;
 	private final String name;
-	private final String type;
-	private final String subtype;
+	private final Type type;
+	private final Subtype subtype;
 	private final List<Transaction> transactions;
 	
-	public Account(String id, String key, String name, String type, String subtype, List<Transaction> transactions) {
+	public Account(String id, String key, String name, Type type, Subtype subtype, List<Transaction> transactions) {
 		super(id);
 		this.key = key;
 		this.name = name;
@@ -26,7 +36,7 @@ public final class Account extends Identifiable {
 	}
 	
 	public Account() {
-		this(null, "0", "Unnamed", "Unknown", "Unknown", new ArrayList<>());
+		this(null, "0", "Unnamed", Type.UNKNOWN, Subtype.UNKNOWN, new ArrayList<>());
 	}
 	
 	public static Account blank() {
@@ -41,11 +51,11 @@ public final class Account extends Identifiable {
 		return name;
 	}
 
-	public String getType() {
+	public Type getType() {
 		return type;
 	}
 
-	public String getSubtype() {
+	public Subtype getSubtype() {
 		return subtype;
 	}
 

@@ -82,8 +82,8 @@ public class PlaidAccountProviderTest {
 	private static void assertEqualAccountData(DiscoveredAccount discovered, Account original) {
 		assertEquals(original.getAccountId(), discovered.getKey());
 		assertEquals(original.getName(), discovered.getName());
-		assertEquals(original.getType(), discovered.getType());
-		assertEquals(original.getSubtype(), discovered.getSubtype());
+		assertEquals(PlaidTypeMapper.toType(original.getType()), discovered.getType());
+		assertEquals(PlaidSubtypeMapper.toSubtype(original.getSubtype()), discovered.getSubtype());
 	}
 	
 	@Test

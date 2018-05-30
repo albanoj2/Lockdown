@@ -17,8 +17,8 @@ public class AccountDto extends Dto {
 		super(account.getId());
 		this.key = account.getKey();
 		this.name = account.getName();
-		this.type = account.getType();
-		this.subtype = account.getSubtype();
+		this.type = account.getType().name();
+		this.subtype = account.getSubtype().name();
 		this.transactionIds = toIdList(account.getTransactions());
 	}
 	
