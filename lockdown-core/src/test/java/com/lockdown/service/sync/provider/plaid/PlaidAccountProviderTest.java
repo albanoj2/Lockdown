@@ -14,11 +14,14 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.lockdown.domain.Credentials;
 import com.lockdown.service.sync.provider.DiscoveredAccount;
 import com.lockdown.service.sync.provider.ProviderException;
 import com.plaid.client.response.Account;
+import com.plaid.client.response.AccountsGetResponse;
+import com.plaid.client.response.ItemStatus;
 
 public class PlaidAccountProviderTest {
 
@@ -50,7 +53,13 @@ public class PlaidAccountProviderTest {
 	}
 
 	private void configureRemoteAccounts(List<Account> remoteAccounts) throws IOException {
-		doReturn(remoteAccounts).when(connection).getRemoteAccounts(any());
+		AccountsGetResponse response = Mockito.mock(AccountsGetResponse.class);
+		ItemStatus itemStatus = Mockito.mock(ItemStatus.class);
+		
+		doReturn("foo").when(itemStatus).getInstitutionId();
+		doReturn(itemStatus).when(response).getItem();
+		doReturn(remoteAccounts).when(response).getAccounts();
+		doReturn(response).when(connection).getRemoteAccounts(any());
 	}
 	
 	@Test

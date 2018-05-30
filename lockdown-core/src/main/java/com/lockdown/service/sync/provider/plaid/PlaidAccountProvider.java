@@ -9,6 +9,7 @@ import com.lockdown.service.sync.provider.AccountProvider;
 import com.lockdown.service.sync.provider.DiscoveredAccount;
 import com.lockdown.service.sync.provider.ProviderException;
 import com.plaid.client.response.Account;
+import com.plaid.client.response.AccountsGetResponse;
 
 public class PlaidAccountProvider implements AccountProvider {
 	
@@ -24,10 +25,12 @@ public class PlaidAccountProvider implements AccountProvider {
 	public List<DiscoveredAccount> getAccounts() {
 		
 		try {
-			return connection
-				.getRemoteAccounts(credentials.getAccessToken())
+			AccountsGetResponse response = connection.getRemoteAccounts(credentials.getAccessToken());
+			String institutionId = response.getItem().getInstitutionId();
+			
+			return response.getAccounts()
 				.stream()
-				.map(PlaidAccountProvider::toDiscoveredAccount)
+				.map(account -> toDiscoveredAccount(account, institutionId))
 				.collect(Collectors.toList());
 		} 
 		catch (IOException e) {
@@ -35,10 +38,11 @@ public class PlaidAccountProvider implements AccountProvider {
 		}
 	}
 	
-	public static DiscoveredAccount toDiscoveredAccount(Account input) {
+	public static DiscoveredAccount toDiscoveredAccount(Account input, String institutionId) {
 		return new DiscoveredAccount(
 			input.getAccountId(), 
-			input.getName(), 
+			input.getName(),
+			PlaidInstitutionMapper.toInstitution(institutionId),
 			PlaidTypeMapper.toType(input.getType()), 
 			PlaidSubtypeMapper.toSubtype(input.getSubtype())
 		);

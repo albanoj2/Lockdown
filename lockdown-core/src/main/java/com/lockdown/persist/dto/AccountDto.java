@@ -9,6 +9,7 @@ public class AccountDto extends Dto {
 	
 	private final String key;
 	private final String name;
+	private final String institution;
 	private final String type;
 	private final String subtype;
 	private final List<String> transactionIds;
@@ -17,6 +18,7 @@ public class AccountDto extends Dto {
 		super(account.getId());
 		this.key = account.getKey();
 		this.name = account.getName();
+		this.institution = account.getInstitution().name();
 		this.type = account.getType().name();
 		this.subtype = account.getSubtype().name();
 		this.transactionIds = toIdList(account.getTransactions());
@@ -25,6 +27,7 @@ public class AccountDto extends Dto {
 	public AccountDto() {
 		this.key = null;
 		this.name = null;
+		this.institution = null;
 		this.type = null;
 		this.subtype = null;
 		this.transactionIds = Collections.emptyList();
@@ -36,6 +39,10 @@ public class AccountDto extends Dto {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getInstitution() {
+		return institution;
 	}
 
 	public String getType() {

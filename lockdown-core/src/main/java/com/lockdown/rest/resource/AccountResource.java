@@ -9,12 +9,14 @@ public class AccountResource  extends ResourceSupport {
 
 	private final String accountId;
 	private final String name;
+	private final String institution;
 	private final String type;
 	private final String subType;
 	
 	public AccountResource(Account account) {
 		this.accountId = account.getId();
 		this.name = account.getName();
+		this.institution = account.getInstitution().name();
 		this.type = account.getType().name();
 		this.subType = account.getSubtype().name();
 	}
@@ -26,6 +28,10 @@ public class AccountResource  extends ResourceSupport {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getInstitution() {
+		return institution;
 	}
 
 	public String getType() {

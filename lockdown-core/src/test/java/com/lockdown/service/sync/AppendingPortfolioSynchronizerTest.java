@@ -21,6 +21,7 @@ import com.lockdown.domain.Account;
 import com.lockdown.domain.Account.Subtype;
 import com.lockdown.domain.Account.Type;
 import com.lockdown.domain.Delta;
+import com.lockdown.domain.Institution;
 import com.lockdown.domain.SynchronizationLogEntry;
 import com.lockdown.persist.store.AccountDataStore;
 import com.lockdown.service.sync.provider.DiscoveredAccount;
@@ -85,7 +86,7 @@ public class AppendingPortfolioSynchronizerTest {
 	}
 	
 	private static DiscoveredAccount discoveredAccountWithKey(String key) {
-		return new DiscoveredAccount(key, "someName", Type.OTHER, Subtype.OTHER);
+		return new DiscoveredAccount(key, "someName", Institution.UNKNOWN, Type.OTHER, Subtype.OTHER);
 	}
 	
 	private void assertAccountsAdded(int count) {

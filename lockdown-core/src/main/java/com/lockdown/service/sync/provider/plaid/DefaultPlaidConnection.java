@@ -11,7 +11,7 @@ import com.plaid.client.PlaidApiService;
 import com.plaid.client.PlaidClient;
 import com.plaid.client.request.AccountsGetRequest;
 import com.plaid.client.request.TransactionsGetRequest;
-import com.plaid.client.response.Account;
+import com.plaid.client.response.AccountsGetResponse;
 import com.plaid.client.response.TransactionsGetResponse.Transaction;
 
 @Component
@@ -39,12 +39,11 @@ public class DefaultPlaidConnection implements PlaidConnection {
 	}
 
 	@Override
-	public List<Account> getRemoteAccounts(String accessToken) throws IOException {
+	public AccountsGetResponse getRemoteAccounts(String accessToken) throws IOException {
 		return getService()
 			.accountsGet(new AccountsGetRequest(accessToken))
 			.execute()
-			.body()
-			.getAccounts();
+			.body();
 	}
 	
 	public List<Transaction> getRemoteTransactions(String accessToken, Date start, Date end) throws IOException {

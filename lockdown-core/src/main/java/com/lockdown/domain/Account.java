@@ -22,21 +22,23 @@ public final class Account extends Identifiable {
 
 	private final String key;
 	private final String name;
+	private final Institution institution;
 	private final Type type;
 	private final Subtype subtype;
 	private final List<Transaction> transactions;
 	
-	public Account(String id, String key, String name, Type type, Subtype subtype, List<Transaction> transactions) {
+	public Account(String id, String key, String name, Institution institution, Type type, Subtype subtype, List<Transaction> transactions) {
 		super(id);
 		this.key = key;
 		this.name = name;
+		this.institution = institution;
 		this.type = type;
 		this.subtype = subtype;
 		this.transactions = transactions;
 	}
 	
 	public Account() {
-		this(null, "0", "Unnamed", Type.UNKNOWN, Subtype.UNKNOWN, new ArrayList<>());
+		this(null, "0", "Unnamed", Institution.UNKNOWN, Type.UNKNOWN, Subtype.UNKNOWN, new ArrayList<>());
 	}
 	
 	public static Account blank() {
@@ -49,6 +51,10 @@ public final class Account extends Identifiable {
 
 	public String getName() {
 		return name;
+	}
+
+	public Institution getInstitution() {
+		return institution;
 	}
 
 	public Type getType() {

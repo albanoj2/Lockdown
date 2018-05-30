@@ -67,6 +67,8 @@ public class AppendingPortfolioSynchronizer extends PortfolioSynchronizer {
 		else if (delta == Delta.UPDATED) {
 			logEntry.incrementTransactionsUpdated();
 		}
+		
+		accountDataStore.saveAndCascade(account);
 	}
 
 	private static String getNoAssociatedAccountMessageFor(DiscoveredTransaction discoveredTransaction) {
