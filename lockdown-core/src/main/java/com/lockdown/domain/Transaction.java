@@ -65,6 +65,10 @@ public final class Transaction extends Identifiable {
 		return body;
 	}
 	
+	boolean bodyEquals(TransactionBody other) {
+		return body.equals(other);
+	}
+	
 	public Optional<String> getComment() {
 		return comment;
 	}

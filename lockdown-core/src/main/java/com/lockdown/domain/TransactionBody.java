@@ -18,6 +18,10 @@ public class TransactionBody {
 		this.description = description;
 		this.isPending = isPending;
 	}
+	
+	public static TransactionBody empty() {
+		return new TransactionBody(LocalDate.now(), Money.zero(), "Unnamed", "No description", false);
+	}
 
 	public boolean isPending() {
 		return isPending;

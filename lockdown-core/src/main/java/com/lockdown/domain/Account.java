@@ -74,6 +74,10 @@ public final class Account extends Identifiable {
 		return transactions.size();
 	}
 	
+	public boolean containsTransaction(Transaction transaction) {
+		return transactions.contains(transaction);
+	}
+	
 	public Account addTransaction(Transaction transaction) {
 		transactions.add(transaction);
 		return this;
@@ -92,25 +96,32 @@ public final class Account extends Identifiable {
 	
 	public synchronized Delta addTransactionOrUpdateIfExists(String key, TransactionBody body) {
 		
-		Delta delta = Delta.UNCHANGED;
-		
-		Optional<Transaction> existingTransaction = transactions.stream()
-			.filter(t -> t.getKey().equals(key))
-			.findFirst();
+		Transaction newTransaction = createTransaction(key, body);
+		Optional<Transaction> existingTransaction = getExistingTransaction(newTransaction);
 		
 		if (existingTransaction.isPresent()) {
-			existingTransaction.get().updateBody(body);
 			
-			if (!existingTransaction.get().getBody().equals(body)) {
-				delta = Delta.UPDATED;
+			if (!existingTransaction.get().bodyEquals(body)) {
+				existingTransaction.get().updateBody(body);
+				return Delta.UPDATED;
 			}
 		}
 		else {
-			addTransaction(new Transaction(null, key, body, Optional.empty(), Transaction.noMapping()));
-			delta = Delta.ADDED;
+			addTransaction(newTransaction);
+			return Delta.ADDED;
 		}
 
-		return delta;
+		return Delta.UNCHANGED;
+	}
+	
+	private static Transaction createTransaction(String key, TransactionBody body) {
+		return new Transaction(null, key, body, Optional.empty(), Transaction.noMapping());
+	}
+	
+	private Optional<Transaction> getExistingTransaction(Transaction transaction) {
+		return transactions.stream()
+			.filter(t -> t.equals(transaction))
+			.findFirst();
 	}
 	
 	public List<Transaction> getBudgetedTransactions() {
@@ -158,7 +169,7 @@ public final class Account extends Identifiable {
 			return false;
 		}
 		else {
-			Transaction other = (Transaction) object;
+			Account other = (Account) object;
 			return Objects.equals(getKey(), other.getKey());
 		}
 	}
