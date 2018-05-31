@@ -113,4 +113,22 @@ public class BudgetItemMappingTest {
 		mapping.addMapping(new BudgetItem(), Money.dollars(5));
 		assertTrue(mapping.isValidFor(transaction));
 	}
+	
+	@Test
+	public void givenNoMappingsAddMappingEnsureMappingIsPresent() {
+		BudgetItem budgetItem = BudgetItem.blank();
+		Money amount = Money.dollars(5);
+		mapping.addMapping(budgetItem, amount);
+		assertEquals(1, mapping.getMappingsCount());
+		assertEquals(amount, mapping.getMappings().get(budgetItem));
+	}
+	
+	@Test
+	public void givenNoMappingsAddMappingAndThenRemoveSameMappingEnsureMappingIsRemoved() {
+		BudgetItem budgetItem = BudgetItem.blank();
+		Money amount = Money.dollars(5);
+		mapping.addMapping(budgetItem, amount);
+		mapping.removeMapping(budgetItem);
+		assertEquals(0, mapping.getMappingsCount());
+	}
 }

@@ -45,4 +45,8 @@ public class BudgetItemMapping {
 	public Map<BudgetItem, Money> getMappings() {
 		return new HashMap<>(mappings);
 	}
+	
+	public int getMappingsCount() {
+		return mappings.size();
+	}
 }

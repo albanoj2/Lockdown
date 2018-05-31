@@ -150,8 +150,8 @@ public final class Account extends Identifiable {
 
 	@Override
 	public String toString() {
-		return "Account [key=" + key + ", name=" + name + ", type=" + type + ", subtype=" + subtype + ", transactions="
-				+ transactions + "]";
+		return "Account [key=" + key + ", name=" + name + ", institution=" + institution + ", type=" + type
+				+ ", subtype=" + subtype + ", transactions=" + transactions + "]";
 	}
 
 	@Override

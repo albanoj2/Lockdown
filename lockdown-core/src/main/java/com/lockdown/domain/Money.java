@@ -95,6 +95,6 @@ public class Money {
 	@Override
 	public String toString() {
 		String sign = cents < 0 ? "-" : "";
-		return sign + String.format("$%d.%d", Math.abs(getDollars()), Math.abs(getCents()));
+		return sign + String.format("$%d.%02d", Math.abs(getDollars()), Math.abs(getCents()));
 	}
 }

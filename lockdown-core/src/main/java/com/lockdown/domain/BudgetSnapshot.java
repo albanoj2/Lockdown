@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 public class BudgetSnapshot {
 
-	private Budget budget;
-	private List<Account> accounts;
+	private final Budget budget;
+	private final List<Account> accounts;
 	
 	public BudgetSnapshot(Budget budget, List<Account> accounts) {
 		this.budget = budget;
@@ -36,5 +36,13 @@ public class BudgetSnapshot {
 		return accounts.stream()
 			.flatMap(account -> account.getBudgetedTransactions().stream())
 			.collect(Collectors.toList());
+	}
+
+	public Budget getBudget() {
+		return budget;
+	}
+
+	public List<Account> getAccounts() {
+		return accounts;
 	}
 }

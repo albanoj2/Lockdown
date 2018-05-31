@@ -1,9 +1,7 @@
 package com.lockdown.domain;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +40,8 @@ public class BudgetSnapshotTest {
 	@Test
 	public void oneAccountWithTransactionsForTwoBudgetEntriesEnsureCorrectEntrySnapshots() {
 				
-		BudgetItem entry1 = BudgetItem.blank();
-		BudgetItem entry2 = BudgetItem.blank();
-		entry1.setName("Entry 1");
-		entry2.setName("Entry 2");
+		BudgetItem entry1 = BudgetItem.withName("Entry 1");
+		BudgetItem entry2 = BudgetItem.withName("Entry 2");
 		Budget budget = new Budget(null, List.of(entry1, entry2));
 		
 		Account account = Account.blank()
@@ -64,10 +60,8 @@ public class BudgetSnapshotTest {
 	@Test
 	public void twoAccountsWithTransactionsForTwoBudgetEntriesEnsureCorrectEntrySnapshots() {
 				
-		BudgetItem entry1 = BudgetItem.blank();
-		BudgetItem entry2 = BudgetItem.blank();
-		entry1.setName("Entry 1");
-		entry2.setName("Entry 2");
+		BudgetItem entry1 = BudgetItem.withName("Entry 1");
+		BudgetItem entry2 = BudgetItem.withName("Entry 2");
 		Budget budget = new Budget(null, List.of(entry1, entry2));
 		
 		Account account1 = Account.blank()
@@ -87,5 +81,12 @@ public class BudgetSnapshotTest {
 		assertFalse(snapshot.getBudgetEntrySnapshots().isEmpty());
 		assertEquals(Money.dollars(20), snapshot.getBudgetEntrySnapshots().get(entry1).getBalance());
 		assertEquals(Money.dollars(-10), snapshot.getBudgetEntrySnapshots().get(entry2).getBalance());
+	}
+	
+	@Test
+	public void createBlankBudgetSnapshotEnsureBudgetExistsAndNoAccountsPresent() {
+		BudgetSnapshot snapshot = new BudgetSnapshot();
+		assertNotNull(snapshot.getBudget());
+		assertTrue(snapshot.getAccounts().isEmpty());
 	}
 }

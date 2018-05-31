@@ -6,8 +6,8 @@ import java.time.temporal.ChronoUnit;
 
 public class SynchronizationLogEntry extends Identifiable {
 
-	private LocalDateTime start;
-	private LocalDateTime stop;
+	private LocalDateTime start = LocalDateTime.now();
+	private LocalDateTime stop = start;
 	private int accountsDiscovered = 0;
 	private int accountsAdded = 0;
 	private int transactionsDiscovered = 0;
@@ -17,6 +17,11 @@ public class SynchronizationLogEntry extends Identifiable {
 	public SynchronizationLogEntry(String id, LocalDateTime start, LocalDateTime stop, int accountDiscovered, int accountAdded,
 			int transactionsDiscovered, int transactionsAdded, int transactionsUpdated) {
 		super(id);
+		
+		if (stop.isBefore(start)) {
+			throw new IllegalArgumentException("Stop time cannot be before start time");
+		}
+		
 		this.start = start;
 		this.stop = stop;
 		this.accountsDiscovered = accountDiscovered;
@@ -32,19 +37,19 @@ public class SynchronizationLogEntry extends Identifiable {
 		return start;
 	}
 	
-	public void setStart(LocalDateTime start) {
-		this.start = start;
-	}
-	
 	public void start() {
 		start = LocalDateTime.now();
+	}
+	
+	void setStart(LocalDateTime start) {
+		this.start = start;
 	}
 	
 	public LocalDateTime getStop() {
 		return stop;
 	}
 	
-	public void setStop(LocalDateTime stop) {
+	void setStop(LocalDateTime stop) {
 		this.stop = stop;
 	}
 	
@@ -53,21 +58,11 @@ public class SynchronizationLogEntry extends Identifiable {
 	}
 	
 	public long getElapsedTime(ChronoUnit units) {
-		
-		if (start == null || stop == null) {
-			return 0;
-		}
-		else {
-			return units.between(start, stop);
-		}
+		return units.between(start, stop);
 	}
 	
 	public int getAccountsDiscovered() {
 		return accountsDiscovered;
-	}
-	
-	public void setAccountsDiscovered(int accountDiscovered) {
-		this.accountsDiscovered = accountDiscovered;
 	}
 	
 	public void incrementAccountsDiscoveredBy(int amount) {
@@ -78,20 +73,12 @@ public class SynchronizationLogEntry extends Identifiable {
 		return accountsAdded;
 	}
 	
-	public void setAccountsAdded(int accountAdded) {
-		this.accountsAdded = accountAdded;
-	}
-	
 	public void incrementAccountsAdded() {
 		accountsAdded++;
 	}
 	
 	public int getTransactionsDiscovered() {
 		return transactionsDiscovered;
-	}
-	
-	public void setTransactionsDiscovered(int transactionsDiscovered) {
-		this.transactionsDiscovered = transactionsDiscovered;
 	}
 	
 	public void incrementTransactionsDiscoveredBy(int amount) {
@@ -106,20 +93,12 @@ public class SynchronizationLogEntry extends Identifiable {
 		transactionsAdded++;
 	}
 	
-	public void setTransactionsAdded(int transactionsAdded) {
-		this.transactionsAdded = transactionsAdded;
-	}
-	
 	public int getTransactionsUpdated() {
 		return transactionsUpdated;
 	}
 	
 	public void incrementTransactionsUpdated() {
 		transactionsUpdated++;
-	}
-	
-	public void setTransactionsUpdated(int transactionsUpdated) {
-		this.transactionsUpdated = transactionsUpdated;
 	}
 
 	@Override
@@ -130,7 +109,7 @@ public class SynchronizationLogEntry extends Identifiable {
 				+ transactionsUpdated + "]";
 	}
 	
-	private String formattedElapsedTime() {
+	public String formattedElapsedTime() {
 		return new SimpleDateFormat("mm:ss.SSS").format(getElapsedTime(ChronoUnit.MILLIS)).toString();
 	}
 }

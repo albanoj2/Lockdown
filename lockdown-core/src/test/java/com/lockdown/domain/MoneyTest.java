@@ -1,8 +1,6 @@
 package com.lockdown.domain;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -280,5 +278,89 @@ public class MoneyTest {
 	@Test
 	public void fromNegativeDollarsAndCentsFractionalDollarsEnsureCorrectValue() {
 		assertEquals(-757, Money.fractionalDollars(-7.57).asCents());
+	}
+	
+	@Test
+	public void givenNegativeAmountWhenCopyMoneyEnsureCopyMatchesOriginal() {
+		Money original = Money.cents(-1);
+		Money copy = original.copy();
+		assertFalse(original == copy);
+		assertEquals(original, copy);
+	}
+
+	@Test
+	public void givenZeroAmountWhenCopyMoneyEnsureCopyMatchesOriginal() {
+		Money original = Money.cents(0);
+		Money copy = original.copy();
+		assertFalse(original == copy);
+		assertEquals(original, copy);
+	}
+	
+	@Test
+	public void givenPositiveAmountWhenCopyMoneyEnsureCopyMatchesOriginal() {
+		Money original = Money.cents(1);
+		Money copy = original.copy();
+		assertFalse(original == copy);
+		assertEquals(original, copy);
+	}
+	
+	@Test
+	public void givenValidAmountWhenComparedToNonMoneyObjectEnsureNotEquals() {
+		Money money = Money.dollars(1);
+		assertNotEquals(money, new Object());
+	}
+	
+	@Test
+	public void givenNegativeCentsAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.cents(-1);
+		assertEquals("-$0.01", money.toString());
+	}
+	
+	@Test
+	public void givenZeroCentsAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.cents(0);
+		assertEquals("$0.00", money.toString());
+	}
+	
+	@Test
+	public void givenPositiveCentsAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.cents(1);
+		assertEquals("$0.01", money.toString());
+	}
+	
+	@Test
+	public void givenNegative99CentsAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.cents(-99);
+		assertEquals("-$0.99", money.toString());
+	}
+	
+	@Test
+	public void givenPositive99CentsAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.cents(99);
+		assertEquals("$0.99", money.toString());
+	}
+	
+	@Test
+	public void givenNegativeOneDollarAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.dollars(-1);
+		assertEquals("-$1.00", money.toString());
+	}
+	
+	@Test
+	public void givenPositiveOneDollarAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.dollars(1);
+		assertEquals("$1.00", money.toString());
+	}
+	
+	@Test
+	public void givenNegativeOneDollarAndOneCentAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.cents(-101);
+		assertEquals("-$1.01", money.toString());
+	}
+	
+	@Test
+	public void givenPositiveOneDollarAndOneCentAmountEnsureCorrectStringRepresentation() {
+		Money money = Money.cents(101);
+		assertEquals("$1.01", money.toString());
 	}
 }

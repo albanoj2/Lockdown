@@ -8,7 +8,7 @@ import com.lockdown.domain.util.Periods;
 
 public class BudgetItem extends Identifiable {
 
-	private String name;
+	private final String name;
 	private final String description;
 	private final Money amountPerFrequency;
 	private final Period life;
@@ -30,6 +30,10 @@ public class BudgetItem extends Identifiable {
 	public static BudgetItem blank() {
 		return new BudgetItem();
 	}
+	
+	public static BudgetItem withName(String name) {
+		return new BudgetItem(null, name, "", Money.zero(), Periods.fromNow(), Frequency.NEVER);
+	}
 
 	public Money getAmountPerFrequency() {
 		return amountPerFrequency;
@@ -41,10 +45,6 @@ public class BudgetItem extends Identifiable {
 
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getDescription() {
