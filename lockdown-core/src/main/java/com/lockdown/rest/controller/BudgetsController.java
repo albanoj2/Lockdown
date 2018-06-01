@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,5 +49,17 @@ public class BudgetsController {
 	public ResponseEntity<BudgetResource> createBudget(@RequestBody Budget budget) {
 		Budget createdBudget = budgetDataStore.saveAndCascade(budget);
 		return new ResponseEntity<>(assembler.toResource(createdBudget), HttpStatus.OK);
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<BudgetResource> updateBudget(@PathVariable String id, @RequestBody Budget budget) {
+		Budget updatedBudget = budgetDataStore.saveAndCascade(budget);
+		return new ResponseEntity<>(assembler.toResource(updatedBudget), HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteBudget(@PathVariable String id) {
+		budgetDataStore.deleteById(id);
+		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 }
