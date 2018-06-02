@@ -3,9 +3,11 @@ package com.lockdown.domain;
 import static com.lockdown.domain.Money.dollars;
 import static org.junit.Assert.assertEquals;
 
-import java.time.Period;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -58,11 +60,7 @@ public class BudgetItemSnapshotTest {
 	}
 	
 	private static BudgetItem createEntry(int dollars) {
-		return BudgetItem.builder()
-			.amount(Money.dollars(dollars))
-			.startingNow()
-			.weekly()
-			.build();
+		return new BudgetItem(null, "foo", "bar", Money.dollars(dollars), Frequency.WEEKLY, LocalDate.now(), Optional.empty(), true);
 	}
 	
 	@Test
@@ -147,11 +145,8 @@ public class BudgetItemSnapshotTest {
 	}
 	
 	public static BudgetItem tenDollarsEachWeekForTwoWeeks() {
-		return BudgetItem.builder()
-			.amount(dollars(10))
-			.life(Period.ofWeeks(2))
-			.weekly()
-			.build();
+		LocalDate twoWeeksAgo = LocalDate.now().minus(2, ChronoUnit.WEEKS);
+		return new BudgetItem(null, "foo", "bar", Money.dollars(10), Frequency.WEEKLY, twoWeeksAgo, Optional.empty(), true);
 	}
 	
 	@Test
@@ -161,7 +156,7 @@ public class BudgetItemSnapshotTest {
 		
 		// Accumulated amount:    $10/week * 2 weeks     = $20
 		// Transaction total:     $5 - $10 - $30 - $20   = -$55
-		// Total:                 -$55 + $20               = -$35
+		// Total:                 -$55 + $20             = -$35
 		assertEquals(Money.dollars(-35), snapshot.getRemainingAmount());
 	}
 }

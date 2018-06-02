@@ -11,11 +11,13 @@ import com.lockdown.domain.Budget;
 public class BudgetResource extends ResourceSupport {
 	
 	private final String budgetId;
+	private final String description;
 	private final String name;
 	
 	public BudgetResource(Budget budget) {
 		this.budgetId = budget.getId();
 		this.name = budget.getName();
+		this.description = budget.getDescription();
 	}
 	
 	@JsonProperty("id")
@@ -25,5 +27,9 @@ public class BudgetResource extends ResourceSupport {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }

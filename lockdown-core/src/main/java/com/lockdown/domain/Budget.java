@@ -6,20 +6,30 @@ import java.util.List;
 public class Budget extends Identifiable {
 
 	private String name;
-	private final List<BudgetItem> entries;
+	private String description;
+	private final List<BudgetItem> items;
 	
-	public Budget(String id, String name, List<BudgetItem> entries) {
+	public Budget(String id, String name, String description, List<BudgetItem> items) {
 		super(id);
 		this.name = name;
-		this.entries = entries;
+		this.description = description;
+		this.items = items;
 	}
 	
 	public Budget() {
-		this(null, "Unnamed", new ArrayList<>());
+		this(null, "Unnamed", null, new ArrayList<>());
 	}
 
 	public static Budget empty() {
 		return new Budget();
+	}
+	
+	public void addBudgetItem(BudgetItem item) {
+		this.items.add(item);
+	}
+	
+	public boolean removeItemById(String id) {
+		return items.removeIf(item -> item.getId().equals(id));
 	}
 
 	public String getName() {
@@ -29,8 +39,16 @@ public class Budget extends Identifiable {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String getDescription() {
+		return description;
+	}
 
-	public List<BudgetItem> getEntries() {
-		return entries;
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public List<BudgetItem> getItems() {
+		return items;
 	}
 }

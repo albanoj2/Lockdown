@@ -20,7 +20,7 @@ public class BudgetDataStore extends AbstractDataStore<Budget, BudgetDto> {
 
 	@Override
 	protected Budget toDomainObject(BudgetDto dto) {
-		return new Budget(dto.getId(), dto.getName(), budgetItemDataStore.findAllById(dto.getEntryIds()));
+		return new Budget(dto.getId(), dto.getName(), dto.getDescription(), budgetItemDataStore.findAllById(dto.getEntryIds()));
 	}
 
 }

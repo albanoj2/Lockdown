@@ -22,8 +22,8 @@ import com.lockdown.rest.resource.BudgetResource;
 import com.lockdown.rest.resource.assembler.BudgetResourceAssembler;
 
 @RestController
-@ExposesResourceFor(Budget.class)
 @RequestMapping("/budget")
+@ExposesResourceFor(Budget.class)
 public class BudgetsController {
 
 	@Autowired
@@ -40,9 +40,13 @@ public class BudgetsController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<BudgetResource> getBudget(@PathVariable String id) {
-		Budget budget = budgetDataStore.findById(id)
-			.orElseThrow(ResourceNotFoundException.supplierForResource("budget", id));
+		Budget budget = getBudgetIfExists(id);
 		return new ResponseEntity<>(assembler.toResource(budget), HttpStatus.OK);
+	}
+
+	private Budget getBudgetIfExists(String id) {
+		return budgetDataStore.findById(id)
+			.orElseThrow(ResourceNotFoundException.supplierForResource("budget", id));
 	}
 	
 	@PostMapping

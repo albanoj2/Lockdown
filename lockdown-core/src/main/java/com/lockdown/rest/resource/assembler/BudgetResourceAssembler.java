@@ -8,6 +8,7 @@ import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
 import com.lockdown.domain.Budget;
+import com.lockdown.rest.controller.BudgetItemsController;
 import com.lockdown.rest.controller.BudgetsController;
 import com.lockdown.rest.resource.BudgetResource;
 
@@ -22,10 +23,15 @@ public class BudgetResourceAssembler extends ResourceAssemblerSupport<Budget, Bu
 	public BudgetResource toResource(Budget budget) {
 		BudgetResource resource = new BudgetResource(budget);
 		resource.add(getSelfLink(budget.getId()));
+		resource.add(getBudgetItemsLink(budget.getId()));
 		return resource;
 	}
 
 	private static Link getSelfLink(String id) {
 		return linkTo(methodOn(BudgetsController.class).getBudget(id)).withSelfRel();
+	}
+	
+	private static Link getBudgetItemsLink(String id) {
+		return linkTo(methodOn(BudgetItemsController.class).getBudgetItems(id)).withRel("budgetItems");
 	}
 }

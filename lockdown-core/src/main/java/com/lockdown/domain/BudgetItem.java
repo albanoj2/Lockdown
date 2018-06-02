@@ -4,27 +4,37 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Optional;
 
-import com.lockdown.domain.util.Periods;
-
 public class BudgetItem extends Identifiable {
 
 	private final String name;
 	private final String description;
 	private final Money amountPerFrequency;
-	private final Period life;
 	private final Frequency frequency;
+	private LocalDate start;
+	private Optional<LocalDate> end;
+	private boolean isActive;
 	
-	public BudgetItem(String id, String name, String description, Money amount, Period life, Frequency frequency) {
+	public BudgetItem(String id, String name, String description, Money amount, Frequency frequency, LocalDate start, Optional<LocalDate> end, boolean isActive) {
 		super(id);
+		
+		if (end.isPresent() && end.get().isBefore(start)) {
+			throw new IllegalArgumentException("End date cannot be before start date");
+		}
+		else if (!isActive && !end.isPresent()) {
+			throw new IllegalArgumentException("Inactive budget item must have an end date");
+		}
+		
 		this.name = name;
 		this.description = description;
 		this.amountPerFrequency = amount;
-		this.life = life;
 		this.frequency = frequency;
+		this.start = start;
+		this.end = end;
+		this.isActive = isActive;
 	}
 	
 	public BudgetItem() {
-		this(null, "Unnamed", "", Money.zero(), Periods.fromNow(), Frequency.NEVER);
+		this(null, "Unnamed", "", Money.zero(), Frequency.NEVER, LocalDate.now(), Optional.empty(), true);
 	}
 	
 	public static BudgetItem blank() {
@@ -32,15 +42,11 @@ public class BudgetItem extends Identifiable {
 	}
 	
 	public static BudgetItem withName(String name) {
-		return new BudgetItem(null, name, "", Money.zero(), Periods.fromNow(), Frequency.NEVER);
+		return new BudgetItem(null, name, "", Money.zero(), Frequency.NEVER, LocalDate.now(), Optional.empty(), true);
 	}
 
 	public Money getAmountPerFrequency() {
 		return amountPerFrequency;
-	}
-	
-	public Money getTotalAccumulatedAmount() {
-		return amountPerFrequency.multiply(frequency.occurrencesIn(life));
 	}
 
 	public String getName() {
@@ -51,112 +57,55 @@ public class BudgetItem extends Identifiable {
 		return description != null ? description : "";
 	}
 
-	public Period getLife() {
-		return life;
-	}
-
 	public Frequency getFrequency() {
 		return frequency;
+	}
+
+	public LocalDate getStart() {
+		return start;
+	}
+
+	public void setStart(LocalDate start) {
+		this.start = start;
+	}
+
+	public Optional<LocalDate> getEnd() {
+		return end;
+	}
+
+	public void setEnd(Optional<LocalDate> end) {
+		this.end = end;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+	
+	public Period getAccumulationPeriod() {
+		
+		if (isActive) {
+			return Period.between(start, LocalDate.now());
+		}
+		else {
+			return Period.between(start, end.get());
+		}
+	}
+	
+	public Money getTotalAccumulatedAmount() {
+		return amountPerFrequency.multiply(occurrencesThusFar());
+	}
+	
+	private int occurrencesThusFar() {
+		return frequency.occurrencesIn(getAccumulationPeriod());
 	}
 
 	@Override
 	public String toString() {
 		String displayName = name != null ? name : "unnamed";
 		return "Budget entry '" + displayName + "'";
-	}
-	
-	public static Builder builder() {
-		return new Builder();
-	}
-	
-	public static class Builder {
-		
-		private Optional<String> id;
-		private Optional<String> name;
-		private Optional<String> description;
-		private Money amount;
-		private Frequency frequency;
-		private Optional<Period> life;
-		
-		public Builder() {
-			this.id = Optional.empty();
-			this.name = Optional.empty();
-			this.description = Optional.empty();
-			this.life = Optional.empty();
-		}
-		
-		public Builder id(String id) {
-			this.id = Optional.of(id);
-			return this;
-		}
-		
-		public Builder name(String name) {
-			this.name = Optional.ofNullable(name);
-			return this;
-		}
-		
-		public Builder description(String description) {
-			this.description = Optional.ofNullable(description);
-			return this;
-		}
-		
-		public Builder amount(Money amount) {
-			this.amount = amount;
-			return this;
-		}
-		
-		public Builder zeroAmount() {
-			return amount(Money.zero());
-		}
-		
-		public Builder frequency(Frequency frequency) {
-			this.frequency = frequency;
-			return this;
-		}
-		
-		public Builder never() {
-			return frequency(Frequency.NEVER);
-		}
-		
-		public Builder weekly() {
-			return frequency(Frequency.WEEKLY);
-		}
-		
-		public Builder monthly() {
-			return frequency(Frequency.MONTHLY);
-		}
-		
-		public Builder life(Period life) {
-			this.life = Optional.ofNullable(life);
-			return this;
-		}
-		
-		public Builder startingNow() {
-			return life(Periods.fromNow());
-		}
-		
-		public Builder start(LocalDate start) {
-			return life(Periods.from(start));
-		}
-		
-		public Builder with(Money amount, Frequency frequency) {
-			return amount(amount)
-				.frequency(frequency);
-		}
-		
-		public BudgetItem build() {
-			
-			if (amount == null) throw new IllegalStateException("Amount must be provided");
-			if (frequency == null) throw new IllegalStateException("Frequency must be provided");
-			
-			return new BudgetItem(
-				id.orElse(null), 
-				name.orElse("Unnamed"), 
-				description.orElse(""), 
-				amount, 
-				life.orElse(Periods.fromNow()), 
-				frequency
-			);
-		}
 	}
 }

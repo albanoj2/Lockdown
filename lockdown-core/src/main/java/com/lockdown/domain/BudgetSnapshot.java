@@ -25,7 +25,7 @@ public class BudgetSnapshot {
 		List<Transaction> budgetedTransactions = getAllTransactions();
 		Map<BudgetItem, BudgetItemSnapshot> snapshots = new HashMap<>();
 		
-		for (BudgetItem entry: budget.getEntries()) {
+		for (BudgetItem entry: budget.getItems()) {
 			snapshots.put(entry, new BudgetItemSnapshot(entry, budgetedTransactions));
 		}
 

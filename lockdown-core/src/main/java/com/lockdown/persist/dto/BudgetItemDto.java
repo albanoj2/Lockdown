@@ -1,6 +1,7 @@
 package com.lockdown.persist.dto;
 
-import java.time.Period;
+import java.time.LocalDate;
+import java.util.Optional;
 
 import com.lockdown.domain.BudgetItem;
 import com.lockdown.domain.Frequency;
@@ -12,7 +13,9 @@ public class BudgetItemDto extends Dto {
 	private final String description;
 	private final long amountPerFrequencyInCents;
 	private final String frequency;
-	private final Period life;
+	private final LocalDate start;
+	private final LocalDate end;
+	private final boolean isActive;
 
 	public BudgetItemDto(BudgetItem budgetItem) {
 		super(budgetItem.getId());
@@ -20,7 +23,9 @@ public class BudgetItemDto extends Dto {
 		this.description = budgetItem.getDescription();
 		this.amountPerFrequencyInCents = budgetItem.getAmountPerFrequency().asCents();
 		this.frequency = budgetItem.getFrequency().name();
-		this.life = budgetItem.getLife();
+		this.start = budgetItem.getStart();
+		this.end = budgetItem.getEnd().orElse(null);
+		this.isActive = budgetItem.isActive();
 	}
 	
 	public BudgetItemDto() {
@@ -28,11 +33,13 @@ public class BudgetItemDto extends Dto {
 		this.description = null;
 		this.amountPerFrequencyInCents = 0;
 		this.frequency = Frequency.NEVER.name();
-		this.life = null;
+		this.start = null;
+		this.end = null;
+		this.isActive = false;
 	}
 	
 	public BudgetItem toBudgetItem() {
-		return new BudgetItem(getId(), name, description, Money.cents(amountPerFrequencyInCents), life, Frequency.valueOf(frequency));
+		return new BudgetItem(getId(), name, description, Money.cents(amountPerFrequencyInCents), Frequency.valueOf(frequency), start, Optional.ofNullable(end), isActive);
 	}
 
 	public String getName() {
@@ -55,7 +62,15 @@ public class BudgetItemDto extends Dto {
 		return frequency;
 	}
 
-	public Period getLife() {
-		return life;
+	public LocalDate getStart() {
+		return start;
+	}
+
+	public LocalDate getEnd() {
+		return end;
+	}
+
+	public boolean isActive() {
+		return isActive;
 	}
 }
