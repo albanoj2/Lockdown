@@ -1,6 +1,7 @@
 package com.lockdown.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,17 +11,15 @@ public class BudgetSnapshot {
 
 	private final Budget budget;
 	private final List<Account> accounts;
+	private final Map<BudgetItem, BudgetItemSnapshot> budgetItemSnapshots;
 	
 	public BudgetSnapshot(Budget budget, List<Account> accounts) {
 		this.budget = budget;
 		this.accounts = accounts;
+		this.budgetItemSnapshots = createBudgetItemSnapshotsMap();
 	}
 	
-	public BudgetSnapshot() {
-		this(Budget.empty(), new ArrayList<>());
-	}
-	
-	public Map<BudgetItem, BudgetItemSnapshot> getBudgetEntrySnapshots() {
+	private Map<BudgetItem, BudgetItemSnapshot> createBudgetItemSnapshotsMap() {
 		
 		List<Transaction> budgetedTransactions = getAllTransactions();
 		Map<BudgetItem, BudgetItemSnapshot> snapshots = new HashMap<>();
@@ -30,6 +29,14 @@ public class BudgetSnapshot {
 		}
 
 		return snapshots;
+	}
+	
+	public BudgetSnapshot() {
+		this(Budget.empty(), new ArrayList<>());
+	}
+	
+	public Map<BudgetItem, BudgetItemSnapshot> getBudgetItemSnapshotsMap() {
+		return budgetItemSnapshots;
 	}
 	
 	private List<Transaction> getAllTransactions() {
@@ -44,5 +51,41 @@ public class BudgetSnapshot {
 
 	public List<Account> getAccounts() {
 		return accounts;
+	}
+	
+	public Money getTotalAccumulated() {
+		return getBudgetItemSnapshots()
+			.stream()
+			.map(snapshot -> snapshot.getAccumulatedAmount())
+			.reduce(Money::sum)
+			.orElse(Money.zero());
+	}
+	
+	private Collection<BudgetItemSnapshot> getBudgetItemSnapshots() {
+		return budgetItemSnapshots.values();
+	}
+	
+	public Money getTotalDeposited() {
+		return getBudgetItemSnapshots()
+			.stream()
+			.map(snapshot -> snapshot.getDepositedAmount())
+			.reduce(Money::sum)
+			.orElse(Money.zero());
+	}
+	
+	public Money getTotalExpensed() {
+		return getBudgetItemSnapshots()
+			.stream()
+			.map(snapshot -> snapshot.getExpensedAmount())
+			.reduce(Money::sum)
+			.orElse(Money.zero());
+	}
+	
+	public Money getTotalRemaining() {
+		return getBudgetItemSnapshots()
+			.stream()
+			.map(snapshot -> snapshot.getRemainingAmount())
+			.reduce(Money::sum)
+			.orElse(Money.zero());
 	}
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lockdown.domain.Budget;
 import com.lockdown.persist.store.BudgetDataStore;
-import com.lockdown.rest.error.ResourceNotFoundException;
+import com.lockdown.rest.controller.util.Retriever;
 import com.lockdown.rest.resource.BudgetResource;
 import com.lockdown.rest.resource.assembler.BudgetResourceAssembler;
 
@@ -40,13 +40,8 @@ public class BudgetsController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<BudgetResource> getBudget(@PathVariable String id) {
-		Budget budget = getBudgetIfExists(id);
+		Budget budget = Retriever.getBudgetIfExists(id, budgetDataStore);
 		return new ResponseEntity<>(assembler.toResource(budget), HttpStatus.OK);
-	}
-
-	private Budget getBudgetIfExists(String id) {
-		return budgetDataStore.findById(id)
-			.orElseThrow(ResourceNotFoundException.supplierForResource("budget", id));
 	}
 	
 	@PostMapping

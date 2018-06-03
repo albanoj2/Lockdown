@@ -1,8 +1,12 @@
 package com.lockdown.service.sync;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -15,6 +19,7 @@ import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import com.lockdown.domain.Account;
@@ -153,13 +158,53 @@ public class AppendingPortfolioSynchronizerTest {
 		verify(logEntry, never()).incrementTransactionsUpdated();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void assertAccountNotSavedAndCascaded(Account account) {
-		assertAccountSavedAndCascaded(account, 0);
+		verify(accountDataStore, never()).saveAndCascade(eq(account));
+		
+		ArgumentCaptor<List<Account>> multiSaveCaptor = ArgumentCaptor.forClass(List.class);
+		verify(accountDataStore, atLeast(0)).saveAllAndCascade(multiSaveCaptor.capture());
+		List<List<Account>> savedMultiAccount = multiSaveCaptor.getAllValues();
+		
+		if (!savedMultiAccount.isEmpty()) {
+			assertTrue(savedMultiAccount.get(0).isEmpty());
+		}
 	}
 	
-	private void assertAccountSavedAndCascaded(Account account, int numberOfSaves) {
-		verify(accountDataStore, times(numberOfSaves)).saveAndCascade(eq(account));
+	@SuppressWarnings("unchecked")
+	private void assertAccountSavedAndCascaded(Account account) {
+		ArgumentCaptor<Account> singleSaveCaptor = ArgumentCaptor.forClass(Account.class);
+		verify(accountDataStore, atLeast(0)).saveAndCascade(singleSaveCaptor.capture());
+		
+		ArgumentCaptor<List<Account>> multiSaveCaptor = ArgumentCaptor.forClass(List.class);
+		verify(accountDataStore, atLeast(0)).saveAllAndCascade(multiSaveCaptor.capture());
+		
+		List<Account> savedSingleAccount = singleSaveCaptor.getAllValues();
+		List<List<Account>> savedMultiAccount = multiSaveCaptor.getAllValues();
+		
+		assertTrue(savedSingleAccount.size() == 1 || savedMultiAccount.size() == 1);
+		
+		if (!savedSingleAccount.isEmpty()) {
+			assertEquals(account, savedSingleAccount.get(0));
+		}
+		else if (!savedMultiAccount.isEmpty()) {
+			assertTrue(savedMultiAccount.get(0).contains(account));
+		}
+		else {
+			fail("Should never reach here");
+		}
 	}
+	
+//	ArgumentCaptor<String> propertyKeyCaptor = ArgumentCaptor.forClass(String.class);
+//	Mockito.verify(foo, atLeast(0)).getProperty(propertyKeyCaptor.capture(), anyString());
+//
+//	ArgumentCaptor<String> propertyKeyCaptor2 = ArgumentCaptor.forClass(String.class);
+//	Mockito.verify(foo, atLeast(0)).getProperty(propertyKeyCaptor2.capture());
+//
+//	List<String> propertyKeyValues = propertyKeyCaptor.getAllValues();
+//	List<String> propertyKeyValues2 = propertyKeyCaptor2.getAllValues();
+//
+//	assertTrue(!propertyKeyValues.isEmpty() || !propertyKeyValues2.isEmpty());
 	
 	@Test
 	public void synchronizeWithOneDiscoveredTransactionToBeAddedEnsureOneTransactionsAdded() {
@@ -170,7 +215,7 @@ public class AppendingPortfolioSynchronizerTest {
 		assertTransactionsAdded(account, 1);
 		assertTransactionsAddedIncremented();
 		assertTransactionsUpdatedNotIncremented();
-		assertAccountSavedAndCascaded(account, 1);
+		assertAccountSavedAndCascaded(account);
 	}
 	
 	private static DiscoveredTransaction discoveredTransactionWithAccountKey(String key) {
@@ -192,7 +237,7 @@ public class AppendingPortfolioSynchronizerTest {
 		assertTransactionsAdded(account, 1);
 		assertTransactionsAddedNotIncremented();
 		assertTransactionsUpdatedIncremented();
-		assertAccountSavedAndCascaded(account, 1);
+		assertAccountSavedAndCascaded(account);
 	}
 	
 	private void configureWillUpdateDiscoveredTransactions(Account account) {

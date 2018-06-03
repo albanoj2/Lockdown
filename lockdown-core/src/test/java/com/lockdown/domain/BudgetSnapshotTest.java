@@ -13,7 +13,7 @@ public class BudgetSnapshotTest {
 	@Test
 	public void noAccountsEnsureNoSnapshots() {
 		BudgetSnapshot snapshot = new BudgetSnapshot(Budget.empty(), new ArrayList<>());
-		assertTrue(snapshot.getBudgetEntrySnapshots().isEmpty());
+		assertTrue(snapshot.getBudgetItemSnapshotsMap().isEmpty());
 	}
 	
 	@Test
@@ -29,8 +29,8 @@ public class BudgetSnapshotTest {
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account));
 		
-		assertFalse(snapshot.getBudgetEntrySnapshots().isEmpty());
-		assertEquals(Money.dollars(10), snapshot.getBudgetEntrySnapshots().get(entry).getBalance());
+		assertFalse(snapshot.getBudgetItemSnapshotsMap().isEmpty());
+		assertEquals(Money.dollars(10), snapshot.getBudgetItemSnapshotsMap().get(entry).getBalance());
 	}
 	
 	private static Transaction transactionFor(BudgetItem item, long dollars) {
@@ -52,9 +52,9 @@ public class BudgetSnapshotTest {
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account));
 		
-		assertFalse(snapshot.getBudgetEntrySnapshots().isEmpty());
-		assertEquals(Money.dollars(-5), snapshot.getBudgetEntrySnapshots().get(entry1).getBalance());
-		assertEquals(Money.dollars(10), snapshot.getBudgetEntrySnapshots().get(entry2).getBalance());
+		assertFalse(snapshot.getBudgetItemSnapshotsMap().isEmpty());
+		assertEquals(Money.dollars(-5), snapshot.getBudgetItemSnapshotsMap().get(entry1).getBalance());
+		assertEquals(Money.dollars(10), snapshot.getBudgetItemSnapshotsMap().get(entry2).getBalance());
 	}
 	
 	@Test
@@ -78,9 +78,9 @@ public class BudgetSnapshotTest {
 		
 		BudgetSnapshot snapshot = new BudgetSnapshot(budget, List.of(account1, account2));
 		
-		assertFalse(snapshot.getBudgetEntrySnapshots().isEmpty());
-		assertEquals(Money.dollars(20), snapshot.getBudgetEntrySnapshots().get(entry1).getBalance());
-		assertEquals(Money.dollars(-10), snapshot.getBudgetEntrySnapshots().get(entry2).getBalance());
+		assertFalse(snapshot.getBudgetItemSnapshotsMap().isEmpty());
+		assertEquals(Money.dollars(20), snapshot.getBudgetItemSnapshotsMap().get(entry1).getBalance());
+		assertEquals(Money.dollars(-10), snapshot.getBudgetItemSnapshotsMap().get(entry2).getBalance());
 	}
 	
 	@Test
