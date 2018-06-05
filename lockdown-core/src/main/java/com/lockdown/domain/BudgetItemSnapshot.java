@@ -1,5 +1,6 @@
 package com.lockdown.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -11,6 +12,10 @@ public class BudgetItemSnapshot {
 	public BudgetItemSnapshot(BudgetItem entry, List<Transaction> budgetedTransactions) {
 		this.entry = entry;
 		this.budgetedTransactions = budgetedTransactions;
+	}
+	
+	public static BudgetItemSnapshot withoutTransactions(BudgetItem item) {
+		return new BudgetItemSnapshot(item, new ArrayList<>());
 	}
 	
 	public Money getExpensedAmount() {

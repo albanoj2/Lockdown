@@ -13,17 +13,17 @@ public class BudgetItem extends Identifiable {
 	private LocalDate start;
 	private Optional<LocalDate> end;
 	private boolean isActive;
-	
-	public BudgetItem(String id, String name, String description, Money amount, Frequency frequency, LocalDate start, Optional<LocalDate> end, boolean isActive) {
+
+	public BudgetItem(String id, String name, String description, Money amount, Frequency frequency, LocalDate start,
+			Optional<LocalDate> end, boolean isActive) {
 		super(id);
-		
+
 		if (end.isPresent() && end.get().isBefore(start)) {
 			throw new IllegalArgumentException("End date cannot be before start date");
-		}
-		else if (!isActive && !end.isPresent()) {
+		} else if (!isActive && !end.isPresent()) {
 			throw new IllegalArgumentException("Inactive budget item must have an end date");
 		}
-		
+
 		this.name = name;
 		this.description = description;
 		this.amountPerFrequency = amount;
@@ -32,15 +32,15 @@ public class BudgetItem extends Identifiable {
 		this.end = end;
 		this.isActive = isActive;
 	}
-	
+
 	public BudgetItem() {
 		this(null, "Unnamed", "", Money.zero(), Frequency.NEVER, LocalDate.now(), Optional.empty(), true);
 	}
-	
+
 	public static BudgetItem blank() {
 		return new BudgetItem();
 	}
-	
+
 	public static BudgetItem withName(String name) {
 		return new BudgetItem(null, name, "", Money.zero(), Frequency.NEVER, LocalDate.now(), Optional.empty(), true);
 	}
@@ -84,21 +84,20 @@ public class BudgetItem extends Identifiable {
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
-	
+
 	public Period getAccumulationPeriod() {
-		
+
 		if (isActive) {
 			return Period.between(start, LocalDate.now());
-		}
-		else {
+		} else {
 			return Period.between(start, end.get());
 		}
 	}
-	
+
 	public Money getTotalAccumulatedAmount() {
 		return amountPerFrequency.multiply(occurrencesThusFar());
 	}
-	
+
 	private int occurrencesThusFar() {
 		return frequency.occurrencesIn(getAccumulationPeriod());
 	}

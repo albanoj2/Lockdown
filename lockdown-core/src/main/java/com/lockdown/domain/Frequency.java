@@ -7,13 +7,13 @@ public enum Frequency implements Recurrence {
 	WEEKLY {
 		@Override
 		public int occurrencesIn(Period period) {
-			return period.getDays() / 7;
+			return period.getDays() / 7 + 1;
 		}
 	}, 
 	MONTHLY {
 		@Override
 		public int occurrencesIn(Period period) {
-			return period.getMonths();
+			return period.getMonths() + 1;
 		}
 	}, 
 	NEVER {

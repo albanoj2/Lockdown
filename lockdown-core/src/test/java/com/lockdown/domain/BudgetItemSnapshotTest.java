@@ -138,10 +138,11 @@ public class BudgetItemSnapshotTest {
 		BudgetItem entry = tenDollarsEachWeekForTwoWeeks();
 		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, List.of(5, -10, 30, -20));
 		
-		// Accumulated amount:    $10/week * 2 weeks     = $20
+		// Accumulated amount:    $10/week * 3 weeks     = $30
+		//	     3 weeks because of this week + plus 2
 		// Transaction total:     $5 - $10 + $30 - $20   = $5
 		// Total:                 $5 + $20               = $25
-		assertEquals(Money.dollars(25), snapshot.getRemainingAmount());
+		assertEquals(Money.dollars(35), snapshot.getRemainingAmount());
 	}
 	
 	public static BudgetItem tenDollarsEachWeekForTwoWeeks() {
@@ -154,9 +155,24 @@ public class BudgetItemSnapshotTest {
 		BudgetItem entry = tenDollarsEachWeekForTwoWeeks();
 		BudgetItemSnapshot snapshot = createSnapshotForTransactionAmounts(entry, List.of(5, -10, -30, -20));
 		
-		// Accumulated amount:    $10/week * 2 weeks     = $20
+		// Accumulated amount:    $10/week * 3 weeks     = $30
+		//     3 weeks because of this week + plus 2
 		// Transaction total:     $5 - $10 - $30 - $20   = -$55
 		// Total:                 -$55 + $20             = -$35
-		assertEquals(Money.dollars(-35), snapshot.getRemainingAmount());
+		assertEquals(Money.dollars(-25), snapshot.getRemainingAmount());
+	}
+	
+	@Test
+	public void givenValidWeeklyBudgetItemWhenLessThanOneWeekEnsureOneMonthAccumulated() {
+		BudgetItem item = new BudgetItem(null, "foo", "bar", Money.dollars(5), Frequency.WEEKLY, LocalDate.now().minus(1, ChronoUnit.DAYS), Optional.empty(), true);
+		BudgetItemSnapshot snapshot = BudgetItemSnapshot.withoutTransactions(item);
+		assertEquals(Money.dollars(5), snapshot.getAccumulatedAmount());
+	}
+	
+	@Test
+	public void givenValidMonthlyBudgetItemWhenLessThanOneMonthEnsureOneMonthAccumulated() {
+		BudgetItem item = new BudgetItem(null, "foo", "bar", Money.dollars(5), Frequency.MONTHLY, LocalDate.now().minus(1, ChronoUnit.DAYS), Optional.empty(), true);
+		BudgetItemSnapshot snapshot = BudgetItemSnapshot.withoutTransactions(item);
+		assertEquals(Money.dollars(5), snapshot.getAccumulatedAmount());
 	}
 }

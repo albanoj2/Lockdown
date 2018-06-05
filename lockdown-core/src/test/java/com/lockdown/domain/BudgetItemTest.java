@@ -59,9 +59,9 @@ public class BudgetItemTest {
 	}
 	
 	@Test
-	public void givenActiveWeeklyBudgetItemWhenStartDateIsNowEnsureAccumulatedTotalIsZero() {
+	public void givenActiveWeeklyBudgetItemWhenStartDateIsNowEnsureAccumulatedTotalIsOneWeek() {
 		BudgetItem item = cononicalActiveBudgetItem(Money.dollars(5), Frequency.WEEKLY, LocalDate.now());
-		assertEquals(Money.zero(), item.getTotalAccumulatedAmount());
+		assertEquals(Money.dollars(5), item.getTotalAccumulatedAmount());
 	}
 	
 	private static BudgetItem cononicalActiveBudgetItem(Money amount, Frequency frequency, LocalDate start) {
@@ -72,20 +72,20 @@ public class BudgetItemTest {
 	public void givenActiveWeeklyBudgetItemWhenStartDateIsOneWeekAgoEnsureCorrectAccumulatedTotal() {
 		LocalDate oneWeekAgo = LocalDate.now().minus(1, ChronoUnit.WEEKS);
 		BudgetItem item = cononicalActiveBudgetItem(Money.dollars(5), Frequency.WEEKLY, oneWeekAgo);
-		assertEquals(Money.dollars(5), item.getTotalAccumulatedAmount());
+		assertEquals(Money.dollars(10), item.getTotalAccumulatedAmount());
 	}
 	
 	@Test
-	public void givenActiveMonthlyBudgetItemWhenStartDateIsNowEnsureAccumulatedTotalIsZero() {
+	public void givenActiveMonthlyBudgetItemWhenStartDateIsNowEnsureAccumulatedTotalIsOneMonth() {
 		BudgetItem item = cononicalActiveBudgetItem(Money.dollars(5), Frequency.MONTHLY, LocalDate.now());
-		assertEquals(Money.zero(), item.getTotalAccumulatedAmount());
+		assertEquals(Money.dollars(5), item.getTotalAccumulatedAmount());
 	}
 	
 	@Test
 	public void givenActiveMonthlyBudgetItemWhenStartDateIsOneWeekAgoEnsureCorrectAccumulatedTotal() {
 		LocalDate oneWeekAgo = LocalDate.now().minus(1, ChronoUnit.MONTHS);
 		BudgetItem item = cononicalActiveBudgetItem(Money.dollars(5), Frequency.MONTHLY, oneWeekAgo);
-		assertEquals(Money.dollars(5), item.getTotalAccumulatedAmount());
+		assertEquals(Money.dollars(10), item.getTotalAccumulatedAmount());
 	}
 	
 	@Test
