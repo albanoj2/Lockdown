@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lockdown.domain.Budget;
 import com.lockdown.persist.store.BudgetDataStore;
 import com.lockdown.rest.controller.util.Retriever;
+import com.lockdown.rest.resource.ActiveBudgetResource;
 import com.lockdown.rest.resource.BudgetPatch;
 import com.lockdown.rest.resource.BudgetResource;
+import com.lockdown.rest.resource.assembler.ActiveBudgetResourceAssembler;
 import com.lockdown.rest.resource.assembler.BudgetResourceAssembler;
 
 @RestController
@@ -33,6 +35,9 @@ public class BudgetsController {
 	
 	@Autowired
 	private BudgetResourceAssembler assembler;
+	
+	@Autowired
+	private ActiveBudgetResourceAssembler activeBudgetResourceAssembler;
 	
 	@GetMapping
 	public ResponseEntity<List<BudgetResource>> getBudgets() {
@@ -70,5 +75,11 @@ public class BudgetsController {
 		patch.patch(existingBudget);
 		Budget updatedBudget = budgetDataStore.save(existingBudget);
 		return new ResponseEntity<>(assembler.toResource(updatedBudget), HttpStatus.OK);
+	}
+	
+	@GetMapping("/active/item")
+	public ResponseEntity<List<ActiveBudgetResource>> getActiveBudgetItems() {
+		List<Budget> budgets = budgetDataStore.findAll();
+		return new ResponseEntity<List<ActiveBudgetResource>>(activeBudgetResourceAssembler.toResource(budgets), HttpStatus.OK);
 	}
 }
