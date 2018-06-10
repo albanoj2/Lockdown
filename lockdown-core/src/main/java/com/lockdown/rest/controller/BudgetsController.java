@@ -77,7 +77,7 @@ public class BudgetsController {
 		return new ResponseEntity<>(assembler.toResource(updatedBudget), HttpStatus.OK);
 	}
 	
-	@GetMapping("/active/item")
+	@GetMapping("/active")
 	public ResponseEntity<List<ActiveBudgetResource>> getActiveBudgetItems() {
 		List<Budget> budgets = budgetDataStore.findAll();
 		return new ResponseEntity<List<ActiveBudgetResource>>(activeBudgetResourceAssembler.toResource(budgets), HttpStatus.OK);

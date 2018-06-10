@@ -10,24 +10,24 @@ import com.lockdown.domain.Money;
 
 public class BudgetItemMappingResource {
 
-	private final Map<String, Money> budgetItemIdMappings;
+	private final Map<String, Long> budgetItemIdMappings;
 	
 	public BudgetItemMappingResource(BudgetItemMapping mapping) {
 		this.budgetItemIdMappings = mapToBudgetItemIds(mapping);
 	}
 	
-	private static Map<String, Money> mapToBudgetItemIds(BudgetItemMapping mapping) {
+	private static Map<String, Long> mapToBudgetItemIds(BudgetItemMapping mapping) {
 		
-		Map<String, Money> idMappings = new HashMap<>();
+		Map<String, Long> idMappings = new HashMap<>();
 		
 		for (Entry<BudgetItem, Money> entry: mapping.getMappings().entrySet()) {
-			idMappings.put(entry.getKey().getId(), entry.getValue());
+			idMappings.put(entry.getKey().getId(), entry.getValue().asCents());
 		}
 		
 		return idMappings;
 	}
 
-	public Map<String, Money> getBudgetItemIdMappings() {
+	public Map<String, Long> getBudgetItemIdMappings() {
 		return budgetItemIdMappings;
 	}
 }
