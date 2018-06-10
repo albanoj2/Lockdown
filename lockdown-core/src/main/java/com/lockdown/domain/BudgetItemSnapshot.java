@@ -42,6 +42,10 @@ public class BudgetItemSnapshot {
 		return entry.getTotalAccumulatedAmount();
 	}
 	
+	public Money getTotalValue() {
+		return getAccumulatedAmount().sum(getDepositedAmount());
+	}
+	
 	public Money getRemainingAmount() {
 		return getBalance().sum(getAccumulatedAmount());
 	}

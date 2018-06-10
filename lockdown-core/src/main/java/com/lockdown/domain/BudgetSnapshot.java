@@ -88,4 +88,8 @@ public class BudgetSnapshot {
 			.reduce(Money::sum)
 			.orElse(Money.zero());
 	}
+	
+	public Money getTotalValue() {
+		return getTotalAccumulated().sum(getTotalDeposited());
+	}
 }

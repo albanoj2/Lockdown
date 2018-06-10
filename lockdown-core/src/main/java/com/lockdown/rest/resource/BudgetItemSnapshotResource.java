@@ -11,12 +11,14 @@ public class BudgetItemSnapshotResource extends ResourceSupport {
 	private final long accumulated;
 	private final long deposited;
 	private final long expensed;
+	private final long totalValue;
 	private final long remaining;
 	
 	public BudgetItemSnapshotResource(BudgetItem item, BudgetItemSnapshot snapshot) {
 		this.budgetItem = new BudgetItemResource(item);
 		this.accumulated = snapshot.getAccumulatedAmount().asCents();
 		this.deposited = snapshot.getDepositedAmount().asCents();
+		this.totalValue = snapshot.getTotalValue().asCents();
 		this.expensed = snapshot.getExpensedAmount().asCents();
 		this.remaining = snapshot.getRemainingAmount().asCents();
 	}
@@ -31,6 +33,10 @@ public class BudgetItemSnapshotResource extends ResourceSupport {
 
 	public long getDeposited() {
 		return deposited;
+	}
+
+	public long getTotalValue() {
+		return totalValue;
 	}
 
 	public long getExpensed() {
