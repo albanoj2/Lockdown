@@ -6,7 +6,15 @@ import java.util.Objects;
 
 public class BudgetItemMapping {
 	
-	private final Map<BudgetItem, Money> mappings = new HashMap<>();
+	private final Map<BudgetItem, Money> mappings;
+	
+	public BudgetItemMapping(Map<BudgetItem, Money> mappings) {
+		this.mappings = mappings;
+	}
+	
+	public BudgetItemMapping() {
+		this(new HashMap<>());
+	}
 	
 	public static BudgetItemMapping blank() {
 		return new BudgetItemMapping();

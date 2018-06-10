@@ -2,15 +2,11 @@ package com.lockdown.domain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.lockdown.domain.BudgetItem;
-import com.lockdown.domain.Money;
-import com.lockdown.domain.BudgetItemMapping;
-import com.lockdown.domain.Transaction;
 
 public class BudgetItemMappingTest {
 
@@ -36,8 +32,8 @@ public class BudgetItemMappingTest {
 		Transaction transaction = new Transaction();
 		Money expectedAmount = Money.dollars(5);
 		
-		BudgetItem item = new BudgetItem();
-		BudgetItem anotherItem = new BudgetItem();
+		BudgetItem item = budgetItemWithId("item");
+		BudgetItem anotherItem = budgetItemWithId("anotherItem");
 		mapping.addMapping(item, expectedAmount);
 		
 		assertEquals(expectedAmount, mapping.amountFor(transaction, item));
@@ -50,8 +46,8 @@ public class BudgetItemMappingTest {
 		Money expectedAmount1 = Money.dollars(7);
 		Money expectedAmount2 = Money.dollars(25);
 		
-		BudgetItem item1 = new BudgetItem();
-		BudgetItem item2 = new BudgetItem();
+		BudgetItem item1 = budgetItemWithId("item1");
+		BudgetItem item2 = budgetItemWithId("item2");
 		BudgetItem anotherItem = new BudgetItem();
 		mapping.addMapping(item1, expectedAmount1);
 		mapping.addMapping(item2, expectedAmount2);
@@ -88,9 +84,15 @@ public class BudgetItemMappingTest {
 	@Test
 	public void givenTwoMappingsWhenGetMappedAmountForNonZeroTransactionThenCorrectMappedAmount() {
 		Transaction transaction = Transactions.budgetedForAmount(Money.dollars(7));
-		mapping.addMapping(new BudgetItem(), Money.dollars(5));
-		mapping.addMapping(new BudgetItem(), Money.dollars(7));
+		mapping.addMapping(budgetItemWithId("foo"), Money.dollars(5));
+		mapping.addMapping(budgetItemWithId("bar"), Money.dollars(7));
 		assertEquals(Money.dollars(12), mapping.mappedAmount(transaction));
+	}
+	
+	private static BudgetItem budgetItemWithId(String id) {
+		BudgetItem item = BudgetItem.blank();
+		item.setId(id);
+		return item;
 	}
 	
 	@Test
@@ -109,8 +111,8 @@ public class BudgetItemMappingTest {
 	@Test
 	public void givenTwoMappingsWithTotalAmountsMatchingTransactionAmountWhenIsValidForNonZeroTransactionThenIsValid() {
 		Transaction transaction = Transactions.budgetedForAmount(Money.dollars(7));
-		mapping.addMapping(new BudgetItem(), Money.dollars(2));
-		mapping.addMapping(new BudgetItem(), Money.dollars(5));
+		mapping.addMapping(budgetItemWithId("foo"), Money.dollars(2));
+		mapping.addMapping(budgetItemWithId("bar"), Money.dollars(5));
 		assertTrue(mapping.isValidFor(transaction));
 	}
 	
@@ -130,5 +132,91 @@ public class BudgetItemMappingTest {
 		mapping.addMapping(budgetItem, amount);
 		mapping.removeMapping(budgetItem);
 		assertEquals(0, mapping.getMappingsCount());
+	}
+	
+	@Test
+	public void givenValidMappingWhenAmountForDifferentBudgetItemObjectWithSameIdAsBudgetItemKeyThenCorrectAmountFor() {
+		
+		String commonId = "foo";
+		Money expectedAmount = Money.dollars(42);
+		
+		BudgetItem key = budgetItemWithId(commonId);
+		BudgetItem desiredBudgetItem = budgetItemWithId(commonId);
+		
+		BudgetItemMapping mapping = new BudgetItemMapping();
+		mapping.addMapping(key, expectedAmount);
+		
+		assertFalse(key == desiredBudgetItem);
+		assertEquals(expectedAmount, mapping.amountFor(new Transaction(), desiredBudgetItem));
+	}
+	
+	@Test
+	public void givenTwoBudgetItemsWithSameIdThenBudgetItemsAreEqual() {
+		BudgetItem item1 = budgetItemWithId("item1");
+		BudgetItem item2 = budgetItemWithId("item1");
+		assertEquals(item1, item2);
+	}
+	
+	@Test
+	public void givenTwoBudgetItemsWithDifferentIdsThenBudgetItemsAreNotEqual() {
+		BudgetItem item1 = budgetItemWithId("foo");
+		BudgetItem item2 = budgetItemWithId("bar");
+		assertNotEquals(item1, item2);
+	}
+
+	@Test
+	public void givenTwoBudgetItemsWhenFirstIsNullThenBudgetItemsAreNotEqual() {
+		BudgetItem item1 = budgetItemWithId(null);
+		BudgetItem item2 = budgetItemWithId("bar");
+		assertNotEquals(item1, item2);
+	}
+
+	@Test
+	public void givenTwoBudgetItemsWhenSecondIsNullThenBudgetItemsAreNotEqual() {
+		BudgetItem item1 = budgetItemWithId("foo");
+		BudgetItem item2 = budgetItemWithId(null);
+		assertNotEquals(item1, item2);
+	}
+
+	@Test
+	public void givenTwoBudgetItemsWhenBothAreNullThenBudgetItemsAreNotEqual() {
+		BudgetItem item1 = budgetItemWithId(null);
+		BudgetItem item2 = budgetItemWithId(null);
+		assertNotEquals(item1, item2);
+	}
+	
+	@Test
+	public void givenTwoBudgetItemsWithSameIdThenBudgetItemsHaveSameHashCode() {
+		BudgetItem item1 = budgetItemWithId("item1");
+		BudgetItem item2 = budgetItemWithId("item1");
+		assertEquals(item1.hashCode(), item2.hashCode());
+	}
+	
+	@Test
+	public void givenTwoBudgetItemsWithDifferentIdsThenBudgetItemsHaveDifferentHashCodes() {
+		BudgetItem item1 = budgetItemWithId("foo");
+		BudgetItem item2 = budgetItemWithId("bar");
+		assertNotEquals(item1.hashCode(), item2.hashCode());
+	}
+
+	@Test
+	public void givenTwoBudgetItemsWhenFirstIsNullThenBudgetItemsHaveDifferentHashCodes() {
+		BudgetItem item1 = budgetItemWithId(null);
+		BudgetItem item2 = budgetItemWithId("bar");
+		assertNotEquals(item1.hashCode(), item2.hashCode());
+	}
+
+	@Test
+	public void givenTwoBudgetItemsWhenSecondIsNullThenBudgetItemsHaveDifferentHashCodes() {
+		BudgetItem item1 = budgetItemWithId("foo");
+		BudgetItem item2 = budgetItemWithId(null);
+		assertNotEquals(item1.hashCode(), item2.hashCode());
+	}
+
+	@Test
+	public void givenTwoBudgetItemsWhenBothAreNullThenBudgetItemsHaveDifferentHashCodes() {
+		BudgetItem item1 = budgetItemWithId(null);
+		BudgetItem item2 = budgetItemWithId(null);
+		assertNotEquals(item1.hashCode(), item2.hashCode());
 	}
 }

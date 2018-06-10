@@ -2,6 +2,7 @@ package com.lockdown.domain;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
 import java.util.Optional;
 
 public class BudgetItem extends Identifiable {
@@ -106,5 +107,34 @@ public class BudgetItem extends Identifiable {
 	public String toString() {
 		String displayName = name != null ? name : "unnamed";
 		return "Budget entry '" + displayName + "'";
+	}
+	
+	@Override
+	public int hashCode() {
+		
+		if (getId() == null) {
+			return super.hashCode();
+		}
+		else {
+			return Objects.hash(getId());
+		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (obj == this) {
+			return true;
+		}
+		else if (!(obj instanceof BudgetItem)) {
+			return false;
+		}
+		else {
+			BudgetItem other = (BudgetItem) obj;
+			return 
+				getId() != null &&
+				other.getId() != null &&
+				Objects.equals(getId(), other.getId());
+		}
 	}
 }
