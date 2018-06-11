@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.lockdown.persist.store.DataStore;
 import com.lockdown.persist.store.util.data.cascade.domain.MockDomainObject;
 
@@ -54,6 +57,16 @@ public class MockDataStore<T extends MockDomainObject> implements DataStore<T> {
 
 	@Override
 	public void deleteById(String id) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Page<T> findAll(Pageable pageable) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Page<T> findAllById(Iterable<String> ids, Pageable pageable) {
 		throw new UnsupportedOperationException();
 	}
 }

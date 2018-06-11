@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.lockdown.domain.BudgetItem;
@@ -16,6 +18,7 @@ import com.lockdown.domain.Money;
 import com.lockdown.domain.Transaction;
 import com.lockdown.persist.dto.BudgetItemMappingDto;
 import com.lockdown.persist.dto.TransactionDto;
+import com.lockdown.persist.repository.TransactionRepository;
 
 @Service
 @DataStoreFor(Transaction.class)
@@ -42,7 +45,7 @@ public class TransactionDataStore extends AbstractDataStore<Transaction, Transac
 			dto.getDescription(),
 			dto.isPending(),
 			Optional.ofNullable(dto.getComment()),
-			generateBudgetItemMapping(dto.getMapping())
+			generateBudgetItemMapping(dto.getMappings())
 		);
 	}
 	
@@ -68,5 +71,14 @@ public class TransactionDataStore extends AbstractDataStore<Transaction, Transac
 		
 		BudgetItemMapping mapping = new BudgetItemMapping(mappings);
 		return Optional.of(mapping);
+	}
+	
+	protected TransactionRepository getRepository() {
+		return (TransactionRepository) super.getRepository();
+	}
+	
+	public Page<Transaction> findByIdInOrderByDateDesc(Iterable<String> ids, Pageable pageable) {
+		return getRepository().findByIdInOrderByDateDesc(ids, pageable)
+			.map(this::toDomainObject);
 	}
 }

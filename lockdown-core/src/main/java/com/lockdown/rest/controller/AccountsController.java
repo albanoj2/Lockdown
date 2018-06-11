@@ -3,6 +3,8 @@ package com.lockdown.rest.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lockdown.domain.Account;
-import com.lockdown.domain.Transaction;
 import com.lockdown.persist.store.AccountDataStore;
 import com.lockdown.persist.store.TransactionDataStore;
 import com.lockdown.rest.error.ResourceNotFoundException;
@@ -52,9 +53,11 @@ public class AccountsController {
 	}
 	
 	@GetMapping("/{accountId}/transactions")
-	public ResponseEntity<List<TransactionResource>> getTransactions(@PathVariable String accountId) {
+	public ResponseEntity<Page<TransactionResource>> getTransactions(@PathVariable String accountId, Pageable pageable) {
 		List<String> transactionIds = accountDataStore.getTransactionIds(accountId);
-		List<Transaction> transactions = transactionDataStore.findAllById(transactionIds);
-		return new ResponseEntity<>(transactionResourceAssembler.toResources(transactions), HttpStatus.OK);
+		Page<TransactionResource> transactions = transactionDataStore.findByIdInOrderByDateDesc(transactionIds, pageable)
+				.map(transaction -> transactionResourceAssembler.toResource(transaction));
+		
+		return new ResponseEntity<>(transactions, HttpStatus.OK);
 	}
 }

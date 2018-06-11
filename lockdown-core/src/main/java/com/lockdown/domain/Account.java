@@ -108,7 +108,6 @@ public final class Account extends Identifiable {
 		}
 		else {
 			addTransaction(newTransaction);
-			System.out.println("Added transactions with ID " + newTransaction.getId());
 			return Delta.ADDED;
 		}
 

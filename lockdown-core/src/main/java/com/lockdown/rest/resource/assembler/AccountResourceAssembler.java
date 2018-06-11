@@ -3,6 +3,7 @@ package com.lockdown.rest.resource.assembler;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,6 @@ public class AccountResourceAssembler extends ResourceAssemblerSupport<Account, 
 	}
 
 	private static Link getTransactionsLink(String accountId) {
-		return linkTo(methodOn(AccountsController.class).getTransactions(accountId)).withRel(LinkRel.TRANSACTIONS.getRel());
+		return linkTo(methodOn(AccountsController.class).getTransactions(accountId, PageRequest.of(1, 20))).withRel(LinkRel.TRANSACTIONS.getRel());
 	}
 }

@@ -1,8 +1,9 @@
 package com.lockdown.service.sync;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,6 @@ public class AppendingPortfolioSynchronizer extends PortfolioSynchronizer {
 				() -> logger.warn(getNoAssociatedAccountMessageFor(transaction))
 			);
 		}
-		
-		accountDataStore.saveAllAndCascade(context.getAccountsToBeSaved());
 	}
 
 	private void addTransaction(DiscoveredTransaction transaction, Account account, SynchronizationLogEntry logEntry, SynchronizationContext context) {
@@ -74,6 +73,8 @@ public class AppendingPortfolioSynchronizer extends PortfolioSynchronizer {
 			logEntry.incrementTransactionsUpdated();
 			context.addUpdatedAccount(account);
 		}
+		
+		accountDataStore.saveAndCascade(account);
 	}
 
 	private static String getNoAssociatedAccountMessageFor(DiscoveredTransaction discoveredTransaction) {
@@ -83,18 +84,22 @@ public class AppendingPortfolioSynchronizer extends PortfolioSynchronizer {
 	
 	private static class SynchronizationContext {
 		
-		private final List<Account> changedAccounts = new ArrayList<>();
+		private final Set<String> changedAccountIds = new HashSet<>();
 		
 		public void addUpdatedAccount(Account account) {
-			changedAccounts.add(account);
+			addChangedAccount(account);
+		}
+
+		private void addChangedAccount(Account account) {
+			changedAccountIds.add(account.getId());
 		}
 		
 		public void addAddedAccount(Account account) {
-			changedAccounts.add(account);
+			addChangedAccount(account);
 		}
 		
-		public List<Account> getAccountsToBeSaved() {
-			return changedAccounts;
+		public Set<String> getAccountIdsToBeSaved() {
+			return changedAccountIds;
 		}
 	}
 }

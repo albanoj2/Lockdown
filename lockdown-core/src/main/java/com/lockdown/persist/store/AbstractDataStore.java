@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.lockdown.domain.Identifiable;
 import com.lockdown.persist.dto.Dto;
@@ -32,12 +34,24 @@ public abstract class AbstractDataStore<DomainObjectType extends Identifiable, D
 			.map(this::toDomainObject)
 			.collect(Collectors.toList());
 	}
+	
+	@Override
+	public final Page<DomainObjectType> findAll(Pageable pageable) {
+		return repository.findAll(pageable)
+			.map(this::toDomainObject);
+	}
 
 	@Override
 	public final List<DomainObjectType> findAllById(Iterable<String> ids) {
 		return StreamSupport.stream(repository.findAllById(ids).spliterator(), false)
 			.map(this::toDomainObject)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public Page<DomainObjectType> findAllById(Iterable<String> ids, Pageable pageable) {
+		return repository.findByIdIn(ids, pageable)
+			.map(this::toDomainObject);
 	}
 
 	@Override

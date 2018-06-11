@@ -20,7 +20,7 @@ public class TransactionResource extends ResourceSupport {
 	private final String description;
 	private final boolean isPending; 
 	private final String comment;
-	private final BudgetItemMappingResource budgetItemMapping;
+	private final BudgetItemMappingsResource budgetItemMappings;
 	
 	public TransactionResource(Transaction transaction) {
 		this.transactionId = transaction.getId();
@@ -30,13 +30,13 @@ public class TransactionResource extends ResourceSupport {
 		this.description = transaction.getDescription();
 		this.isPending = transaction.isPending();
 		this.comment = transaction.getComment().orElse(null);
-		this.budgetItemMapping = toResource(transaction.getBudgetItemMapping());
+		this.budgetItemMappings = toResource(transaction.getBudgetItemMapping());
 	}
 	
-	private static BudgetItemMappingResource toResource(Optional<BudgetItemMapping> mapping) {
+	private static BudgetItemMappingsResource toResource(Optional<BudgetItemMapping> mapping) {
 		
 		if (mapping.isPresent()) {
-			return new BudgetItemMappingResource(mapping.get());
+			return new BudgetItemMappingsResource(mapping.get());
 		}
 		else {
 			return null;
@@ -72,7 +72,7 @@ public class TransactionResource extends ResourceSupport {
 		return comment;
 	}
 
-	protected BudgetItemMappingResource getBudgetItemMapping() {
-		return budgetItemMapping;
+	protected BudgetItemMappingsResource getBudgetItemMappings() {
+		return budgetItemMappings;
 	}
 }
