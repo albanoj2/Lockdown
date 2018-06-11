@@ -4,14 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.lockdown.domain.BudgetItem;
 import com.lockdown.domain.BudgetItemMapping;
 import com.lockdown.domain.Money;
 
 public class BudgetItemMappingDto {
 	
-	@JsonUnwrapped
+	
 	private final Map<String, Long> mappings;
 	
 	public BudgetItemMappingDto(BudgetItemMapping mapping) {

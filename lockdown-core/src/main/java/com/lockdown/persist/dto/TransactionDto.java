@@ -1,7 +1,13 @@
 package com.lockdown.persist.dto;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import com.lockdown.domain.BudgetItem;
+import com.lockdown.domain.BudgetItemMapping;
+import com.lockdown.domain.Money;
 import com.lockdown.domain.Transaction;
 
 public class TransactionDto extends Dto {
@@ -13,7 +19,7 @@ public class TransactionDto extends Dto {
 	private final String description;
 	private final boolean isPending;
 	private final String comment;
-	private final BudgetItemMappingDto mappings;
+	private final Map<String, Long> mappings;
 
 	public TransactionDto(Transaction transaction) {
 		super(transaction.getId());
@@ -24,7 +30,18 @@ public class TransactionDto extends Dto {
 		this.description = transaction.getDescription();
 		this.isPending = transaction.isPending();
 		this.comment = transaction.getComment().orElse(null);
-		this.mappings = transaction.getBudgetItemMapping().isPresent() ? new BudgetItemMappingDto(transaction.getBudgetItemMapping().get()) : null;
+		this.mappings = transaction.getBudgetItemMapping().isPresent() ? generateMappings(transaction.getBudgetItemMapping().get()) : null;
+	}
+	
+	private static Map<String, Long> generateMappings(BudgetItemMapping originalMapping) {
+		
+		Map<String, Long> mappings = new HashMap<>();
+		
+		for (Entry<BudgetItem, Money> entry: originalMapping.getMappings().entrySet()) {
+			mappings.put(entry.getKey().getId(), entry.getValue().asCents());
+		}
+		
+		return mappings;
 	}
 	
 	public TransactionDto() {
@@ -66,7 +83,7 @@ public class TransactionDto extends Dto {
 		return comment;
 	}
 
-	public BudgetItemMappingDto getMappings() {
+	public Map<String, Long> getMappings() {
 		return mappings;
 	}
 }

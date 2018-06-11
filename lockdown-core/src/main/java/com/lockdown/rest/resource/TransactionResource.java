@@ -7,6 +7,7 @@ import org.springframework.hateoas.ResourceSupport;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.lockdown.domain.BudgetItemMapping;
 import com.lockdown.domain.Transaction;
 
@@ -20,6 +21,7 @@ public class TransactionResource extends ResourceSupport {
 	private final String description;
 	private final boolean isPending; 
 	private final String comment;
+	@JsonUnwrapped
 	private final BudgetItemMappingsResource budgetItemMappings;
 	
 	public TransactionResource(Transaction transaction) {

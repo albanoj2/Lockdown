@@ -16,7 +16,6 @@ import com.lockdown.domain.BudgetItem;
 import com.lockdown.domain.BudgetItemMapping;
 import com.lockdown.domain.Money;
 import com.lockdown.domain.Transaction;
-import com.lockdown.persist.dto.BudgetItemMappingDto;
 import com.lockdown.persist.dto.TransactionDto;
 import com.lockdown.persist.repository.TransactionRepository;
 
@@ -49,15 +48,15 @@ public class TransactionDataStore extends AbstractDataStore<Transaction, Transac
 		);
 	}
 	
-	private Optional<BudgetItemMapping> generateBudgetItemMapping(BudgetItemMappingDto dto) {
+	private Optional<BudgetItemMapping> generateBudgetItemMapping(Map<String, Long> dtoMappings) {
 		
-		if (dto == null || dto.getMappings() == null) {
+		if (dtoMappings == null) {
 			return Optional.empty();
 		}
 		
 		Map<BudgetItem, Money> mappings = new HashMap<>();
 		
-		for (Entry<String, Long> originalMapping: dto.getMappings().entrySet()) {
+		for (Entry<String, Long> originalMapping: dtoMappings.entrySet()) {
 			Optional<BudgetItem> key = budgetItemDataStore.findById(originalMapping.getKey());
 			
 			if (key.isPresent()) {
