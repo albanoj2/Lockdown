@@ -311,4 +311,22 @@ public class AccountTest {
 		Account account2 = accountWithKey("bar");
 		assertNotEquals(account1.hashCode(), account2.hashCode());
 	}
+	
+	@Test
+	public void givenEmptyAccountWhenGetUnbdugetedTransactionCountThenZero() {
+		assertEquals(0, account.getUnbudgetedTransactionsCount());
+	}
+	
+	@Test
+	public void givenAccountWithOneUnbudgetedTransactionWhenGetUnbdugetedTransactionCountThenOne() {
+		addUnbudgetedTransactionWithAmount(1);
+		assertEquals(1, account.getUnbudgetedTransactionsCount());
+	}
+	
+	@Test
+	public void givenAccountWithOneBudgetedAndOneUnbudgetedTransactionWhenGetUnbdugetedTransactionCountThenOne() {
+		addUnbudgetedTransactionWithAmount(1);
+		addBudgetedTransactionWithAmount(2);
+		assertEquals(1, account.getUnbudgetedTransactionsCount());
+	}
 }

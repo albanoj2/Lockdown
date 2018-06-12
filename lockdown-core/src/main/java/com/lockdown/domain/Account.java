@@ -147,6 +147,10 @@ public final class Account extends Identifiable {
 			.reduce((t1, t2) -> t1.sum(t2))
 			.orElse(Money.zero());
 	}
+	
+	public int getUnbudgetedTransactionsCount() {
+		return getUnbudgetedTransactions().size();
+	}
 
 	@Override
 	public String toString() {

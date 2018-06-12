@@ -12,6 +12,7 @@ public class AccountResource  extends ResourceSupport {
 	private final String institution;
 	private final String type;
 	private final String subType;
+	private final long unbudgetedTransactionCount;
 	
 	public AccountResource(Account account) {
 		this.accountId = account.getId();
@@ -19,6 +20,7 @@ public class AccountResource  extends ResourceSupport {
 		this.institution = account.getInstitution().name();
 		this.type = account.getType().name();
 		this.subType = account.getSubtype().name();
+		this.unbudgetedTransactionCount = account.getUnbudgetedTransactionsCount();
 	}
 
 	@JsonProperty("id")
@@ -40,5 +42,9 @@ public class AccountResource  extends ResourceSupport {
 
 	public String getSubType() {
 		return subType;
+	}
+
+	public long getUnbudgetedTransactionCount() {
+		return unbudgetedTransactionCount;
 	}
 }
