@@ -66,7 +66,7 @@ public class BudgetsController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteBudget(@PathVariable String id) {
 		budgetDataStore.deleteById(id);
-		return new ResponseEntity<>(null, HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@PatchMapping("/{id}")
